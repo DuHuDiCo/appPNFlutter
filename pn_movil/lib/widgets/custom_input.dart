@@ -8,17 +8,17 @@ class Custominput {
     return InputDecoration(
       enabledBorder: const UnderlineInputBorder(
           borderSide:
-              BorderSide(color: Color.fromARGB(255, 149, 10, 0), width: 2)),
+              BorderSide(color: Color.fromARGB(255, 40, 89, 135), width: 2)),
       focusedBorder: const UnderlineInputBorder(
           borderSide:
-              BorderSide(color: Color.fromARGB(255, 149, 10, 0), width: 2)),
+              BorderSide(color: Color.fromARGB(255, 40, 89, 135), width: 2)),
       hintText: hintText,
       labelText: labelText,
       labelStyle: const TextStyle(color: Colors.grey),
       prefixIcon: prefixIcon != null
           ? Icon(
               prefixIcon,
-              color: const Color.fromARGB(255, 149, 10, 0),
+              color: const Color.fromARGB(255, 40, 89, 135),
             )
           : null,
     );

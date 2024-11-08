@@ -1,17 +1,27 @@
 import 'package:flutter/material.dart';
 
 class Background extends StatelessWidget {
-  const Background({Key? key, required SingleChildScrollView child})
-      : super(key: key);
+  final Widget child;
+
+  const Background({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
-    return const SizedBox(
+    return SizedBox(
       width: double.infinity,
       height: double.infinity,
       child: Stack(
-          // children: [const _Caja(), const _HeaderIcon(), child],
+        clipBehavior: Clip.none,
+        children: [
+          child,
+          const Positioned(
+            top: 200,
+            left: 0,
+            right: 0,
+            child: _HeaderIcon(),
           ),
+        ],
+      ),
     );
   }
 }
@@ -23,15 +33,22 @@ class _HeaderIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
+    return Center(
       child: Container(
-        width: double.infinity,
-        margin: const EdgeInsets.only(top: 30),
-        child: Image.asset(
-          'assets/OIP.jfif',
-          width: 220,
-          height: 220,
-          fit: BoxFit.contain,
+        width: 100,
+        height: 100,
+        padding: const EdgeInsets.all(5),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.blue, width: 5),
+        ),
+        child: ClipOval(
+          child: Image.asset(
+            '../assets/algo.jpg',
+            fit: BoxFit.cover,
+            width: 90,
+            height: 90,
+          ),
         ),
       ),
     );
