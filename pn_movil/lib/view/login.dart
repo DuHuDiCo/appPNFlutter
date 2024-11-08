@@ -71,7 +71,7 @@ class _LoginForm extends StatelessWidget {
               keyboardType: TextInputType.emailAddress,
               decoration: Custominput.authInputDecoracion(
                 hintText: 'Escribe tu correo',
-                labelText: 'Correo electrónico',
+                labelText: 'Correo electrónic',
                 prefixIcon: Icons.email,
               ),
               onChanged: (value) {
