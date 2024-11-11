@@ -10,19 +10,20 @@ class LoginProvider extends ChangeNotifier {
 
   bool get isValidForm => formKey.currentState!.validate();
 
-  Future<bool> login() async {
+  Future<bool> login(BuildContext context) async {
     isLoading = true;
-    await Future.delayed(const Duration(seconds: 1));
-    isLoading = false;
-    return true;
-  }
+    notifyListeners();
 
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text('LoginProvider'),
-      ),
-    );
+    await Future.delayed(const Duration(seconds: 1));
+
+    isLoading = false;
+    notifyListeners();
+
+    if (isValidForm) {
+      Navigator.pushReplacementNamed(context, 'home');
+      return true;
+    } else {
+      return false;
+    }
   }
 }
