@@ -11,14 +11,13 @@ class CardContainer extends StatelessWidget {
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(20),
-        decoration: _Card(),
+        decoration: _card(),
         child: child,
       ),
     );
   }
 
-  // ignore: non_constant_identifier_names
-  BoxDecoration _Card() => BoxDecoration(
+  BoxDecoration _card() => BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(25),
           boxShadow: const [

@@ -12,7 +12,7 @@ class VistaInicial extends StatelessWidget {
         backgroundColor: Colors.blue[800],
         centerTitle: true,
       ),
-      drawer: CustomDrawer(),
+      drawer: const CustomDrawer(),
       body: const Center(
         child: Text(
           'Hola',

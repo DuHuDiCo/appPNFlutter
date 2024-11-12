@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class CustomDrawer extends StatelessWidget {
+  const CustomDrawer({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -9,7 +11,6 @@ class CustomDrawer extends StatelessWidget {
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
-            // Cabecera del Drawer
             DrawerHeader(
               decoration: BoxDecoration(
                 color: Colors.blue[600],
@@ -33,7 +34,6 @@ class CustomDrawer extends StatelessWidget {
                 ],
               ),
             ),
-
             ListTile(
               leading: const Icon(Icons.home, color: Colors.white),
               title: const Text(
@@ -44,30 +44,104 @@ class CustomDrawer extends StatelessWidget {
                 Navigator.pushReplacementNamed(context, 'home');
               },
             ),
-            ListTile(
-              leading: const Icon(Icons.settings, color: Colors.white),
-              title: const Text(
-                'Configuración',
-                style: TextStyle(color: Colors.white),
-              ),
-              onTap: () {
-                Navigator.pushReplacementNamed(context, 'settings');
-              },
-            ),
-
-            ListTile(
-              leading: const Icon(Icons.info, color: Colors.white),
+            ExpansionTile(
+              leading: const Icon(Icons.supervised_user_circle_sharp,
+                  color: Colors.white),
               title: const Text(
                 'Usuarios',
                 style: TextStyle(color: Colors.white),
               ),
-              onTap: () {
-                Navigator.pushReplacementNamed(context, 'about');
-              },
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(left: 16.0),
+                  child: ListTile(
+                    leading: const Icon(Icons.shopping_cart_checkout,
+                        color: Colors.white),
+                    title: const Text('Vendedores',
+                        style: TextStyle(color: Colors.white)),
+                    onTap: () {
+                      Navigator.pushReplacementNamed(context, 'vendedores');
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 16.0),
+                  child: ListTile(
+                    leading: const Icon(Icons.superscript, color: Colors.white),
+                    title: const Text('Proveedores',
+                        style: TextStyle(color: Colors.white)),
+                    onTap: () {
+                      Navigator.pushReplacementNamed(context, 'proveedores');
+                    },
+                  ),
+                ),
+              ],
             ),
-
-            const Divider(color: Colors.white), // Separador visual
-
+            ExpansionTile(
+              leading: const Icon(Icons.shopping_bag, color: Colors.white),
+              title: const Text(
+                'Compras',
+                style: TextStyle(color: Colors.white),
+              ),
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(left: 16.0),
+                  child: ListTile(
+                    leading: const Icon(Icons.money_off, color: Colors.white),
+                    title: const Text('Solicitar pago',
+                        style: TextStyle(color: Colors.white)),
+                    onTap: () {
+                      Navigator.pushReplacementNamed(context, 'solicitar-pago');
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 16.0),
+                  child: ListTile(
+                    leading: const Icon(Icons.money, color: Colors.white),
+                    title: const Text('Realizar pago',
+                        style: TextStyle(color: Colors.white)),
+                    onTap: () {
+                      Navigator.pushReplacementNamed(context, 'realizar-pago');
+                    },
+                  ),
+                ),
+              ],
+            ),
+            ExpansionTile(
+              leading: const Icon(Icons.inventory, color: Colors.white),
+              title: const Text(
+                'Inventario',
+                style: TextStyle(color: Colors.white),
+              ),
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(left: 16.0),
+                  child: ListTile(
+                    leading: const Icon(Icons.inventory_2_rounded,
+                        color: Colors.white),
+                    title: const Text('Inventario',
+                        style: TextStyle(color: Colors.white)),
+                    onTap: () {
+                      Navigator.pushReplacementNamed(context, 'inventario');
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 16.0),
+                  child: ListTile(
+                    leading:
+                        const Icon(Icons.business_sharp, color: Colors.white),
+                    title: const Text('Productos',
+                        style: TextStyle(color: Colors.white)),
+                    onTap: () {
+                      Navigator.pushReplacementNamed(context, 'productos');
+                    },
+                  ),
+                ),
+              ],
+            ),
+            const Divider(color: Colors.white),
             ListTile(
               leading: const Icon(Icons.logout, color: Colors.white),
               title: const Text(
