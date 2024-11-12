@@ -116,10 +116,10 @@ class _LoginForm extends StatelessWidget {
 
                     loginProvider.isLoading = true;
 
-                    final loginSuccessful = await loginProvider.login();
+                    final loginSuccessful = await loginProvider.login(context);
 
                     if (loginSuccessful) {
-                      Navigator.pushReplacementNamed(context, 'homeScreen');
+                      Navigator.pushReplacementNamed(context, 'home');
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
