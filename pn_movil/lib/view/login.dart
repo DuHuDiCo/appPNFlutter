@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pn_movil/provider/login_provider.dart';
+import 'package:pn_movil/widgets/botton_google.dart';
 import 'package:pn_movil/widgets/card_container.dart';
 import 'package:pn_movil/widgets/background.dart';
 import 'package:pn_movil/widgets/custom_input.dart';
@@ -12,14 +13,14 @@ class Login extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Background(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Column(
-            children: [
-              const SizedBox(height: 150),
-              Align(
-                alignment: Alignment.center,
-                child: Stack(
+        child: Center(
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: 100),
+                Stack(
                   clipBehavior: Clip.none,
                   children: [
                     CardContainer(
@@ -46,9 +47,9 @@ class Login extends StatelessWidget {
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(height: 50),
-            ],
+                const SizedBox(height: 50),
+              ],
+            ),
           ),
         ),
       ),
@@ -152,6 +153,9 @@ class _LoginForm extends StatelessWidget {
               ),
             ),
           ),
+          const SizedBox(height: 30),
+          // Aquí agregamos el Google SignIn Button
+          GoogleSignInButton(),
         ],
       ),
     );

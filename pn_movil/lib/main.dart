@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pn_movil/view/crear_product.dart';
 import 'package:pn_movil/view/login.dart';
 import 'package:pn_movil/view/products.dart';
 import 'package:pn_movil/view/vista_inicial.dart';
@@ -20,6 +21,7 @@ class MyApp extends StatelessWidget {
         'login': (_) => const Login(),
         'home': (_) => const VistaInicial(),
         'productos': (_) => const Products(),
+        'crearProduct': (_) => const Crearproduct(),
       },
       theme: ThemeData.light().copyWith(
           scaffoldBackgroundColor: Colors.grey[300],

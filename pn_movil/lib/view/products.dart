@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pn_movil/widgets/cardsListar.dart';
+import 'package:pn_movil/widgets/cards_listar_products.dart';
 import 'package:pn_movil/widgets/drawer.dart';
 import 'package:pn_movil/widgets/navbar.dart';
 
@@ -56,6 +56,21 @@ class Products extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 10),
+                  Container(
+                    width: 60,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: const Color.fromRGBO(112, 185, 244, 1),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: IconButton(
+                      onPressed: () {
+                        Navigator.pushReplacementNamed(context, 'crearProduct');
+                      },
+                      icon: const Icon(Icons.add),
+                      color: Colors.white,
+                    ),
+                  ),
                 ],
               ),
             ),
