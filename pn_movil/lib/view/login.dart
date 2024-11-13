@@ -16,22 +16,33 @@ class Login extends StatelessWidget {
           physics: const BouncingScrollPhysics(),
           child: Column(
             children: [
-              const SizedBox(height: 250),
-              CardContainer(
-                child: Column(
-                  children: [
-                    const SizedBox(height: 40),
-                    Text(
-                      'Iniciar Sesión',
-                      style: Theme.of(context).textTheme.headlineSmall,
+              const SizedBox(height: 150),
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  CardContainer(
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 40),
+                        Text(
+                          'Iniciar Sesión',
+                          style: Theme.of(context).textTheme.headlineSmall,
+                        ),
+                        const SizedBox(height: 10),
+                        ChangeNotifierProvider(
+                          create: (context) => LoginProvider(),
+                          child: const _LoginForm(),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 10),
-                    ChangeNotifierProvider(
-                      create: (context) => LoginProvider(),
-                      child: const _LoginForm(),
-                    ),
-                  ],
-                ),
+                  ),
+                  const Positioned(
+                    top: -50,
+                    left: 0,
+                    right: 0,
+                    child: HeaderIcon(),
+                  ),
+                ],
               ),
               const SizedBox(height: 50),
             ],

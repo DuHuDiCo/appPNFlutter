@@ -67,7 +67,8 @@ class CustomDrawer extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(left: 16.0),
                   child: ListTile(
-                    leading: const Icon(Icons.superscript, color: Colors.white),
+                    leading:
+                        const Icon(Icons.local_shipping, color: Colors.white),
                     title: const Text('Proveedores',
                         style: TextStyle(color: Colors.white)),
                     onTap: () {
