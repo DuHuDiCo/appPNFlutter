@@ -10,24 +10,13 @@ class Background extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       height: double.infinity,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          child,
-          const Positioned(
-            top: 200,
-            left: 0,
-            right: 0,
-            child: _HeaderIcon(),
-          ),
-        ],
-      ),
+      child: child,
     );
   }
 }
 
-class _HeaderIcon extends StatelessWidget {
-  const _HeaderIcon({
+class HeaderIcon extends StatelessWidget {
+  const HeaderIcon({
     super.key,
   });
 
