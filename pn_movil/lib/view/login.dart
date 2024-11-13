@@ -17,26 +17,25 @@ class Login extends StatelessWidget {
           child: Column(
             children: [
               const SizedBox(height: 150),
-              Expanded(
+              Align(
+                alignment: Alignment.center,
                 child: Stack(
                   clipBehavior: Clip.none,
                   children: [
-                    Center(
-                      child: CardContainer(
-                        child: Column(
-                          children: [
-                            const SizedBox(height: 40),
-                            Text(
-                              'Iniciar Sesión',
-                              style: Theme.of(context).textTheme.headlineSmall,
-                            ),
-                            const SizedBox(height: 10),
-                            ChangeNotifierProvider(
-                              create: (context) => LoginProvider(),
-                              child: const _LoginForm(),
-                            ),
-                          ],
-                        ),
+                    CardContainer(
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 40),
+                          Text(
+                            'Iniciar Sesión',
+                            style: Theme.of(context).textTheme.headlineSmall,
+                          ),
+                          const SizedBox(height: 10),
+                          ChangeNotifierProvider(
+                            create: (context) => LoginProvider(),
+                            child: const _LoginForm(),
+                          ),
+                        ],
                       ),
                     ),
                     const Positioned(
