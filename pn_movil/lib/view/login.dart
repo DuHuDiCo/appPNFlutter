@@ -17,32 +17,36 @@ class Login extends StatelessWidget {
           child: Column(
             children: [
               const SizedBox(height: 150),
-              Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  CardContainer(
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 40),
-                        Text(
-                          'Iniciar Sesión',
-                          style: Theme.of(context).textTheme.headlineSmall,
+              Expanded(
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Center(
+                      child: CardContainer(
+                        child: Column(
+                          children: [
+                            const SizedBox(height: 40),
+                            Text(
+                              'Iniciar Sesión',
+                              style: Theme.of(context).textTheme.headlineSmall,
+                            ),
+                            const SizedBox(height: 10),
+                            ChangeNotifierProvider(
+                              create: (context) => LoginProvider(),
+                              child: const _LoginForm(),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 10),
-                        ChangeNotifierProvider(
-                          create: (context) => LoginProvider(),
-                          child: const _LoginForm(),
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
-                  const Positioned(
-                    top: -50,
-                    left: 0,
-                    right: 0,
-                    child: HeaderIcon(),
-                  ),
-                ],
+                    const Positioned(
+                      top: -50,
+                      left: 0,
+                      right: 0,
+                      child: HeaderIcon(),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 50),
             ],
@@ -54,7 +58,7 @@ class Login extends StatelessWidget {
 }
 
 class _LoginForm extends StatelessWidget {
-  const _LoginForm({super.key});
+  const _LoginForm();
 
   @override
   Widget build(BuildContext context) {
