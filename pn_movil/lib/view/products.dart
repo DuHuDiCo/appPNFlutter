@@ -11,15 +11,84 @@ class Products extends StatelessWidget {
     return Scaffold(
       appBar: const Navbar(),
       drawer: const CustomDrawer(),
-      body: Center(
-          child: CardsListar(
-        imageUrl: 'assets/algo.jpg',
-        title: 'Adidas talla 32',
-        subtitle: 'Son tennis de alta calidad con estilo unico',
-        description: 'Este es un producto de alta calidad talla 32',
-        onVisibilityTap: () {},
-        onEditTap: () {},
-      )),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.blue.shade50, Colors.blue.shade100],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: ListView(
+          padding: const EdgeInsets.all(16.0),
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              child: Text(
+                'Explora nuestros productos',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue.shade800,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      decoration: InputDecoration(
+                        hintText: 'Buscar productos...',
+                        prefixIcon:
+                            const Icon(Icons.search, color: Colors.grey),
+                        filled: true,
+                        fillColor: Colors.white,
+                        contentPadding:
+                            const EdgeInsets.symmetric(vertical: 12),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            ListItem(
+              imageUrl: 'assets/algo.jpg',
+              title: 'Adidas talla 32',
+              description:
+                  'Un texto es una composición de signos codificados en un sistema de escritura que forma una unidad de sentido.',
+              onVisibilityTap: () {},
+              onEditTap: () {},
+            ),
+            const SizedBox(height: 12),
+            ListItem(
+              imageUrl: 'assets/algo.jpg',
+              title: 'Nike talla 40',
+              description:
+                  'Descripción adicional de otro producto que puedes agregar en la lista.',
+              onVisibilityTap: () {},
+              onEditTap: () {},
+            ),
+            const SizedBox(height: 12),
+            ListItem(
+              imageUrl: 'assets/algo.jpg',
+              title: 'Puma talla 38',
+              description:
+                  'Un tercer registro para mostrar la capacidad de listar varios ítems.',
+              onVisibilityTap: () {},
+              onEditTap: () {},
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -1,87 +1,117 @@
 import 'package:flutter/material.dart';
 
-class CardsListar extends StatelessWidget {
+class ListItem extends StatelessWidget {
   final String imageUrl;
   final String title;
-  final String subtitle;
   final String description;
   final VoidCallback onVisibilityTap;
   final VoidCallback onEditTap;
 
-  const CardsListar({
-    super.key,
+  const ListItem({
+    Key? key,
     required this.imageUrl,
     required this.title,
-    required this.subtitle,
     required this.description,
     required this.onVisibilityTap,
     required this.onEditTap,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Card(
-        child: ListTile(
-          leading: Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.5),
-                  spreadRadius: 5,
-                  blurRadius: 7,
-                  offset: const Offset(0, 3),
-                ),
-              ],
-            ),
-            child: CircleAvatar(
-              radius: 25,
-              backgroundImage: NetworkImage(imageUrl),
-            ),
-          ),
-          title: Text(title),
-          subtitle: Text(subtitle),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+          child: Row(
             children: [
-              GestureDetector(
-                onTap: onVisibilityTap,
+              Expanded(
+                flex: 2,
                 child: Container(
-                  width: 35,
-                  height: 35,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Color.fromRGBO(112, 185, 244, 1),
-                  ),
-                  child: const Icon(
-                    Icons.visibility,
-                    color: Colors.white,
+                  height: 150,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    image: DecorationImage(
+                      image: NetworkImage(imageUrl),
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
               ),
-              const SizedBox(width: 10),
-              GestureDetector(
-                onTap: onEditTap,
-                child: Container(
-                  width: 35,
-                  height: 35,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Color.fromRGBO(112, 185, 244, 1),
-                  ),
-                  child: const Icon(
-                    Icons.edit,
-                    color: Colors.white,
-                  ),
+              const SizedBox(width: 16),
+              Expanded(
+                flex: 4,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      description,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey[700],
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 40.0),
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            ElevatedButton(
+                              onPressed: onVisibilityTap,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    Color.fromRGBO(112, 185, 244, 1),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                              ),
+                              child: const Icon(
+                                Icons.visibility,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(width: 20),
+                            ElevatedButton(
+                              onPressed: onEditTap,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    Color.fromRGBO(112, 185, 244, 1),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                              ),
+                              child: const Icon(
+                                Icons.edit,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
         ),
-      ),
+        const Divider(
+          thickness: 1,
+          indent: 16,
+          endIndent: 16,
+          color: Colors.grey,
+        ),
+      ],
     );
   }
 }
