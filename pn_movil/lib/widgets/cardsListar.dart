@@ -8,13 +8,13 @@ class ListItem extends StatelessWidget {
   final VoidCallback onEditTap;
 
   const ListItem({
-    Key? key,
+    super.key,
     required this.imageUrl,
     required this.title,
     required this.description,
     required this.onVisibilityTap,
     required this.onEditTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,7 @@ class ListItem extends StatelessWidget {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
                     image: DecorationImage(
-                      image: NetworkImage(imageUrl),
+                      image: _getImageProvider(),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -113,5 +113,13 @@ class ListItem extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  ImageProvider _getImageProvider() {
+    if (imageUrl.startsWith('http')) {
+      return NetworkImage(imageUrl);
+    } else {
+      return AssetImage(imageUrl);
+    }
   }
 }

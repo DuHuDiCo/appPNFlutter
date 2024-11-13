@@ -14,7 +14,7 @@ class Products extends StatelessWidget {
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.blue.shade50, Colors.blue.shade100],
+            colors: [Colors.blue.shade50, Colors.white],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -70,7 +70,8 @@ class Products extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             ListItem(
-              imageUrl: 'assets/algo.jpg',
+              imageUrl:
+                  'https://cdn.royalcanin-weshare-online.io/zlY7qG0BBKJuub5q1Vk6/v1/59-es-l-golden-running-thinking-getting-dog-beneficios',
               title: 'Nike talla 40',
               description:
                   'Descripción adicional de otro producto que puedes agregar en la lista.',

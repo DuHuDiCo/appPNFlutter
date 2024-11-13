@@ -60,9 +60,9 @@ class VistaInicial extends StatelessWidget {
                   ),
                   _buildModuleCard(
                     icon: Icons.analytics,
-                    label: 'Solicitud de pagos',
+                    label: 'Solicitudes',
                     color: Colors.purple,
-                    statsLabel: 'Registrados',
+                    statsLabel: 'Registradas',
                     statsValue: '20',
                     onTap: () {},
                   ),
