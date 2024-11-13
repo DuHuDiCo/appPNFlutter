@@ -27,9 +27,7 @@ class Background extends StatelessWidget {
 }
 
 class _HeaderIcon extends StatelessWidget {
-  const _HeaderIcon({
-    super.key,
-  });
+  const _HeaderIcon();
 
   @override
   Widget build(BuildContext context) {

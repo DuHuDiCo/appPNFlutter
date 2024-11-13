@@ -1,14 +1,43 @@
 import 'package:flutter/material.dart';
 
-class Navbar extends StatelessWidget {
+class Navbar extends StatelessWidget implements PreferredSizeWidget {
   const Navbar({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text('Navbar'),
+    return AppBar(
+      title: const Text(
+        'Pequeño Negocio',
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 22,
+          color: Colors.white,
+        ),
       ),
+      centerTitle: true,
+      elevation: 0,
+      flexibleSpace: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.blue[800]!, Colors.blue[400]!],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+      ),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.notifications),
+          onPressed: () {},
+        ),
+        IconButton(
+          icon: const Icon(Icons.settings),
+          onPressed: () {},
+        ),
+      ],
     );
   }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }

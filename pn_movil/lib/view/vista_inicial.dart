@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pn_movil/widgets/drawer.dart';
+import 'package:pn_movil/widgets/navbar.dart';
 
 class VistaInicial extends StatelessWidget {
   const VistaInicial({super.key});
@@ -7,15 +8,11 @@ class VistaInicial extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Vista Inicial'),
-        backgroundColor: Colors.blue[800],
-        centerTitle: true,
-      ),
+      appBar: Navbar(),
       drawer: const CustomDrawer(),
       body: const Center(
         child: Text(
-          'Hola',
+          'Bienvenido',
           style: TextStyle(fontSize: 24),
         ),
       ),

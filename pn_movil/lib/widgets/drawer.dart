@@ -123,7 +123,7 @@ class CustomDrawer extends StatelessWidget {
                     title: const Text('Inventario',
                         style: TextStyle(color: Colors.white)),
                     onTap: () {
-                      Navigator.pushReplacementNamed(context, 'inventario');
+                      Navigator.pushReplacementNamed(context, 'listar');
                     },
                   ),
                 ),
