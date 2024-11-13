@@ -38,19 +38,19 @@ class VistaInicial extends StatelessWidget {
                     onTap: () {},
                   ),
                   _buildModuleCard(
-                    icon: Icons.local_shipping,
-                    label: 'Proveedores',
-                    color: Colors.teal,
-                    statsLabel: 'Registrados',
-                    statsValue: '15',
-                    onTap: () {},
-                  ),
-                  _buildModuleCard(
                     icon: Icons.shopping_cart_checkout,
                     label: 'Vendedores',
                     color: Colors.green,
                     statsLabel: 'Activos',
                     statsValue: '21',
+                    onTap: () {},
+                  ),
+                  _buildModuleCard(
+                    icon: Icons.local_shipping,
+                    label: 'Proveedores',
+                    color: Colors.teal,
+                    statsLabel: 'Registrados',
+                    statsValue: '15',
                     onTap: () {},
                   ),
                   _buildModuleCard(
