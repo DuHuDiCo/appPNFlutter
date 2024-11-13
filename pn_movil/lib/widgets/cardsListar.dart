@@ -25,7 +25,7 @@ class ListItem extends StatelessWidget {
           child: Row(
             children: [
               Expanded(
-                flex: 2,
+                flex: 3,
                 child: Container(
                   height: 150,
                   decoration: BoxDecoration(
@@ -39,7 +39,7 @@ class ListItem extends StatelessWidget {
               ),
               const SizedBox(width: 16),
               Expanded(
-                flex: 4,
+                flex: 3,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -60,7 +60,7 @@ class ListItem extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Padding(
-                      padding: const EdgeInsets.only(right: 40.0),
+                      padding: const EdgeInsets.only(right: 00.0),
                       child: Align(
                         alignment: Alignment.centerRight,
                         child: Row(

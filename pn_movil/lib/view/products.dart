@@ -64,7 +64,7 @@ class Products extends StatelessWidget {
               imageUrl: 'assets/algo.jpg',
               title: 'Adidas talla 32',
               description:
-                  'Un texto es una composición de signos codificados en un sistema de escritura que forma una unidad de sentido.',
+                  'Un texto es una composición de signos codificados en un sistema.',
               onVisibilityTap: () {},
               onEditTap: () {},
             ),
