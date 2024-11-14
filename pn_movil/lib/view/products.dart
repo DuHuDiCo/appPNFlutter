@@ -80,8 +80,9 @@ class Products extends StatelessWidget {
               title: 'Adidas talla 32',
               description:
                   'Un texto es una composición de signos codificados en un sistema.',
-              onVisibilityTap: () {},
-              onEditTap: () {},
+              onEditTap: () {
+                Navigator.pushReplacementNamed(context, 'crearProduct');
+              },
             ),
             const SizedBox(height: 12),
             ListItem(
@@ -90,8 +91,9 @@ class Products extends StatelessWidget {
               title: 'Nike talla 40',
               description:
                   'Descripción adicional de otro producto que puedes agregar en la lista.',
-              onVisibilityTap: () {},
-              onEditTap: () {},
+              onEditTap: () {
+                Navigator.pushReplacementNamed(context, 'crearProduct');
+              },
             ),
             const SizedBox(height: 12),
             ListItem(
@@ -99,8 +101,9 @@ class Products extends StatelessWidget {
               title: 'Puma talla 38',
               description:
                   'Un tercer registro para mostrar la capacidad de listar varios ítems.',
-              onVisibilityTap: () {},
-              onEditTap: () {},
+              onEditTap: () {
+                Navigator.pushReplacementNamed(context, 'crearProduct');
+              },
             ),
           ],
         ),

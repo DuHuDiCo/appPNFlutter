@@ -4,7 +4,6 @@ class ListItem extends StatelessWidget {
   final String imageUrl;
   final String title;
   final String description;
-  final VoidCallback onVisibilityTap;
   final VoidCallback onEditTap;
 
   const ListItem({
@@ -12,7 +11,6 @@ class ListItem extends StatelessWidget {
     required this.imageUrl,
     required this.title,
     required this.description,
-    required this.onVisibilityTap,
     required this.onEditTap,
   });
 
@@ -60,26 +58,12 @@ class ListItem extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Padding(
-                      padding: const EdgeInsets.only(right: 00.0),
+                      padding: const EdgeInsets.only(right: 20),
                       child: Align(
                         alignment: Alignment.centerRight,
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            ElevatedButton(
-                              onPressed: onVisibilityTap,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    Color.fromRGBO(112, 185, 244, 1),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                              ),
-                              child: const Icon(
-                                Icons.visibility,
-                                color: Colors.white,
-                              ),
-                            ),
                             const SizedBox(width: 20),
                             ElevatedButton(
                               onPressed: onEditTap,

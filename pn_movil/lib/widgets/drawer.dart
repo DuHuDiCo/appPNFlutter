@@ -45,40 +45,6 @@ class CustomDrawer extends StatelessWidget {
               },
             ),
             ExpansionTile(
-              leading: const Icon(Icons.supervised_user_circle_sharp,
-                  color: Colors.white),
-              title: const Text(
-                'Usuarios',
-                style: TextStyle(color: Colors.white),
-              ),
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(left: 16.0),
-                  child: ListTile(
-                    leading: const Icon(Icons.shopping_cart_checkout,
-                        color: Colors.white),
-                    title: const Text('Vendedores',
-                        style: TextStyle(color: Colors.white)),
-                    onTap: () {
-                      Navigator.pushReplacementNamed(context, 'vendedores');
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 16.0),
-                  child: ListTile(
-                    leading:
-                        const Icon(Icons.local_shipping, color: Colors.white),
-                    title: const Text('Proveedores',
-                        style: TextStyle(color: Colors.white)),
-                    onTap: () {
-                      Navigator.pushReplacementNamed(context, 'proveedores');
-                    },
-                  ),
-                ),
-              ],
-            ),
-            ExpansionTile(
               leading: const Icon(Icons.shopping_bag, color: Colors.white),
               title: const Text(
                 'Compras',
