@@ -25,6 +25,7 @@ class Database {
       } else {
         print('Error al enviar el token al backend: ${response.statusCode}');
         print('Mensaje de error: ${response.body}');
+        print('idToken: $idToken');
       }
     } catch (e) {
       print('Error de red o de conexión: $e');

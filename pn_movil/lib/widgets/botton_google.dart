@@ -22,6 +22,7 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
       await _database.sendTokenToBackend(idToken);
     } else {
       print('Inicio de sesión cancelado o fallido');
+      print(idToken);
     }
   }
 
