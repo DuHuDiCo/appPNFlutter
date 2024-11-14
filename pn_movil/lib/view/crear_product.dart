@@ -39,10 +39,17 @@ class _CrearproductState extends State<Crearproduct> {
     return Scaffold(
       appBar: const Navbar(),
       drawer: const CustomDrawer(),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 80, horizontal: 20),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.white, Colors.blue.shade50],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        padding: const EdgeInsets.symmetric(vertical: 80, horizontal: 1),
+        child: Center(
+          child: SingleChildScrollView(
             child: CardContainer(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
