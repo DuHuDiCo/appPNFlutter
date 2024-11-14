@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
         'login': (_) => const Login(),
         'home': (_) => const VistaInicial(),
         'productos': (_) => const Products(),
-        'crearProduct': (_) => const Crearproduct(),
+        'crearProduct': (_) => const CrearProduct(),
       },
       theme: ThemeData.light().copyWith(
           scaffoldBackgroundColor: Colors.grey[300],
