@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pn_movil/provider/login_provider.dart';
+import 'package:pn_movil/providers/login_provider.dart';
 import 'package:pn_movil/widgets/botton_google.dart';
 import 'package:pn_movil/widgets/card_container.dart';
 import 'package:pn_movil/widgets/background.dart';
@@ -124,34 +124,27 @@ class _LoginForm extends StatelessWidget {
                 ? null
                 : () async {
                     FocusScope.of(context).unfocus();
-
-                    if (!loginProvider.formKey.currentState!.validate()) {
-                      return;
-                    }
-
-                    loginProvider.isLoading = true;
+                    if (!loginProvider.isValidForm) return;
 
                     final loginSuccessful = await loginProvider.login(context);
 
-                    if (loginSuccessful) {
-                      Navigator.pushReplacementNamed(context, 'home');
-                    } else {
+                    if (!loginSuccessful) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Error al iniciar sesión'),
-                        ),
+                            content: Text('Error al iniciar sesión')),
                       );
                     }
-
-                    loginProvider.isLoading = false;
                   },
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 80, vertical: 15),
-              child: Text(
-                loginProvider.isLoading ? 'Cargando...' : 'Iniciar sesión',
-                style: const TextStyle(color: Colors.white),
-              ),
-            ),
+            child: loginProvider.isLoading
+                ? const CircularProgressIndicator(
+                    color: Colors.white,
+                  )
+                : Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 80, vertical: 15),
+                    child: const Text('Iniciar sesión',
+                        style: TextStyle(color: Colors.white)),
+                  ),
           ),
           const SizedBox(height: 30),
           // Aquí agregamos el Google SignIn Button

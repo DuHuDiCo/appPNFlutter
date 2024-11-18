@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pn_movil/widgets/card_container.dart';
 import 'package:pn_movil/widgets/drawer.dart';
-import 'package:pn_movil/widgets/form_product.dart';
+import 'package:pn_movil/views/Productos/form_product.dart';
 import 'package:pn_movil/widgets/navbar.dart';
 
 class CrearProduct extends StatelessWidget {
@@ -50,7 +50,7 @@ class CrearProduct extends StatelessWidget {
             Center(
               child: SingleChildScrollView(
                 child: CardContainer(
-                  child: FormularioCrearProducto(),
+                  child: FormularioProducto(),
                 ),
               ),
             ),

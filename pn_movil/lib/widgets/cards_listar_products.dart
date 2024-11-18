@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 
 class ListItem extends StatelessWidget {
-  final String imageUrl;
-  final String title;
-  final String description;
-  final VoidCallback onEditTap;
+  final String? imageUrl;
+  final Widget content;
+  final List<Widget>? actions;
 
   const ListItem({
     super.key,
-    required this.imageUrl,
-    required this.title,
-    required this.description,
-    required this.onEditTap,
+    this.imageUrl,
+    required this.content,
+    this.actions,
   });
 
   @override
@@ -21,68 +19,37 @@ class ListItem extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                flex: 3,
-                child: Container(
-                  height: 150,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    image: DecorationImage(
-                      image: _getImageProvider(),
-                      fit: BoxFit.cover,
+              if (imageUrl != null)
+                Expanded(
+                  flex: 3,
+                  child: Container(
+                    height: 150,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      image: DecorationImage(
+                        image: _getImageProvider(),
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 16),
+              if (imageUrl != null) const SizedBox(width: 16),
               Expanded(
                 flex: 3,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      description,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[700],
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 20),
-                      child: Align(
-                        alignment: Alignment.centerRight,
+                    content,
+                    if (actions != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
                         child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const SizedBox(width: 20),
-                            ElevatedButton(
-                              onPressed: onEditTap,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    Color.fromRGBO(112, 185, 244, 1),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                              ),
-                              child: const Icon(
-                                Icons.edit,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: actions!,
                         ),
                       ),
-                    ),
                   ],
                 ),
               ),
@@ -100,10 +67,12 @@ class ListItem extends StatelessWidget {
   }
 
   ImageProvider _getImageProvider() {
-    if (imageUrl.startsWith('http')) {
-      return NetworkImage(imageUrl);
+    if (imageUrl != null && imageUrl!.startsWith('http')) {
+      return NetworkImage(imageUrl!);
+    } else if (imageUrl != null) {
+      return AssetImage(imageUrl!);
     } else {
-      return AssetImage(imageUrl);
+      return const AssetImage('assets/placeholder.png');
     }
   }
 }

@@ -58,7 +58,8 @@ class CustomDrawer extends StatelessWidget {
                     title: const Text('Solicitar pago',
                         style: TextStyle(color: Colors.white)),
                     onTap: () {
-                      Navigator.pushReplacementNamed(context, 'solicitar-pago');
+                      Navigator.pushReplacementNamed(
+                          context, 'compras-solicitar');
                     },
                   ),
                 ),
@@ -91,6 +92,27 @@ class CustomDrawer extends StatelessWidget {
                         style: TextStyle(color: Colors.white)),
                     onTap: () {
                       Navigator.pushReplacementNamed(context, 'listar');
+                    },
+                  ),
+                ),
+              ],
+            ),
+            ExpansionTile(
+              leading: const Icon(Icons.business_sharp, color: Colors.white),
+              title: const Text(
+                'Productos',
+                style: TextStyle(color: Colors.white),
+              ),
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(left: 16.0),
+                  child: ListTile(
+                    leading: const Icon(Icons.category, color: Colors.white),
+                    title: const Text('Clasificacion',
+                        style: TextStyle(color: Colors.white)),
+                    onTap: () {
+                      Navigator.pushReplacementNamed(
+                          context, 'clasificacion-productos');
                     },
                   ),
                 ),

@@ -1,17 +1,16 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:pn_movil/widgets/custom_input.dart'; // Si estás usando un widget de custom input
 import 'dart:io';
 
-class FormularioCrearProducto extends StatefulWidget {
-  const FormularioCrearProducto({Key? key}) : super(key: key);
+class FormularioProducto extends StatefulWidget {
+  const FormularioProducto({super.key});
 
   @override
-  _FormularioCrearProductoState createState() =>
-      _FormularioCrearProductoState();
+  _FormularioProductoState createState() => _FormularioProductoState();
 }
 
-class _FormularioCrearProductoState extends State<FormularioCrearProducto> {
+class _FormularioProductoState extends State<FormularioProducto> {
   XFile? _image;
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
@@ -44,7 +43,7 @@ class _FormularioCrearProductoState extends State<FormularioCrearProducto> {
             alignment: Alignment.center,
             children: [
               CircleAvatar(
-                radius: 75,
+                radius: 60,
                 backgroundColor: Colors.grey[200],
                 backgroundImage:
                     _image != null ? FileImage(File(_image!.path)) : null,
@@ -55,7 +54,7 @@ class _FormularioCrearProductoState extends State<FormularioCrearProducto> {
                   children: const [
                     Icon(
                       Icons.image,
-                      size: 50,
+                      size: 35,
                       color: Colors.grey,
                     ),
                     SizedBox(height: 5),
@@ -72,6 +71,19 @@ class _FormularioCrearProductoState extends State<FormularioCrearProducto> {
           ),
         ),
         const SizedBox(height: 20),
+        TextField(
+          controller: _titleController,
+          decoration: InputDecoration(
+            labelText: 'Clasificacion del Producto',
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            filled: true,
+            fillColor: Colors.grey[100]?.withOpacity(0.8),
+            prefixIcon: const Icon(Icons.category),
+          ),
+        ),
+        const SizedBox(height: 30),
         TextField(
           controller: _titleController,
           decoration: InputDecoration(
@@ -117,8 +129,12 @@ class _FormularioCrearProductoState extends State<FormularioCrearProducto> {
           onPressed: () {
             String title = _titleController.text;
             String description = _descriptionController.text;
-            print('Título: $title');
-            print('Descripción: $description');
+            if (kDebugMode) {
+              print('Título: $title');
+            }
+            if (kDebugMode) {
+              print('Descripción: $description');
+            }
           },
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 50),

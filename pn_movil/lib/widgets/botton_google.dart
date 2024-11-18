@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pn_movil/conexion.dart';
-import 'package:pn_movil/service/GoogleAuthService.dart';
+import 'package:pn_movil/conexiones/autentificacion.dart';
+import 'package:pn_movil/services/AuthService.dart';
 
 class GoogleSignInButton extends StatefulWidget {
   const GoogleSignInButton({Key? key}) : super(key: key);
@@ -10,8 +10,8 @@ class GoogleSignInButton extends StatefulWidget {
 }
 
 class _GoogleSignInButtonState extends State<GoogleSignInButton> {
-  final GoogleAuthService _authService = GoogleAuthService();
-  final Database _database = Database();
+  final AuthService _authService = AuthService();
+  final GoogleAuthController _database = GoogleAuthController();
 
   Future<void> _handleSignIn() async {
     // Autenticación de Google para obtener el ID token
