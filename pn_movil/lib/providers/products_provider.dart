@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../conexiones/products.dart';
-import '../conexiones/autentificacion.dart';
 
 class ProductsProvider extends ChangeNotifier {
   final ProductsController _productsService = ProductsController();
