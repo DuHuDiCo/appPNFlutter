@@ -7,13 +7,15 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:pn_movil/main.dart';
+import 'package:pn_movil/conexiones/ApiClient.dart'; // Asegúrate de importar ApiClient
+import 'package:pn_movil/main.dart'; //import 'package:pn_movil/main.dart';
 
 void main() {
+  final apiClient = ApiClient(
+      'https://apppn.duckdns.org/api/v1'); // Asegúrate de usar el URL correcto
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(MyApp(apiClient: apiClient));
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);

@@ -62,6 +62,7 @@ class GoogleAuthController {
 
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('auth_token', token);
+        print('Token: $token');
 
         return responseBody;
       } else {

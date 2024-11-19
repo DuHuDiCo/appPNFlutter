@@ -1,7 +1,13 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:pn_movil/conexiones/apiClient.dart';
+import 'package:pn_movil/models/Productos.dart';
 import 'dart:io';
+
+import 'package:pn_movil/providers/products_provider.dart';
+import 'package:provider/provider.dart';
 
 class FormularioProducto extends StatefulWidget {
   const FormularioProducto({super.key});
@@ -13,8 +19,12 @@ class FormularioProducto extends StatefulWidget {
 class _FormularioProductoState extends State<FormularioProducto> {
   XFile? _image;
   final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _clasificacionController =
+      TextEditingController();
+  final TextEditingController _precioController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
 
+  // Método para seleccionar una imagen
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
     final XFile? pickedImage =
@@ -29,7 +39,54 @@ class _FormularioProductoState extends State<FormularioProducto> {
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
+    _precioController.dispose();
     super.dispose();
+  }
+
+  Future<void> _addProduct(BuildContext context) async {
+    final productsProvider =
+        Provider.of<ProductsProvider>(context, listen: false);
+
+    final token = await productsProvider.getAuthToken();
+
+    // Verificar que todos los campos estén completos
+    if (_titleController.text.isEmpty ||
+        _clasificacionController.text.isEmpty ||
+        _descriptionController.text.isEmpty ||
+        _precioController.text.isEmpty ||
+        _image == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Todos los campos deben ser completados")),
+      );
+      return;
+    }
+
+    // Convertir imagen a MultipartFile
+    final imagenFile = await MultipartFile.fromFile(
+      _image!.path,
+      filename: _image!.path.split('/').last, // Extrae el nombre del archivo
+    );
+
+    // Crear el objeto Producto con MultipartFile
+    final product = Productos(
+      producto: _titleController.text,
+      description: _descriptionController.text,
+      imagen: imagenFile,
+      clasificacionProducto: 1, // Cambia según el valor real de clasificación
+    );
+
+    // Verificar los datos que se enviarán
+    print('Producto a enviar: ${product.toMap()}');
+
+    // Convertir a Map<String, dynamic>
+    final productMap = product.toMap();
+
+    // Llamar al método del proveedor para agregar el producto
+    await productsProvider.addProduct(
+      context,
+      token!,
+      productMap,
+    );
   }
 
   @override
@@ -72,9 +129,10 @@ class _FormularioProductoState extends State<FormularioProducto> {
         ),
         const SizedBox(height: 20),
         TextField(
-          controller: _titleController,
+          controller:
+              _clasificacionController, // Nuevo controlador para la clasificación
           decoration: InputDecoration(
-            labelText: 'Clasificacion del Producto',
+            labelText: 'Clasificación del Producto',
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
             ),
@@ -85,7 +143,8 @@ class _FormularioProductoState extends State<FormularioProducto> {
         ),
         const SizedBox(height: 30),
         TextField(
-          controller: _titleController,
+          controller:
+              _titleController, // Asegúrate de usar otro controlador para este campo si es necesario
           decoration: InputDecoration(
             labelText: 'Título del Producto',
             border: OutlineInputBorder(
@@ -98,7 +157,7 @@ class _FormularioProductoState extends State<FormularioProducto> {
         ),
         const SizedBox(height: 30),
         TextField(
-          controller: _titleController,
+          controller: _precioController,
           keyboardType: TextInputType.number,
           decoration: InputDecoration(
             labelText: 'Precio del Producto',
@@ -127,14 +186,7 @@ class _FormularioProductoState extends State<FormularioProducto> {
         const SizedBox(height: 30),
         ElevatedButton(
           onPressed: () {
-            String title = _titleController.text;
-            String description = _descriptionController.text;
-            if (kDebugMode) {
-              print('Título: $title');
-            }
-            if (kDebugMode) {
-              print('Descripción: $description');
-            }
+            _addProduct(context); // Llamar al método para agregar el producto
           },
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 50),

@@ -31,4 +31,32 @@ class ProductsController {
       rethrow;
     }
   }
+
+  Future<Map<String, dynamic>> postProduct(
+      String authToken, Map<String, dynamic> productData) async {
+    try {
+      final url = Uri.parse('$_baseUrl/api/v1/product/');
+      final response = await http.post(
+        url,
+        headers: {
+          'Authorization': 'Bearer $authToken',
+          'Content-Type': 'application/json',
+        },
+        body: json.encode(productData),
+      );
+
+      if (response.statusCode == 201) {
+        Map<String, dynamic> createdProduct = json.decode(response.body);
+        return createdProduct;
+      } else {
+        throw Exception(
+            'Error al guardar el producto. Codigo: ${response.statusCode}');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error al realizar la solicitud: $e');
+      }
+      rethrow;
+    }
+  }
 }

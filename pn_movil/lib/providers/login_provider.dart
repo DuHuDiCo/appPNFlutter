@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pn_movil/models/Roles.dart';
 import 'package:pn_movil/services/AuthService.dart';
+import 'package:pn_movil/models/Roles.dart';
+import 'package:provider/provider.dart';
+import 'package:pn_movil/conexiones/ApiClient.dart';
 
 class LoginProvider extends ChangeNotifier {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -18,7 +20,10 @@ class LoginProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      Role role = await AuthService().login(email, password);
+      final apiClient = Provider.of<ApiClient>(context, listen: false);
+      final authService = AuthService(apiClient);
+
+      Role role = await authService.login(email, password);
       userRole = role;
 
       isLoading = false;

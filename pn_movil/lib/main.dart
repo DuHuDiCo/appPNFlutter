@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:pn_movil/conexiones/ApiClient.dart';
 import 'package:pn_movil/providers/products_provider.dart';
+import 'package:pn_movil/services/AuthService.dart';
 import 'package:pn_movil/views/Clasificacion-productos/clasificacion_product.dart';
 import 'package:pn_movil/views/Compras-solicitar/compras_crear_v2.dart';
 import 'package:pn_movil/views/Compras-solicitar/compras_solicitar.dart';
@@ -11,9 +13,7 @@ import 'package:pn_movil/views/vista_inicial.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  runApp(
-    const MyApp(),
-  );
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -23,7 +23,20 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ProductsProvider()),
+        // Registro de ApiClient
+        Provider<ApiClient>(
+          create: (_) => ApiClient('https://apppn.duckdns.org/api/v1'),
+        ),
+
+        // AuthService depende de ApiClient
+        Provider<AuthService>(
+          create: (context) => AuthService(context.read<ApiClient>()),
+        ),
+
+        // ProductsProvider depende de ApiClient
+        ChangeNotifierProvider<ProductsProvider>(
+          create: (context) => ProductsProvider(context.read<ApiClient>()),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

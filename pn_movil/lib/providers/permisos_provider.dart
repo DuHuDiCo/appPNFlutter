@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
-import '../models/Roles.dart';
-import '../services/AuthService.dart';
+import 'package:pn_movil/conexiones/ApiClient.dart';
+import 'package:pn_movil/models/Roles.dart';
+import 'package:pn_movil/services/AuthService.dart';
+import 'package:provider/provider.dart';
 
 class PermisosProvider with ChangeNotifier {
   Role _role = Role.guest;
   Role get role => _role;
 
-  void setRole(Role role) {
-    _role = role;
-    notifyListeners();
-  }
+  Future<void> login(
+      BuildContext context, String username, String password) async {
+    final apiClient = Provider.of<ApiClient>(context, listen: false);
+    final authService = AuthService(apiClient);
 
-  final AuthService _authService = AuthService();
-
-  Future<void> login(String username, String password) async {
-    _role = await _authService.login(username, password);
+    _role = await authService.login(username, password);
     notifyListeners();
   }
 
