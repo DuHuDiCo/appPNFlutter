@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -56,6 +57,12 @@ class GoogleAuthController {
 
       if (response.statusCode == 200) {
         final responseBody = json.decode(response.body);
+
+        final token = responseBody['token'];
+
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('auth_token', token);
+
         return responseBody;
       } else {
         throw Exception('Error en la autenticación: ${response.statusCode}');

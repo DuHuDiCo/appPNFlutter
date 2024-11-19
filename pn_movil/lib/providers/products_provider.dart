@@ -1,20 +1,24 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:pn_movil/conexiones/autentificacion.dart';
 import '../conexiones/products.dart';
 
 class ProductsProvider extends ChangeNotifier {
   final ProductsController _productsService = ProductsController();
   List<Map<String, dynamic>> _products = [];
   bool _isLoading = false;
-  String authToken = ''; // Inicializamos el token vacío
+  String authToken = '';
 
   List<Map<String, dynamic>> get products => _products;
   bool get isLoading => _isLoading;
 
-  // Método para hacer login y obtener el token
   Future<void> loginAndGetToken(String username, String password) async {
     try {
-      // authToken = await GoogleAuthController().LoginBackend(username, password);
+      final response =
+          await GoogleAuthController().LoginBackend(username, password);
+      authToken = response['token'] ?? '';
+
+      // Notifica los cambios
       notifyListeners();
     } catch (e) {
       print("Error al obtener el token: $e");
@@ -39,7 +43,6 @@ class ProductsProvider extends ChangeNotifier {
       if (kDebugMode) {
         print('Error al cargar productos: $e');
       }
-      // Mostrar un mensaje de error al usuario
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error al cargar productos: $e')),
       );
