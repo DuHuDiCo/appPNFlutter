@@ -34,7 +34,7 @@ class CrearProduct extends StatelessWidget {
                     color: Colors.blue.shade800,
                     size: 28,
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 10),
                   Text(
                     'Crear Producto',
                     style: TextStyle(
@@ -46,7 +46,7 @@ class CrearProduct extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
             Center(
               child: SingleChildScrollView(
                 child: CardContainer(

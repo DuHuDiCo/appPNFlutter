@@ -42,8 +42,6 @@ class _ProductsState extends State<Products> {
         builder: (context, productsProvider, child) {
           if (productsProvider.isLoading) {
             return const Center(child: CircularProgressIndicator());
-          } else if (productsProvider.products.isEmpty) {
-            return const Center(child: Text('No hay productos disponibles'));
           } else {
             return _buildProductsList(productsProvider.products);
           }
@@ -119,8 +117,8 @@ class _ProductsState extends State<Products> {
 
   Widget _buildProductItem(Map<String, dynamic> product) {
     return ListItem(
-      imageUrl: product['imagenes'].isNotEmpty
-          ? product['imagenes'][0]
+      imageUrl: (product['imagenes'] is List && product['imagenes'].isNotEmpty)
+          ? product['imagenes'][0]['urlPath']
           : 'assets/algo.jpg',
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -154,6 +152,22 @@ class _ProductsState extends State<Products> {
           ),
           child: const Icon(
             Icons.edit,
+            color: Colors.white,
+          ),
+        ),
+        const SizedBox(width: 15),
+        ElevatedButton(
+          onPressed: () {
+            Navigator.pushReplacementNamed(context, 'crearProduct');
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color.fromARGB(255, 238, 117, 101),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(5),
+            ),
+          ),
+          child: const Icon(
+            Icons.delete,
             color: Colors.white,
           ),
         ),

@@ -2,22 +2,19 @@ import 'package:dio/dio.dart';
 
 class Productos {
   final String producto;
-  final String description;
-  final MultipartFile imagen;
+  final String descripcion;
   final int clasificacionProducto;
 
   Productos({
     required this.producto,
-    required this.description,
-    required this.imagen,
+    required this.descripcion,
     required this.clasificacionProducto,
   });
 
   Map<String, dynamic> toMap() {
     return {
       'producto': producto,
-      'description': description,
-      'imagen': imagen,
+      'descripcion': descripcion,
       'clasificacionProducto': clasificacionProducto,
     };
   }

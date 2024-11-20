@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pn_movil/conexiones/ApiClient.dart';
@@ -41,45 +42,35 @@ class ProductsProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> addProduct(BuildContext context, String authToken,
-      Map<String, dynamic> productData) async {
+  Future<void> addProduct(
+    BuildContext context,
+    String token,
+    FormData productData,
+  ) async {
+    final dio = Dio();
+    dio.options.headers = {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'multipart/form-data',
+    };
+
     try {
-      _isLoading = true;
-      notifyListeners();
-
-      print(productData);
-
-      final response = await _apiClient.post(
-        '/product/',
-        productData,
-        includeAuth: true,
+      final response = await dio.post(
+        'https://apppn.duckdns.org/api/v1/product/',
+        data: productData,
       );
 
-      print(response.statusCode);
-
-      if (response.statusCode == 201) {
-        final newProduct = json.decode(response.body);
-        _products.add(newProduct);
-        print('Producto agregado con éxito: $newProduct');
+      if (response.statusCode == 200) {
+        print('Producto agregado exitosamente');
       } else {
-        throw Exception('Error Backend');
+        print('Error al agregar producto: ${response.statusCode}');
       }
     } catch (e) {
-      final errorMessage = e.toString().contains('No se ha iniciado sesión')
-          ? e.toString()
-          : e.toString();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(errorMessage)),
-      );
-      if (kDebugMode) print(errorMessage);
-    } finally {
-      _isLoading = false;
-      notifyListeners();
+      print('Error en la solicitud: $e');
     }
   }
 
   Future<String?> getAuthToken() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('auth_token'); // Recupera el token almacenado
+    return prefs.getString('auth_token');
   }
 }
