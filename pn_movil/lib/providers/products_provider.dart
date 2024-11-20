@@ -44,28 +44,27 @@ class ProductsProvider extends ChangeNotifier {
 
   Future<void> addProduct(
     BuildContext context,
-    String token,
     FormData productData,
   ) async {
-    final dio = Dio();
-    dio.options.headers = {
-      'Authorization': 'Bearer $token',
-      'Content-Type': 'multipart/form-data',
-    };
-
     try {
-      final response = await dio.post(
-        'https://apppn.duckdns.org/api/v1/product/',
-        data: productData,
+      final response = await _apiClient.postFormData(
+        '/product/',
+        productData,
       );
 
-      if (response.statusCode == 200) {
-        print('Producto agregado exitosamente');
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Producto agregado exitosamente")),
+        );
       } else {
-        print('Error al agregar producto: ${response.statusCode}');
+        throw Exception('Error al agregar producto: ${response.body}');
       }
     } catch (e) {
-      print('Error en la solicitud: $e');
+      print(productData);
+      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error al guardar el producto: $e")),
+      );
     }
   }
 

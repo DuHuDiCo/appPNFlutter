@@ -28,18 +28,19 @@ class ApiClient {
     FormData formData, {
     bool includeAuth = true,
   }) async {
+    final token = await getAuthToken();
+    print('Token enviado: $token');
+
     final headers = await _getHeaders(includeAuth: includeAuth);
+
     final url = Uri.parse('$baseUrl$endpoint');
 
-    // Preparar la solicitud multipart
     final request = http.MultipartRequest('POST', url)..headers.addAll(headers);
 
-    // Agregar los campos del FormData
     formData.fields.forEach((entry) {
       request.fields[entry.key] = entry.value;
     });
 
-    // Agregar los archivos del FormData
     for (final file in formData.files) {
       final filePath = file.value.filename;
       if (filePath == null) {
@@ -47,8 +48,6 @@ class ApiClient {
       }
 
       final mimeType = file.value.contentType.toString().split('/');
-
-      // Crear el MultipartFile desde el archivo
       request.files.add(await http.MultipartFile.fromPath(
         file.key,
         filePath,

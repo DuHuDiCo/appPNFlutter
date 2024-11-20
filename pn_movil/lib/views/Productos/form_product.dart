@@ -44,8 +44,6 @@ class _FormularioProductoState extends State<FormularioProducto> {
     final productsProvider =
         Provider.of<ProductsProvider>(context, listen: false);
 
-    final token = await productsProvider.getAuthToken();
-
     if (_titleController.text.isEmpty ||
         _clasificacionController.text.isEmpty ||
         _descripcionController.text.isEmpty ||
@@ -57,39 +55,34 @@ class _FormularioProductoState extends State<FormularioProducto> {
     }
 
     // Validar clasificación
-    int? clasificacionProducto;
-    if (_clasificacionController.text.isNotEmpty &&
-        int.tryParse(_clasificacionController.text) != null) {
-      clasificacionProducto = int.parse(_clasificacionController.text);
-    } else {
+    int? clasificacionProducto = int.tryParse(_clasificacionController.text);
+    if (clasificacionProducto == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("La clasificación debe ser un número válido")),
       );
       return;
     }
 
-    // Convertir imagen a MultipartFile
-    final imagenFile = await MultipartFile.fromFile(
+    // Preparar FormData
+    final imagenFile = MultipartFile.fromFileSync(
       _image!.path,
       filename: _image!.path.split('/').last,
     );
 
+    print("Ruta del archivo: ${_image!.path}");
+
     final formData = FormData.fromMap({
       'producto': _titleController.text,
       'descripcion': _descripcionController.text,
-      'imagen': imagenFile,
       'clasificacionProducto': clasificacionProducto,
+      'imagen': imagenFile,
     });
 
+    print(formData);
+
+    // Intentar guardar el producto
     try {
-      await productsProvider.addProduct(
-        context,
-        token!,
-        formData,
-      );
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Producto guardado exitosamente")),
-      );
+      await productsProvider.addProduct(context, formData);
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error al guardar el producto: $error")),
