@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 
-class ProductCard extends StatelessWidget {
+class ProductCardSelect extends StatelessWidget {
   final String imageUrl;
   final String productName;
   final String price;
   final String units;
+  final void Function(String name, String price, String units) onAddProduct;
 
-  const ProductCard({
+  const ProductCardSelect({
     super.key,
     required this.imageUrl,
     required this.productName,
     required this.price,
     required this.units,
+    required this.onAddProduct,
   });
 
   @override
@@ -22,7 +24,7 @@ class ProductCard extends StatelessWidget {
         padding: const EdgeInsets.all(9.0),
         child: SizedBox(
           width: MediaQuery.of(context).size.width * 0.38,
-          height: 230, // Ajusta la altura para incluir el botón
+          height: 230,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -55,12 +57,12 @@ class ProductCard extends StatelessWidget {
               const SizedBox(height: 15),
               ElevatedButton(
                 onPressed: () {
-                  print("Producto agregado: $productName");
+                  onAddProduct(productName, price, units);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 56, 148, 255),
                 ),
-                child: Text(
+                child: const Text(
                   "Agregar",
                   style: TextStyle(
                     color: Colors.white,

@@ -5,8 +5,25 @@ import 'package:pn_movil/widgets/cards_select_products.dart';
 import 'package:pn_movil/widgets/drawer.dart';
 import 'package:pn_movil/widgets/navbar.dart';
 
-class SeleccionarProductos extends StatelessWidget {
+class SeleccionarProductos extends StatefulWidget {
   const SeleccionarProductos({super.key});
+
+  @override
+  _SeleccionarProductosState createState() => _SeleccionarProductosState();
+}
+
+class _SeleccionarProductosState extends State<SeleccionarProductos> {
+  final List<Map<String, String>> _selectedProducts = [];
+
+  void _addProduct(String name, String price, String units) {
+    setState(() {
+      _selectedProducts.add({
+        'productName': name,
+        'price': price,
+        'units': units,
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -115,29 +132,33 @@ class SeleccionarProductos extends StatelessWidget {
                   spacing: 10.0,
                   runSpacing: 10.0,
                   children: [
-                    ProductCard(
+                    ProductCardSelect(
                       imageUrl: 'assets/algo.jpg',
                       productName: 'Adidas talla 32',
                       price: '100',
                       units: '10',
+                      onAddProduct: _addProduct,
                     ),
-                    ProductCard(
+                    ProductCardSelect(
                       imageUrl: 'assets/algo.jpg',
                       productName: 'Adidas talla 32',
                       price: '100',
                       units: '10',
+                      onAddProduct: _addProduct,
                     ),
-                    ProductCard(
+                    ProductCardSelect(
                       imageUrl: 'assets/algo.jpg',
                       productName: 'Nike talla 40',
                       price: '150',
                       units: '5',
+                      onAddProduct: _addProduct,
                     ),
-                    ProductCard(
+                    ProductCardSelect(
                       imageUrl: 'assets/algo.jpg',
                       productName: 'Puma talla 36',
                       price: '120',
                       units: '7',
+                      onAddProduct: _addProduct,
                     ),
                   ],
                 ),
