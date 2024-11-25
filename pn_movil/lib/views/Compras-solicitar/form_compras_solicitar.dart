@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:pn_movil/providers/proveedor_provider.dart';
+import 'package:pn_movil/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 
 class FormComprasSolicitar extends StatefulWidget {
   const FormComprasSolicitar({super.key});
@@ -12,12 +15,19 @@ class _FormularioCompraState extends State<FormComprasSolicitar> {
   String? _proveedorSeleccionado;
   String? _vendedorSeleccionado;
 
-  final List<String> _proveedores = [
-    'Proveedor 1',
-    'Proveedor 2',
-    'Proveedor 3'
-  ];
-  final List<String> _vendedores = ['Vendedor A', 'Vendedor B', 'Vendedor C'];
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<ProveedorProvider>(context, listen: false)
+          .loadProveedores(context);
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<UserProvider>(context, listen: false)
+          .loadUsuariosVendedores(context);
+    });
+  }
 
   @override
   void dispose() {
@@ -61,49 +71,97 @@ class _FormularioCompraState extends State<FormComprasSolicitar> {
             },
           ),
           const SizedBox(height: 20),
-          // Campo de proveedor
-          DropdownButtonFormField<String>(
-            value: _proveedorSeleccionado,
-            onChanged: (value) {
-              setState(() {
-                _proveedorSeleccionado = value;
-              });
+          Consumer<ProveedorProvider>(
+            builder: (context, proveedorProvider, child) {
+              if (proveedorProvider.isLoading) {
+                return CircularProgressIndicator();
+              }
+
+              if (proveedorProvider.proveedores.isEmpty) {
+                return Text("No hay proveedores disponibles");
+              }
+
+              final proveedores = proveedorProvider.proveedores;
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: InputDecorator(
+                  decoration: InputDecoration(
+                    labelText: 'Proveedor compra',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[100]?.withOpacity(0.8),
+                    prefixIcon: const Icon(Icons.category),
+                  ),
+                  child: DropdownButton<String>(
+                    isExpanded: true,
+                    value: _proveedorSeleccionado,
+                    hint: Text('Proveedor compra'),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        _proveedorSeleccionado = newValue;
+                      });
+                    },
+                    items: proveedores.map((proveedor) {
+                      return DropdownMenuItem<String>(
+                        value: proveedor['proveedor'],
+                        child: Text(proveedor['proveedor']),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              );
             },
-            items: _proveedores
-                .map((proveedor) =>
-                    DropdownMenuItem(value: proveedor, child: Text(proveedor)))
-                .toList(),
-            decoration: InputDecoration(
-              labelText: 'Proveedor',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              filled: true,
-              fillColor: Colors.grey[100]?.withOpacity(0.8),
-            ),
           ),
           const SizedBox(height: 20),
-          // Campo de vendedor
-          DropdownButtonFormField<String>(
-            value: _vendedorSeleccionado,
-            onChanged: (value) {
-              setState(() {
-                _vendedorSeleccionado = value;
-              });
-            },
-            items: _vendedores
-                .map((vendedor) =>
-                    DropdownMenuItem(value: vendedor, child: Text(vendedor)))
-                .toList(),
-            decoration: InputDecoration(
-              labelText: 'Vendedor',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              filled: true,
-              fillColor: Colors.grey[100]?.withOpacity(0.8),
-            ),
-          ),
+          // Consumer<UserProvider>(
+          //   builder: (context, userProvider, child) {
+          //     if (userProvider.isLoading) {
+          //       return const CircularProgressIndicator();
+          //     }
+
+          //     if (userProvider.usuarios.isEmpty) {
+          //       return const Text("No hay vendedores disponibles");
+          //     }
+
+          //     final usuarios = userProvider.usuarios;
+
+          //     final dropdownItems = usuarios.map((usuario) {
+          //       return DropdownMenuItem<String>(
+          //         value: usuario['id'].toString(),
+          //         child: Text(usuario['nombre']),
+          //       );
+          //     }).toList();
+
+          //     return Padding(
+          //       padding: const EdgeInsets.symmetric(vertical: 10),
+          //       child: InputDecorator(
+          //         decoration: InputDecoration(
+          //           labelText: 'Selecciona un Vendedor',
+          //           border: OutlineInputBorder(
+          //             borderRadius: BorderRadius.circular(12),
+          //           ),
+          //           filled: true,
+          //           fillColor: Colors.grey[100]?.withOpacity(0.8),
+          //           prefixIcon: const Icon(Icons.person),
+          //         ),
+          //         child: DropdownButton<String>(
+          //           isExpanded: true,
+          //           value: _proveedorSeleccionado,
+          //           hint: const Text('Selecciona un vendedor'),
+          //           onChanged: (String? newValue) {
+          //             setState(() {
+          //               _proveedorSeleccionado = newValue;
+          //             });
+          //           },
+          //           items: dropdownItems,
+          //         ),
+          //       ),
+          //     );
+          //   },
+          // ),
+
           const SizedBox(height: 30),
         ],
       ),

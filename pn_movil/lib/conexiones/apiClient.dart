@@ -50,7 +50,7 @@ class ApiClient {
       final mimeType = file.value.contentType.toString().split('/');
       request.files.add(await http.MultipartFile.fromPath(
         file.key,
-        filePath,
+        filePath, // Usa filePath aquí
         contentType: MediaType(mimeType[0], mimeType[1]),
       ));
     }
