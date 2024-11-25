@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:pn_movil/conexiones/ApiClient.dart';
+import 'package:pn_movil/providers/clasificacion_provider.dart';
+import 'package:pn_movil/providers/compra_provider.dart';
 import 'package:pn_movil/providers/products_provider.dart';
+import 'package:pn_movil/providers/proveedor_provider.dart';
+import 'package:pn_movil/providers/user_provider.dart';
 import 'package:pn_movil/services/AuthService.dart';
-import 'package:pn_movil/views/Clasificacion-productos/clasificacion_product.dart';
 import 'package:pn_movil/views/Compras-solicitar/compras_crear_v2.dart';
 import 'package:pn_movil/views/Compras-solicitar/compras_solicitar.dart';
 import 'package:pn_movil/views/Compras-solicitar/compras_crear_v1.dart';
@@ -12,7 +15,7 @@ import 'package:pn_movil/views/Productos/products.dart';
 import 'package:pn_movil/views/vista_inicial.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
   runApp(const MyApp());
 }
 
@@ -28,14 +31,28 @@ class MyApp extends StatelessWidget {
           create: (_) => ApiClient('https://apppn.duckdns.org/api/v1'),
         ),
 
-        // AuthService depende de ApiClient
         Provider<AuthService>(
           create: (context) => AuthService(context.read<ApiClient>()),
         ),
 
-        // ProductsProvider depende de ApiClient
         ChangeNotifierProvider<ProductsProvider>(
           create: (context) => ProductsProvider(context.read<ApiClient>()),
+        ),
+
+        ChangeNotifierProvider<ClasificacionProvider>(
+          create: (context) => ClasificacionProvider(context.read<ApiClient>()),
+        ),
+
+        ChangeNotifierProvider<CompraProvider>(
+          create: (context) => CompraProvider(context.read<ApiClient>()),
+        ),
+
+        ChangeNotifierProvider<ProveedorProvider>(
+          create: (context) => ProveedorProvider(context.read<ApiClient>()),
+        ),
+
+        ChangeNotifierProvider<UserProvider>(
+          create: (context) => UserProvider(context.read<ApiClient>()),
         ),
       ],
       child: MaterialApp(
@@ -51,7 +68,6 @@ class MyApp extends StatelessWidget {
           'compras-solicitar-crear-v1': (_) => const ComprasSolicitarCrearV1(),
           'compras-solicitar-crear-v2': (_) => const SeleccionarProductos(),
           'compras-solicitar-detalle': (_) => const ComprasSolicitarCrearV1(),
-          'clasificacion-productos': (_) => const ClasificacionProduct(),
         },
         theme: ThemeData.light().copyWith(
           scaffoldBackgroundColor: Colors.grey[300],

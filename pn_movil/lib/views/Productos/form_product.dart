@@ -1,10 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:pn_movil/providers/clasificacion_provider.dart';
 import 'dart:io';
-
 import 'package:pn_movil/providers/products_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:http_parser/http_parser.dart';
 
 class FormularioProducto extends StatefulWidget {
   const FormularioProducto({super.key});
@@ -16,10 +18,19 @@ class FormularioProducto extends StatefulWidget {
 class _FormularioProductoState extends State<FormularioProducto> {
   XFile? _image;
   final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _clasificacionController =
-      TextEditingController();
   final TextEditingController _precioController = TextEditingController();
   final TextEditingController _descripcionController = TextEditingController();
+  String? _selectedClasificacion;
+
+  @override
+  void initState() {
+    super.initState();
+    // Cargar las clasificaciones al inicio
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<ClasificacionProvider>(context, listen: false)
+          .loadClasificaciones(context);
+    });
+  }
 
   // Método para seleccionar una imagen
   Future<void> _pickImage() async {
@@ -44,8 +55,9 @@ class _FormularioProductoState extends State<FormularioProducto> {
     final productsProvider =
         Provider.of<ProductsProvider>(context, listen: false);
 
+    // Validar que todos los campos están llenos
     if (_titleController.text.isEmpty ||
-        _clasificacionController.text.isEmpty ||
+        _selectedClasificacion == null ||
         _descripcionController.text.isEmpty ||
         _image == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -54,31 +66,50 @@ class _FormularioProductoState extends State<FormularioProducto> {
       return;
     }
 
-    // Validar clasificación
-    int? clasificacionProducto = int.tryParse(_clasificacionController.text);
-    if (clasificacionProducto == null) {
+    // Convertir XFile a File
+    final imageFile = File(_image!.path);
+
+    // Mover el archivo a un directorio accesible (Documentos)
+    final newFile = await moveFileToDocumentsDirectory(imageFile);
+
+    // Verificar que el archivo se movió correctamente
+    if (!await newFile.exists()) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("La clasificación debe ser un número válido")),
+        SnackBar(
+            content: Text("El archivo no se encontró en la nueva ubicación")),
       );
       return;
     }
 
-    // Preparar FormData
-    final imagenFile = MultipartFile.fromFileSync(
-      _image!.path,
-      filename: _image!.path.split('/').last,
+    // Al crear el MultipartFile
+    final imagenFile = await MultipartFile.fromFile(
+      newFile.path,
+      filename: newFile.path.split('/').last,
+      contentType: MediaType('image', 'jpeg'), // Usar dio.MediaType
     );
 
-    print("Ruta del archivo: ${_image!.path}");
+    print(
+        "Tipo MIME: ${imagenFile.contentType}"); // Esto imprime el tipo MIME de la imagen
 
+    print("Ruta del archivo movido: ${newFile.path}");
+
+    // Preparar el FormData
     final formData = FormData.fromMap({
       'producto': _titleController.text,
       'descripcion': _descripcionController.text,
-      'clasificacionProducto': clasificacionProducto,
-      'imagen': imagenFile,
+      'clasificacionProducto': _selectedClasificacion,
+      'imagen': imagenFile, // Usar el archivo que acabamos de crear
     });
 
-    print(formData);
+    print("Datos de FormData:");
+    formData.fields.forEach((entry) {
+      print("Campo: ${entry.key} = ${entry.value}");
+    });
+
+    formData.files.forEach((file) {
+      print("Archivo: ${file.key}, Nombre del archivo: ${file.value.filename}");
+      print("Tipo MIME del archivo: ${file.value.contentType}");
+    });
 
     // Intentar guardar el producto
     try {
@@ -87,6 +118,26 @@ class _FormularioProductoState extends State<FormularioProducto> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error al guardar el producto: $error")),
       );
+    }
+  }
+
+// Función que mueve el archivo a un directorio más accesible
+  Future<File> moveFileToDocumentsDirectory(File image) async {
+    try {
+      // Obtén la ruta del directorio de documentos de la aplicación
+      final directory = await getApplicationDocumentsDirectory();
+      // Crea una nueva ruta en el directorio de documentos con el mismo nombre de archivo
+      final newPath = '${directory.path}/${image.path.split('/').last}';
+      // Mueve el archivo desde la ruta original a la nueva ruta
+      final newFile = await image.copy(newPath);
+
+      print("Nuevo archivo en: $newPath");
+
+      // Devuelve el nuevo archivo
+      return newFile;
+    } catch (e) {
+      print("Error al mover el archivo: $e");
+      rethrow;
     }
   }
 
@@ -129,23 +180,52 @@ class _FormularioProductoState extends State<FormularioProducto> {
           ),
         ),
         const SizedBox(height: 20),
-        TextField(
-          controller: _clasificacionController,
-          keyboardType: TextInputType.number,
-          decoration: InputDecoration(
-            labelText: 'Clasificación del Producto',
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            filled: true,
-            fillColor: Colors.grey[100]?.withOpacity(0.8),
-            prefixIcon: const Icon(Icons.category),
-          ),
+        Consumer<ClasificacionProvider>(
+          builder: (context, clasificacionProvider, child) {
+            if (clasificacionProvider.isLoading) {
+              return CircularProgressIndicator(); // Mostrar mientras carga
+            }
+
+            if (clasificacionProvider.clasificaciones.isEmpty) {
+              return Text("No hay clasificaciones disponibles");
+            }
+
+            final clasificaciones = clasificacionProvider.clasificaciones;
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: InputDecorator(
+                decoration: InputDecoration(
+                  labelText: 'Clasificación del Producto',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey[100]?.withOpacity(0.8),
+                  prefixIcon: const Icon(Icons.category),
+                ),
+                child: DropdownButton<String>(
+                  isExpanded: true,
+                  value: _selectedClasificacion,
+                  hint: Text('Clasificación producto'),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedClasificacion = newValue;
+                    });
+                  },
+                  items: clasificaciones.map((clasificacion) {
+                    return DropdownMenuItem<String>(
+                      value: clasificacion['clasificacionProducto'],
+                      child: Text(clasificacion['clasificacionProducto']),
+                    );
+                  }).toList(),
+                ),
+              ),
+            );
+          },
         ),
         const SizedBox(height: 30),
         TextField(
-          controller:
-              _titleController, // Asegúrate de usar otro controlador para este campo si es necesario
+          controller: _titleController,
           decoration: InputDecoration(
             labelText: 'Título del Producto',
             border: OutlineInputBorder(

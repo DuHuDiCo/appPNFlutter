@@ -42,6 +42,7 @@ class ProductsProvider extends ChangeNotifier {
     }
   }
 
+//Metodo para agregar los productos
   Future<void> addProduct(
     BuildContext context,
     FormData productData,
@@ -51,6 +52,9 @@ class ProductsProvider extends ChangeNotifier {
         '/product/',
         productData,
       );
+
+      print(
+          'Respuesta del servidor: ${response.body}'); // Imprime la respuesta del servidor
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -68,8 +72,77 @@ class ProductsProvider extends ChangeNotifier {
     }
   }
 
+//Metodo para eliminar un producto
+  Future<void> deleteProduct(BuildContext context, int productId) async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+
+      final response = await _apiClient.delete('/product/$productId');
+
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        // Eliminar producto de la lista localmente
+        _products.removeWhere((product) => product['idProducto'] == productId);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Producto eliminado exitosamente')),
+        );
+      } else {
+        throw Exception('Error al eliminar producto: ${response.body}');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al eliminar el producto: $e')),
+      );
+      if (kDebugMode) print(e);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+//Metodo para obtener el token
   Future<String?> getAuthToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('auth_token');
   }
+
+  //Metodo para editar un producto
+// Future<void> editProduct(
+//   BuildContext context,
+//   String productId,
+//   FormData updatedData,
+// ) async {
+//   try {
+//     _isLoading = true;
+//     notifyListeners();
+
+//     final response = await _apiClient.put(
+//       '/product/$productId/', postForm,
+//     );
+
+//     if (response.statusCode == 200 || response.statusCode == 204) {
+//       // Actualizar producto localmente
+//       final index = _products.indexWhere((product) => product['id'] == productId);
+//       if (index != -1) {
+//         final updatedProduct = json.decode(response.body) as Map<String, dynamic>;
+//         _products[index] = updatedProduct;
+//       }
+
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         SnackBar(content: Text('Producto actualizado exitosamente')),
+//       );
+//     } else {
+//       throw Exception('Error al actualizar producto: ${response.body}');
+//     }
+//   } catch (e) {
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       SnackBar(content: Text('Error al actualizar el producto: $e')),
+//     );
+//     if (kDebugMode) print(e);
+//   } finally {
+//     _isLoading = false;
+//     notifyListeners();
+//   }
+// }
 }

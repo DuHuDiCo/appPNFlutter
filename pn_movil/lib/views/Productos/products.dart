@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:pn_movil/widgets/cards_listar_products.dart';
 import 'package:pn_movil/widgets/drawer.dart';
@@ -158,7 +160,17 @@ class _ProductsState extends State<Products> {
         const SizedBox(width: 15),
         ElevatedButton(
           onPressed: () {
-            Navigator.pushReplacementNamed(context, 'crearProduct');
+            final provider =
+                Provider.of<ProductsProvider>(context, listen: false);
+            final productId = product['idProducto'];
+            if (productId == null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                    content: Text('El producto no tiene un ID válido')),
+              );
+              return;
+            }
+            eliminarProducto(context, productId, provider);
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color.fromARGB(255, 238, 117, 101),
@@ -172,6 +184,56 @@ class _ProductsState extends State<Products> {
           ),
         ),
       ],
+    );
+  }
+
+  void eliminarProducto(
+      BuildContext context, int productId, ProductsProvider provider) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        // Usamos dialogContext en el builder
+        return AlertDialog(
+          title: const Text("Eliminar producto"),
+          content: const Text("¿Está seguro que desea eliminar el producto?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop(); // Cerramos el diálogo
+              },
+              child: const Text("Cancelar"),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.of(dialogContext)
+                    .pop(); // Cerramos el diálogo primero
+
+                try {
+                  await provider.deleteProduct(context, productId);
+                  // Mostramos un SnackBar usando el contexto principal
+                  Future.delayed(Duration.zero, () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Producto eliminado exitosamente'),
+                      ),
+                    );
+                  });
+                } catch (e) {
+                  Future.delayed(Duration.zero, () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error: $e')),
+                    );
+                  });
+                }
+              },
+              child: const Text(
+                "Confirmar",
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
