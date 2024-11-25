@@ -3,16 +3,15 @@ import 'package:flutter/material.dart';
 class ProductCardSelect extends StatelessWidget {
   final String imageUrl;
   final String productName;
-  final String price;
-  final String units;
-  final void Function(String name, String price, String units) onAddProduct;
+  final String clasification;
+  final void Function(String name, String clasification, String productName)
+      onAddProduct;
 
   const ProductCardSelect({
     super.key,
     required this.imageUrl,
     required this.productName,
-    required this.price,
-    required this.units,
+    required this.clasification,
     required this.onAddProduct,
   });
 
@@ -26,7 +25,7 @@ class ProductCardSelect extends StatelessWidget {
           width: MediaQuery.of(context).size.width * 0.38,
           height: 230,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               CircleAvatar(
@@ -42,14 +41,7 @@ class ProductCardSelect extends StatelessWidget {
               ),
               const SizedBox(height: 5),
               Text(
-                'Precio: $price',
-                style: const TextStyle(
-                  fontSize: 14,
-                ),
-              ),
-              const SizedBox(height: 5),
-              Text(
-                'Cantidad: $units',
+                clasification,
                 style: const TextStyle(
                   fontSize: 14,
                 ),
@@ -57,7 +49,7 @@ class ProductCardSelect extends StatelessWidget {
               const SizedBox(height: 15),
               ElevatedButton(
                 onPressed: () {
-                  onAddProduct(productName, price, units);
+                  onAddProduct(productName, clasification, productName);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 56, 148, 255),
