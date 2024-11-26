@@ -4,7 +4,6 @@ import 'package:pn_movil/widgets/botton_CP.dart';
 import 'package:pn_movil/widgets/card_container.dart';
 import 'package:pn_movil/widgets/drawer.dart';
 import 'package:pn_movil/widgets/navbar.dart';
-import 'package:provider/provider.dart';
 
 class ComprasSolicitarCrearV1 extends StatelessWidget {
   const ComprasSolicitarCrearV1({super.key});
@@ -67,52 +66,6 @@ class ComprasSolicitarCrearV1 extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 120),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    width: 160,
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromARGB(255, 12, 12, 12),
-                      ),
-                      child: Text(
-                        'Total: 0',
-                        style: const TextStyle(
-                          color: Color.fromARGB(255, 244, 245, 246),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 20),
-                  ValueListenableBuilder<bool>(
-                    valueListenable: context
-                        .watch<FormComprasSolicitar>()
-                        .isFormValidNotifier,
-                    builder: (context, isFormValid, child) {
-                      return SizedBox(
-                        width: 160,
-                        child: ElevatedButton(
-                          onPressed: isFormValid ? () {} : null,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue,
-                          ),
-                          child: const Text(
-                            'Guardar',
-                            style: TextStyle(
-                              color: Color.fromARGB(255, 244, 245, 246),
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
           ],
         ),
       ),

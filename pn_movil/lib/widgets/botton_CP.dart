@@ -55,6 +55,7 @@ class _CustomToggleButtonState extends State<CustomToggleButton> {
             ),
             GestureDetector(
               onTap: () {
+                // Navegar a la ruta 'compras-solicitar-crear-v2'
                 Navigator.pushReplacementNamed(
                     context, 'compras-solicitar-crear-v2');
               },

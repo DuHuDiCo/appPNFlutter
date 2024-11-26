@@ -174,7 +174,7 @@ class _ComprasState extends State<Compras> {
                                     padding: const EdgeInsets.all(10),
                                   ),
                                   child: const Icon(
-                                    Icons.delete,
+                                    Icons.edit,
                                     color: Colors.white,
                                     size: 25,
                                   ),

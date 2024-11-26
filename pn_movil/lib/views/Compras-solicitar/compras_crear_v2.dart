@@ -186,23 +186,7 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(
-            width: 160,
-            child: ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 12, 12, 12),
-              ),
-              child: Text(
-                'Total: ${_selectedProducts.length}',
-                style: const TextStyle(
-                  color: Color.fromARGB(255, 244, 245, 246),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 20),
-          SizedBox(
-            width: 160,
+            width: 200,
             child: ElevatedButton(
               onPressed: () {
                 // Acción del botón Guardar
@@ -211,7 +195,7 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
                 backgroundColor: Colors.blue,
               ),
               child: const Text(
-                'Guardar',
+                'Agregar productos',
                 style: TextStyle(
                   color: Color.fromARGB(255, 244, 245, 246),
                 ),

@@ -42,4 +42,53 @@ class CompraProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  String? fecha;
+  String? proveedor;
+
+  void setFecha(String nuevaFecha) {
+    fecha = nuevaFecha;
+    notifyListeners();
+  }
+
+  void setProveedor(String nuevoProveedor) {
+    proveedor = nuevoProveedor;
+    notifyListeners();
+  }
+
+  bool get isValid => fecha != null && proveedor != null;
+
+  Future<void> createCompra(
+      BuildContext context, Map<String, dynamic> nuevaCompra) async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+
+      final response = await _apiClient.post(
+        '/compra/',
+        nuevaCompra,
+      );
+
+      if (response.statusCode == 201) {
+        final compraCreada = json.decode(response.body) as Map<String, dynamic>;
+        _compras.add(compraCreada);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Compra creada exitosamente')),
+        );
+      } else {
+        throw Exception('Error al crear la compra: ${response.body}');
+      }
+    } catch (e) {
+      final errorMessage = e.toString().contains('No se ha iniciado sesión')
+          ? e.toString()
+          : 'Error al crear la compra';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(errorMessage)),
+      );
+      if (kDebugMode) print(errorMessage);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
 }

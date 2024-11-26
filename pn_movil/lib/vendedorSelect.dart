@@ -44,3 +44,52 @@
           //     );
           //   },
           // ),
+
+
+
+//botton guardar ultima vista de compras 
+
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(horizontal: 20),
+            //   child: Row(
+            //     mainAxisAlignment: MainAxisAlignment.center,
+            //     children: [
+            //       SizedBox(
+            //         width: 160,
+            //         child: ElevatedButton(
+            //           onPressed: () {},
+            //           style: ElevatedButton.styleFrom(
+            //             backgroundColor: const Color.fromARGB(255, 12, 12, 12),
+            //           ),
+            //           child: Text(
+            //             'Total: ',
+            //             style: const TextStyle(
+            //               color: Color.fromARGB(255, 244, 245, 246),
+            //             ),
+            //           ),
+            //         ),
+            //       ),
+            //       const SizedBox(width: 20),
+            //       SizedBox(
+            //         width: 160,
+            //         child: ElevatedButton(
+            //           onPressed: null,
+            //           style: ElevatedButton.styleFrom(
+            //             backgroundColor: Colors.blue.shade700,
+            //             disabledForegroundColor:
+            //                 Colors.blue.shade200.withOpacity(0.38),
+            //             disabledBackgroundColor:
+            //                 const Color.fromARGB(255, 33, 119, 189)
+            //                     .withOpacity(0.12),
+            //           ),
+            //           child: const Text(
+            //             'Guardar',
+            //             style: TextStyle(
+            //               color: Color.fromARGB(255, 255, 255, 255),
+            //             ),
+            //           ),
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),

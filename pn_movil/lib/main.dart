@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pn_movil/conexiones/ApiClient.dart';
 import 'package:pn_movil/conexiones/autentificacion.dart';
+import 'package:pn_movil/models/Compras.dart';
 import 'package:pn_movil/providers/clasificacion_provider.dart';
 import 'package:pn_movil/providers/compra_provider.dart';
 import 'package:pn_movil/providers/google_provider.dart';
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
         Provider<AuthService>(
           create: (context) => AuthService(context.read<ApiClient>()),
         ),
+        ChangeNotifierProvider(create: (_) => CompraState()),
         ChangeNotifierProvider<ProductsProvider>(
           create: (context) => ProductsProvider(context.read<ApiClient>()),
         ),
