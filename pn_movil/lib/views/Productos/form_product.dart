@@ -183,7 +183,7 @@ class _FormularioProductoState extends State<FormularioProducto> {
         Consumer<ClasificacionProvider>(
           builder: (context, clasificacionProvider, child) {
             if (clasificacionProvider.isLoading) {
-              return CircularProgressIndicator(); // Mostrar mientras carga
+              return CircularProgressIndicator();
             }
 
             if (clasificacionProvider.clasificaciones.isEmpty) {

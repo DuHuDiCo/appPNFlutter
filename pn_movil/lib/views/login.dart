@@ -57,8 +57,15 @@ class Login extends StatelessWidget {
   }
 }
 
-class _LoginForm extends StatelessWidget {
+class _LoginForm extends StatefulWidget {
   const _LoginForm();
+
+  @override
+  State<_LoginForm> createState() => _LoginFormState();
+}
+
+class _LoginFormState extends State<_LoginForm> {
+  bool _obscureText = true; // Controla la visibilidad de la contraseña
 
   @override
   Widget build(BuildContext context) {
@@ -76,6 +83,16 @@ class _LoginForm extends StatelessWidget {
               hintText: 'Escribe tu correo',
               labelText: 'Correo electrónico',
               prefixIcon: Icons.email,
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _obscureText ? Icons.visibility_off : Icons.visibility,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _obscureText = !_obscureText;
+                  });
+                },
+              ),
             ),
             onChanged: (value) {
               loginProvider.email = value;
@@ -94,11 +111,21 @@ class _LoginForm extends StatelessWidget {
           const SizedBox(height: 30),
           TextFormField(
             autocorrect: false,
-            obscureText: true,
+            obscureText: _obscureText,
             decoration: Custominput.authInputDecoracion(
               hintText: 'Escribe tu contraseña',
               labelText: 'Contraseña',
               prefixIcon: Icons.lock,
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _obscureText ? Icons.visibility_off : Icons.visibility,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _obscureText = !_obscureText;
+                  });
+                },
+              ),
             ),
             onChanged: (value) {
               loginProvider.password = value;

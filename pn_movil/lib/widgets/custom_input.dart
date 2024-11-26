@@ -4,7 +4,8 @@ class Custominput {
   static InputDecoration authInputDecoracion(
       {required String hintText,
       required String labelText,
-      IconData? prefixIcon}) {
+      IconData? prefixIcon,
+      required IconButton suffixIcon}) {
     return InputDecoration(
       enabledBorder: const UnderlineInputBorder(
           borderSide:
