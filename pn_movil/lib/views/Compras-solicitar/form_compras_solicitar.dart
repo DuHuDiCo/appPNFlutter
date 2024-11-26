@@ -6,6 +6,8 @@ import 'package:provider/provider.dart';
 class FormComprasSolicitar extends StatefulWidget {
   const FormComprasSolicitar({super.key});
 
+  get isFormValidNotifier => null;
+
   @override
   _FormularioCompraState createState() => _FormularioCompraState();
 }
@@ -14,6 +16,8 @@ class _FormularioCompraState extends State<FormComprasSolicitar> {
   final TextEditingController _fechaController = TextEditingController();
   String? _proveedorSeleccionado;
   String? _vendedorSeleccionado;
+
+  ValueNotifier<bool> _isFormValidNotifier = ValueNotifier<bool>(false);
 
   @override
   void initState() {
@@ -27,11 +31,21 @@ class _FormularioCompraState extends State<FormComprasSolicitar> {
       Provider.of<UserProvider>(context, listen: false)
           .loadUsuariosVendedores(context);
     });
+
+    _fechaController.addListener(_validateForm);
+  }
+
+  void _validateForm() {
+    bool isValid = _fechaController.text.isNotEmpty &&
+        _proveedorSeleccionado != null &&
+        _vendedorSeleccionado != null;
+    _isFormValidNotifier.value = isValid;
   }
 
   @override
   void dispose() {
     _fechaController.dispose();
+    _isFormValidNotifier.dispose();
     super.dispose();
   }
 
@@ -67,6 +81,7 @@ class _FormularioCompraState extends State<FormComprasSolicitar> {
                   _fechaController.text =
                       '${pickedDate.toLocal()}'.split(' ')[0];
                 });
+                _validateForm();
               }
             },
           ),
@@ -102,6 +117,7 @@ class _FormularioCompraState extends State<FormComprasSolicitar> {
                       setState(() {
                         _proveedorSeleccionado = newValue;
                       });
+                      _validateForm();
                     },
                     items: proveedores.map((proveedor) {
                       return DropdownMenuItem<String>(
@@ -114,54 +130,6 @@ class _FormularioCompraState extends State<FormComprasSolicitar> {
               );
             },
           ),
-          const SizedBox(height: 20),
-          // Consumer<UserProvider>(
-          //   builder: (context, userProvider, child) {
-          //     if (userProvider.isLoading) {
-          //       return const CircularProgressIndicator();
-          //     }
-
-          //     if (userProvider.usuarios.isEmpty) {
-          //       return const Text("No hay vendedores disponibles");
-          //     }
-
-          //     final usuarios = userProvider.usuarios;
-
-          //     final dropdownItems = usuarios.map((usuario) {
-          //       return DropdownMenuItem<String>(
-          //         value: usuario['id'].toString(),
-          //         child: Text(usuario['nombre']),
-          //       );
-          //     }).toList();
-
-          //     return Padding(
-          //       padding: const EdgeInsets.symmetric(vertical: 10),
-          //       child: InputDecorator(
-          //         decoration: InputDecoration(
-          //           labelText: 'Selecciona un Vendedor',
-          //           border: OutlineInputBorder(
-          //             borderRadius: BorderRadius.circular(12),
-          //           ),
-          //           filled: true,
-          //           fillColor: Colors.grey[100]?.withOpacity(0.8),
-          //           prefixIcon: const Icon(Icons.person),
-          //         ),
-          //         child: DropdownButton<String>(
-          //           isExpanded: true,
-          //           value: _proveedorSeleccionado,
-          //           hint: const Text('Selecciona un vendedor'),
-          //           onChanged: (String? newValue) {
-          //             setState(() {
-          //               _proveedorSeleccionado = newValue;
-          //             });
-          //           },
-          //           items: dropdownItems,
-          //         ),
-          //       ),
-          //     );
-          //   },
-          // ),
-
           const SizedBox(height: 30),
         ],
       ),

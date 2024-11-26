@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pn_movil/conexiones/ApiClient.dart';
+import 'package:pn_movil/conexiones/autentificacion.dart';
 import 'package:pn_movil/providers/clasificacion_provider.dart';
 import 'package:pn_movil/providers/compra_provider.dart';
+import 'package:pn_movil/providers/google_provider.dart';
 import 'package:pn_movil/providers/products_provider.dart';
 import 'package:pn_movil/providers/proveedor_provider.dart';
 import 'package:pn_movil/providers/user_provider.dart';
@@ -26,33 +28,35 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        // Registro de ApiClient
         Provider<ApiClient>(
           create: (_) => ApiClient('https://apppn.duckdns.org/api/v1'),
         ),
-
         Provider<AuthService>(
           create: (context) => AuthService(context.read<ApiClient>()),
         ),
-
         ChangeNotifierProvider<ProductsProvider>(
           create: (context) => ProductsProvider(context.read<ApiClient>()),
         ),
-
         ChangeNotifierProvider<ClasificacionProvider>(
           create: (context) => ClasificacionProvider(context.read<ApiClient>()),
         ),
-
         ChangeNotifierProvider<CompraProvider>(
           create: (context) => CompraProvider(context.read<ApiClient>()),
         ),
-
         ChangeNotifierProvider<ProveedorProvider>(
           create: (context) => ProveedorProvider(context.read<ApiClient>()),
         ),
-
         ChangeNotifierProvider<UserProvider>(
           create: (context) => UserProvider(context.read<ApiClient>()),
+        ),
+        Provider<GoogleAuthController>(
+          create: (_) => GoogleAuthController(),
+        ),
+        ChangeNotifierProvider<GoogleSignInProvider>(
+          create: (context) => GoogleSignInProvider(
+            context.read<AuthService>(),
+            context.read<GoogleAuthController>(),
+          ),
         ),
       ],
       child: MaterialApp(

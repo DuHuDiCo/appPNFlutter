@@ -32,6 +32,7 @@ class CompraProvider extends ChangeNotifier {
       final errorMessage = e.toString().contains('No se ha iniciado sesión')
           ? e.toString()
           : 'Error al cargar compras';
+      print(_compras);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(errorMessage)),
       );
