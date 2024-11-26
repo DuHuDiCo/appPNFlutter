@@ -22,12 +22,9 @@ class _FormularioCompraState extends State<FormComprasSolicitar> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    Future.microtask(() {
       Provider.of<ProveedorProvider>(context, listen: false)
           .loadProveedores(context);
-    });
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<UserProvider>(context, listen: false)
           .loadUsuariosVendedores(context);
     });
