@@ -15,7 +15,7 @@ class FormComprasSolicitar extends StatefulWidget {
 class _FormularioCompraState extends State<FormComprasSolicitar> {
   final TextEditingController _fechaController = TextEditingController();
   String? _proveedorSeleccionado;
-  String? _vendedorSeleccionado;
+  // String? _vendedorSeleccionado;
 
   ValueNotifier<bool> _isFormValidNotifier = ValueNotifier<bool>(false);
 
@@ -33,9 +33,8 @@ class _FormularioCompraState extends State<FormComprasSolicitar> {
   }
 
   void _validateForm() {
-    bool isValid = _fechaController.text.isNotEmpty &&
-        _proveedorSeleccionado != null &&
-        _vendedorSeleccionado != null;
+    bool isValid =
+        _fechaController.text.isNotEmpty && _proveedorSeleccionado != null;
     _isFormValidNotifier.value = isValid;
   }
 
