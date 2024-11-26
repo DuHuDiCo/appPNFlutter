@@ -78,7 +78,7 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
                             product['producto'] ?? 'Producto sin nombre',
                         clasification: product['clasificacionProducto']
                             ['clasificacionProducto'],
-                        onAddProduct: (name, clasification, units) {
+                        onAddProduct: (name, clasification) {
                           _addProduct(name, clasification);
                         },
                       );

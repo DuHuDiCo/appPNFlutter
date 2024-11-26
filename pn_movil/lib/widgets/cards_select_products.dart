@@ -4,8 +4,7 @@ class ProductCardSelect extends StatelessWidget {
   final String imageUrl;
   final String productName;
   final String clasification;
-  final void Function(String name, String clasification, String productName)
-      onAddProduct;
+  final void Function(String clasification, String productName) onAddProduct;
 
   const ProductCardSelect({
     super.key,
@@ -49,7 +48,7 @@ class ProductCardSelect extends StatelessWidget {
               const SizedBox(height: 15),
               ElevatedButton(
                 onPressed: () {
-                  onAddProduct(productName, clasification, productName);
+                  onAddProduct(productName, clasification);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 56, 148, 255),
