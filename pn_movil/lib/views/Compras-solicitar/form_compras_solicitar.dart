@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:pn_movil/providers/compra_provider.dart';
 import 'package:pn_movil/providers/proveedor_provider.dart';
 import 'package:pn_movil/providers/user_provider.dart';
-import 'package:pn_movil/widgets/botton_CP.dart';
 import 'package:provider/provider.dart';
 
 class FormComprasSolicitar extends StatefulWidget {
