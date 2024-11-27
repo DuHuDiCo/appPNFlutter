@@ -94,7 +94,7 @@ class _ComprasState extends State<Compras> {
                             child: IconButton(
                               onPressed: () {
                                 Navigator.pushReplacementNamed(
-                                    context, 'compras-solicitar-crear-v1');
+                                    context, 'compras-solicitar-crear-v2');
                               },
                               icon: const Icon(Icons.add),
                               color: Colors.white,

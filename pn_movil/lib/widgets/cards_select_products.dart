@@ -1,10 +1,15 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 
 class ProductCardSelect extends StatelessWidget {
   final String imageUrl;
   final String productName;
   final String clasification;
-  final void Function(String clasification, String productName) onAddProduct;
+  final String productId;
+  final void Function(
+      String clasification, String productName, String productId) onAddProduct;
+  final bool isSelected;
 
   const ProductCardSelect({
     super.key,
@@ -12,6 +17,8 @@ class ProductCardSelect extends StatelessWidget {
     required this.productName,
     required this.clasification,
     required this.onAddProduct,
+    required this.isSelected,
+    required this.productId,
   });
 
   @override
@@ -47,15 +54,20 @@ class ProductCardSelect extends StatelessWidget {
               ),
               const SizedBox(height: 15),
               ElevatedButton(
-                onPressed: () {
-                  onAddProduct(productName, clasification);
-                },
+                onPressed: isSelected
+                    ? null
+                    : () {
+                        onAddProduct(productName, clasification,
+                            productId); // Pasamos el id aquí
+                      },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 56, 148, 255),
+                  backgroundColor: isSelected
+                      ? Colors.grey
+                      : const Color.fromARGB(255, 56, 148, 255),
                 ),
-                child: const Text(
-                  "Agregar",
-                  style: TextStyle(
+                child: Text(
+                  isSelected ? "Agregado" : "Agregar",
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 16,
                   ),

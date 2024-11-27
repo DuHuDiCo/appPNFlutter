@@ -43,20 +43,14 @@ class CompraProvider extends ChangeNotifier {
     }
   }
 
-  String? fecha;
   String? proveedor;
-
-  void setFecha(String nuevaFecha) {
-    fecha = nuevaFecha;
-    notifyListeners();
-  }
 
   void setProveedor(String nuevoProveedor) {
     proveedor = nuevoProveedor;
     notifyListeners();
   }
 
-  bool get isValid => fecha != null && proveedor != null;
+  bool get isValid => proveedor != null;
 
   Future<void> createCompra(
       BuildContext context, Map<String, dynamic> nuevaCompra) async {
@@ -68,6 +62,9 @@ class CompraProvider extends ChangeNotifier {
         '/compra/',
         nuevaCompra,
       );
+
+      print('Respuesta del backend: ${response.body}');
+      print(nuevaCompra);
 
       if (response.statusCode == 201) {
         final compraCreada = json.decode(response.body) as Map<String, dynamic>;

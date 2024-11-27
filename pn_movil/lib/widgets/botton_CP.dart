@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 
-class CustomToggleButton extends StatefulWidget {
-  const CustomToggleButton({super.key});
+class CustomToggleButton extends StatelessWidget {
+  final bool isFormValid; // Recibe el estado de validación del formulario
+  final VoidCallback? onSaveAndRedirect;
 
-  @override
-  _CustomToggleButtonState createState() => _CustomToggleButtonState();
-}
+  const CustomToggleButton({
+    required this.isFormValid,
+    this.onSaveAndRedirect,
+    super.key,
+  });
 
-class _CustomToggleButtonState extends State<CustomToggleButton> {
   @override
   Widget build(BuildContext context) {
-    // Obtén la ruta actual
     final String? currentRoute = ModalRoute.of(context)?.settings.name;
 
     return Center(
@@ -54,16 +55,14 @@ class _CustomToggleButtonState extends State<CustomToggleButton> {
               ),
             ),
             GestureDetector(
-              onTap: () {
-                // Navegar a la ruta 'compras-solicitar-crear-v2'
-                Navigator.pushReplacementNamed(
-                    context, 'compras-solicitar-crear-v2');
-              },
+              onTap: isFormValid ? onSaveAndRedirect : null,
               child: Container(
                 decoration: BoxDecoration(
-                  color: currentRoute == 'compras-solicitar-crear-v2'
-                      ? Colors.blue
-                      : Colors.black,
+                  color: isFormValid
+                      ? (currentRoute == 'compras-solicitar-crear-v2'
+                          ? Colors.blue
+                          : Colors.black)
+                      : Colors.grey, // Color deshabilitado
                   borderRadius: const BorderRadius.horizontal(
                     right: Radius.circular(30),
                   ),
@@ -78,7 +77,7 @@ class _CustomToggleButtonState extends State<CustomToggleButton> {
                   ),
                 ),
               ),
-            ),
+            )
           ],
         ),
       ),
