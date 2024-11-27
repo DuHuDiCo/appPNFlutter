@@ -47,28 +47,26 @@ class ProductsProvider extends ChangeNotifier {
     BuildContext context,
     FormData productData,
   ) async {
+    final dio = Dio();
+    final token = await getAuthToken();
+    dio.options.headers = {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'multipart/form-data',
+    };
+
     try {
-      final response = await _apiClient.postFormData(
-        '/product/',
-        productData,
+      final response = await dio.post(
+        'https://apppn.duckdns.org/api/v1/product/',
+        data: productData,
       );
 
-      print(
-          'Respuesta del servidor: ${response.body}'); // Imprime la respuesta del servidor
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Producto agregado exitosamente")),
-        );
+      if (response.statusCode == 200) {
+        print('Producto agregado exitosamente');
       } else {
-        throw Exception('Error al agregar producto: ${response.body}');
+        print('Error al agregar producto: ${response.statusCode}');
       }
     } catch (e) {
-      print(productData);
-      print(e);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error al guardar el producto: $e")),
-      );
+      print('Error en la solicitud: $e');
     }
   }
 

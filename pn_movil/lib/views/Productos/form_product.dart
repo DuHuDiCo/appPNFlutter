@@ -20,7 +20,7 @@ class _FormularioProductoState extends State<FormularioProducto> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _precioController = TextEditingController();
   final TextEditingController _descripcionController = TextEditingController();
-  String? _selectedClasificacion;
+  int? _selectedClasificacion;
 
   @override
   void initState() {
@@ -55,65 +55,40 @@ class _FormularioProductoState extends State<FormularioProducto> {
     final productsProvider =
         Provider.of<ProductsProvider>(context, listen: false);
 
+    final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
+        GlobalKey<ScaffoldMessengerState>();
+
     // Validar que todos los campos están llenos
     if (_titleController.text.isEmpty ||
         _selectedClasificacion == null ||
-        _descripcionController.text.isEmpty ||
-        _image == null) {
+        _descripcionController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Todos los campos deben ser completados")),
       );
       return;
     }
 
-    // Convertir XFile a File
-    final imageFile = File(_image!.path);
-
-    // Mover el archivo a un directorio accesible (Documentos)
-    final newFile = await moveFileToDocumentsDirectory(imageFile);
-
-    // Verificar que el archivo se movió correctamente
-    if (!await newFile.exists()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text("El archivo no se encontró en la nueva ubicación")),
-      );
-      return;
-    }
-
-    // Al crear el MultipartFile
+    // Convertir imagen a MultipartFile
     final imagenFile = await MultipartFile.fromFile(
-      newFile.path,
-      filename: newFile.path.split('/').last,
-      contentType: MediaType('image', 'jpeg'), // Usar dio.MediaType
+      _image!.path,
+      filename: _image!.path.split('/').last,
     );
 
-    print(
-        "Tipo MIME: ${imagenFile.contentType}"); // Esto imprime el tipo MIME de la imagen
-
-    print("Ruta del archivo movido: ${newFile.path}");
-
-    // Preparar el FormData
     final formData = FormData.fromMap({
       'producto': _titleController.text,
       'descripcion': _descripcionController.text,
+      'imagen': imagenFile,
       'clasificacionProducto': _selectedClasificacion,
-      'imagen': imagenFile, // Usar el archivo que acabamos de crear
     });
 
-    print("Datos de FormData:");
-    formData.fields.forEach((entry) {
-      print("Campo: ${entry.key} = ${entry.value}");
-    });
-
-    formData.files.forEach((file) {
-      print("Archivo: ${file.key}, Nombre del archivo: ${file.value.filename}");
-      print("Tipo MIME del archivo: ${file.value.contentType}");
-    });
-
-    // Intentar guardar el producto
     try {
-      await productsProvider.addProduct(context, formData);
+      await productsProvider.addProduct(
+        context,
+        formData,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Producto guardado exitosamente")),
+      );
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error al guardar el producto: $error")),
@@ -203,18 +178,18 @@ class _FormularioProductoState extends State<FormularioProducto> {
                   fillColor: Colors.grey[100]?.withOpacity(0.8),
                   prefixIcon: const Icon(Icons.category),
                 ),
-                child: DropdownButton<String>(
+                child: DropdownButton<int>(
                   isExpanded: true,
                   value: _selectedClasificacion,
                   hint: Text('Clasificación producto'),
-                  onChanged: (String? newValue) {
+                  onChanged: (newValue) {
                     setState(() {
                       _selectedClasificacion = newValue;
                     });
                   },
                   items: clasificaciones.map((clasificacion) {
-                    return DropdownMenuItem<String>(
-                      value: clasificacion['clasificacionProducto'],
+                    return DropdownMenuItem<int>(
+                      value: clasificacion['idClasificacionProducto'],
                       child: Text(clasificacion['clasificacionProducto']),
                     );
                   }).toList(),
@@ -254,7 +229,6 @@ class _FormularioProductoState extends State<FormularioProducto> {
         ElevatedButton(
           onPressed: () {
             _addProduct(context);
-            Navigator.pushReplacementNamed(context, 'productos');
           },
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 50),
