@@ -106,41 +106,31 @@ class ProductsProvider extends ChangeNotifier {
   }
 
   //Metodo para editar un producto
-// Future<void> editProduct(
-//   BuildContext context,
-//   String productId,
-//   FormData updatedData,
-// ) async {
-//   try {
-//     _isLoading = true;
-//     notifyListeners();
+  Future<void> editProduct(
+    BuildContext context,
+    int productId,
+    FormData updatedData,
+  ) async {
+    final dio = Dio();
+    final token = await getAuthToken();
+    dio.options.headers = {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'multipart/form-data',
+    };
 
-//     final response = await _apiClient.put(
-//       '/product/$productId/', postForm,
-//     );
+    try {
+      final response = await dio.put(
+        'https://apppn.duckdns.org/api/v1/product/$productId',
+        data: updatedData,
+      );
 
-//     if (response.statusCode == 200 || response.statusCode == 204) {
-//       // Actualizar producto localmente
-//       final index = _products.indexWhere((product) => product['id'] == productId);
-//       if (index != -1) {
-//         final updatedProduct = json.decode(response.body) as Map<String, dynamic>;
-//         _products[index] = updatedProduct;
-//       }
-
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         SnackBar(content: Text('Producto actualizado exitosamente')),
-//       );
-//     } else {
-//       throw Exception('Error al actualizar producto: ${response.body}');
-//     }
-//   } catch (e) {
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       SnackBar(content: Text('Error al actualizar el producto: $e')),
-//     );
-//     if (kDebugMode) print(e);
-//   } finally {
-//     _isLoading = false;
-//     notifyListeners();
-//   }
-// }
+      if (response.statusCode == 200) {
+        print('Producto agregado exitosamente');
+      } else {
+        print('Error al agregar producto: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error en la solicitud: $e');
+    }
+  }
 }

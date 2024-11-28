@@ -20,6 +20,7 @@ class _FormularioProductoState extends State<FormularioProducto> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descripcionController = TextEditingController();
   int? _selectedClasificacion;
+  Map<String, dynamic>? product;
 
   @override
   void initState() {
@@ -29,6 +30,18 @@ class _FormularioProductoState extends State<FormularioProducto> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<ClasificacionProvider>(context, listen: false)
           .loadClasificaciones(context);
+
+      final Map<String, dynamic>? productArgs =
+          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+      if (productArgs != null) {
+        setState(() {
+          product = productArgs;
+          _titleController.text = product!['producto'];
+          _descripcionController.text = product!['descripcion'];
+          _selectedClasificacion =
+              product!['clasificacionProducto']['idClasificacionProducto'];
+        });
+      }
     });
   }
 
@@ -42,17 +55,6 @@ class _FormularioProductoState extends State<FormularioProducto> {
   // VISTA
   @override
   Widget build(BuildContext context) {
-    final Map<String, dynamic>? product =
-        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-
-    if (product != null) {
-      _titleController.text = product['producto'];
-      _descripcionController.text = product['descripcion'];
-      _selectedClasificacion =
-          product['clasificacionProducto']['idClasificacionProducto'];
-      print(product);
-    }
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -64,8 +66,11 @@ class _FormularioProductoState extends State<FormularioProducto> {
               CircleAvatar(
                 radius: 60,
                 backgroundColor: Colors.grey[200],
-                backgroundImage:
-                    _image != null ? FileImage(File(_image!.path)) : null,
+                backgroundImage: _image != null
+                    ? FileImage(File(_image!.path))
+                    : product != null && product?['imagenes'].length > 0
+                        ? NetworkImage(product?['imagenes'][0]['urlPath'])
+                        : null,
               ),
               if (_image == null)
                 Column(
@@ -173,7 +178,7 @@ class _FormularioProductoState extends State<FormularioProducto> {
             backgroundColor: const Color.fromARGB(255, 90, 136, 204),
           ),
           child: Text(
-            product != null ? 'Guardar Producto' : 'Editar Producto',
+            product != null ? 'Editar Producto' : 'Guardar Producto',
             style: const TextStyle(
               fontSize: 18,
               color: Colors.white,
@@ -189,6 +194,9 @@ class _FormularioProductoState extends State<FormularioProducto> {
   Future<void> _addProduct(BuildContext context) async {
     final productsProvider =
         Provider.of<ProductsProvider>(context, listen: false);
+
+    final Map<String, dynamic>? product =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
 
     // Validar que todos los campos están llenos
     if (_titleController.text.isEmpty ||
@@ -223,22 +231,47 @@ class _FormularioProductoState extends State<FormularioProducto> {
       });
     }
 
-    try {
-      await productsProvider.addProduct(
-        context,
-        formData,
-      );
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Producto guardado exitosamente")),
-      );
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => Products()),
-      );
-    } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error al guardar el producto: $error")),
-      );
+    if (product != null) {
+      try {
+        print(product['idProducto']);
+        print(_titleController.text);
+        print(_descripcionController.text);
+        print(_selectedClasificacion);
+        await productsProvider.editProduct(
+          context,
+          product['idProducto'],
+          formData,
+        );
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Producto editado exitosamente")),
+        );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => Products()),
+        );
+      } catch (error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error al editar el producto: $error")),
+        );
+      }
+    } else {
+      try {
+        await productsProvider.addProduct(
+          context,
+          formData,
+        );
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Producto guardado exitosamente")),
+        );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => Products()),
+        );
+      } catch (error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error al guardar el producto: $error")),
+        );
+      }
     }
   }
 
