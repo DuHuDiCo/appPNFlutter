@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pn_movil/providers/login_provider.dart';
 import 'package:pn_movil/widgets/botton_google.dart';
-import 'package:pn_movil/widgets/card_container.dart';
-import 'package:pn_movil/widgets/background.dart';
-import 'package:pn_movil/widgets/custom_input.dart';
+import 'package:pn_movil/widgets/Components-cards/card_container.dart';
+import 'package:pn_movil/widgets/Components-generales/background.dart';
+import 'package:pn_movil/widgets/Components-generales/custom_input.dart';
 import 'package:provider/provider.dart';
 
 class Login extends StatelessWidget {

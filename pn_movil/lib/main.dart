@@ -12,7 +12,7 @@ import 'package:pn_movil/services/AuthService.dart';
 import 'package:pn_movil/views/Compras-solicitar/compras_solicitar_crear.dart';
 import 'package:pn_movil/views/Compras-solicitar/compras_solicitar.dart';
 import 'package:pn_movil/views/Compras-solicitar/compras_solicitar_editar.dart';
-import 'package:pn_movil/views/Compras-solicitar/compras_solitar_detalle.dart';
+import 'package:pn_movil/views/Compras-solicitar/compras_solicitar_detalle.dart';
 import 'package:pn_movil/views/Pago/pago.dart';
 import 'package:pn_movil/views/Productos/crear_product.dart';
 import 'package:pn_movil/views/Login/login.dart';
@@ -75,7 +75,7 @@ class MyApp extends StatelessWidget {
           'compras-solicitar': (_) => const Compras(),
           'compras-solicitar-crear': (_) => SeleccionarProductos(),
           'compras-solicitar-editar': (_) => const ComprasSolicitarEditar(),
-          'compras-solicitar-detalle': (_) => const ComprasSolitarDetalle(),
+          'compras-solicitar-detalle': (_) => const ComprasSolicitarDetalle(),
           'pago': (_) => const Pago(),
         },
         theme: ThemeData.light().copyWith(

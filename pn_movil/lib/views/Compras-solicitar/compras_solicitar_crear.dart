@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:pn_movil/providers/compra_provider.dart';
 import 'package:pn_movil/providers/products_provider.dart';
 import 'package:pn_movil/providers/proveedor_provider.dart';
-import 'package:pn_movil/widgets/card_container.dart';
-import 'package:pn_movil/widgets/cards_select_products.dart';
-import 'package:pn_movil/widgets/drawer.dart';
-import 'package:pn_movil/widgets/navbar.dart';
+import 'package:pn_movil/widgets/Components-cards/card_container.dart';
+import 'package:pn_movil/widgets/Components-cards/cards_select_products.dart';
+import 'package:pn_movil/widgets/Components-navbar/drawer.dart';
+import 'package:pn_movil/widgets/Components-navbar/navbar.dart';
 import 'package:provider/provider.dart';
 
 class SeleccionarProductos extends StatefulWidget {

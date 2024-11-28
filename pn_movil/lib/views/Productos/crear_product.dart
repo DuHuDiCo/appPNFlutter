@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pn_movil/widgets/card_container.dart';
-import 'package:pn_movil/widgets/drawer.dart';
+import 'package:pn_movil/widgets/Components-cards/card_container.dart';
+import 'package:pn_movil/widgets/Components-navbar/drawer.dart';
 import 'package:pn_movil/views/Productos/form_product.dart';
-import 'package:pn_movil/widgets/navbar.dart';
+import 'package:pn_movil/widgets/Components-navbar/navbar.dart';
 
 class CrearProduct extends StatelessWidget {
   const CrearProduct({super.key});

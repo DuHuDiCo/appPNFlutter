@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pn_movil/providers/compra_provider.dart';
-import 'package:pn_movil/widgets/cards_listar_products.dart';
-import 'package:pn_movil/widgets/drawer.dart';
-import 'package:pn_movil/widgets/navbar.dart';
+import 'package:pn_movil/widgets/Components-cards/cards_listar_products.dart';
+import 'package:pn_movil/widgets/Components-navbar/drawer.dart';
+import 'package:pn_movil/widgets/Components-navbar/navbar.dart';
 import 'package:provider/provider.dart';
 
 class Compras extends StatefulWidget {
@@ -143,7 +143,8 @@ class _ComprasState extends State<Compras> {
                                 ElevatedButton(
                                   onPressed: () {
                                     Navigator.pushReplacementNamed(
-                                        context, 'compras-solicitar-detalle');
+                                        context, 'compras-solicitar-detalle',
+                                        arguments: compra);
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor:

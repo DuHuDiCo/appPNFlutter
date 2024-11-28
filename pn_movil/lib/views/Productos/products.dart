@@ -1,9 +1,9 @@
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
-import 'package:pn_movil/widgets/cards_listar_products.dart';
-import 'package:pn_movil/widgets/drawer.dart';
-import 'package:pn_movil/widgets/navbar.dart';
+import 'package:pn_movil/widgets/Components-cards/cards_listar_products.dart';
+import 'package:pn_movil/widgets/Components-navbar/drawer.dart';
+import 'package:pn_movil/widgets/Components-navbar/navbar.dart';
 import 'package:pn_movil/providers/products_provider.dart';
 import 'package:provider/provider.dart';
 
