@@ -83,14 +83,14 @@ class ComprasSolicitarDetalle extends StatelessWidget {
               _buildInfoRow(
                 icon: Icons.monetization_on,
                 title: 'Monto:',
-                value: '\$${(compra['monto'] ?? 0).toStringAsFixed(2)}',
+                value: '\$${(compra['monto'] ?? 0).toStringAsFixed(0)}',
                 iconColor: Colors.orange.shade700,
               ),
               const SizedBox(height: 10),
               _buildInfoRow(
                 icon: Icons.monetization_on,
                 title: 'Total a pagar:',
-                value: '\$${(compra['totalPagar'] ?? 0).toStringAsFixed(2)}',
+                value: '\$${(compra['totalPagar'] ?? 0).toStringAsFixed(0)}',
                 iconColor: Colors.orange.shade700,
               ),
             ],
@@ -146,7 +146,7 @@ class ComprasSolicitarDetalle extends StatelessWidget {
                     'Sin clasificación';
 
                 final String price =
-                    '\$${(productoCompra['costo'] ?? 0).toStringAsFixed(2)}';
+                    '\$${(productoCompra['costo'] ?? 0).toStringAsFixed(0)}';
                 final String units =
                     '${productoCompra['cantidad'] ?? 0} unidad${(productoCompra['cantidad'] ?? 0) > 1 ? 'es' : ''}';
 
