@@ -5,6 +5,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pn_movil/providers/clasificacion_provider.dart';
 import 'dart:io';
 import 'package:pn_movil/providers/products_provider.dart';
+import 'package:pn_movil/views/Productos/crear_product.dart';
+import 'package:pn_movil/views/Productos/products.dart';
 import 'package:provider/provider.dart';
 import 'package:http_parser/http_parser.dart';
 
@@ -68,18 +70,28 @@ class _FormularioProductoState extends State<FormularioProducto> {
       return;
     }
 
-    // Convertir imagen a MultipartFile
-    final imagenFile = await MultipartFile.fromFile(
-      _image!.path,
-      filename: _image!.path.split('/').last,
-    );
+    var formData = FormData();
 
-    final formData = FormData.fromMap({
-      'producto': _titleController.text,
-      'descripcion': _descripcionController.text,
-      'imagen': imagenFile,
-      'clasificacionProducto': _selectedClasificacion,
-    });
+    if (_image != null) {
+      // Convertir imagen a MultipartFile
+      final imagenFile = await MultipartFile.fromFile(
+        _image!.path,
+        filename: _image!.path.split('/').last,
+      );
+
+      formData = FormData.fromMap({
+        'producto': _titleController.text,
+        'descripcion': _descripcionController.text,
+        'imagen': imagenFile,
+        'clasificacionProducto': _selectedClasificacion,
+      });
+    } else {
+      formData = FormData.fromMap({
+        'producto': _titleController.text,
+        'descripcion': _descripcionController.text,
+        'clasificacionProducto': _selectedClasificacion,
+      });
+    }
 
     try {
       await productsProvider.addProduct(
@@ -88,6 +100,10 @@ class _FormularioProductoState extends State<FormularioProducto> {
       );
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Producto guardado exitosamente")),
+      );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => Products()),
       );
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
