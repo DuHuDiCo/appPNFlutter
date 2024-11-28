@@ -157,7 +157,7 @@ class _ProductsState extends State<Products> {
             color: Colors.white,
           ),
         ),
-        const SizedBox(width: 15),
+        const SizedBox(width: 10),
         ElevatedButton(
           onPressed: () {
             final provider =

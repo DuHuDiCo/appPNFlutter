@@ -22,9 +22,10 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
   final TextEditingController costoController = TextEditingController();
   final List<Map<String, String>> _selectedProducts = [];
 
-  String? _proveedorSeleccionado;
+  int? _proveedorSeleccionado;
   bool _isFormValid = false;
 
+//Funcion para inicializar el estado
   @override
   void initState() {
     super.initState();
@@ -36,6 +37,7 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
     });
   }
 
+//Funcion para liberar recursos
   @override
   void dispose() {
     _proveedorController.dispose();
@@ -44,13 +46,22 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
     super.dispose();
   }
 
-  void _addProductWithDetails(String name, String clasification, int cantidad,
-      double costo, String productId) {
+  void _addProductWithDetails(
+      String name,
+      String clasification,
+      int cantidad,
+      double costo,
+      String productId,
+      bool estimarFlete,
+      bool isDescuentoInicial) {
+    // Evitar duplicados
     if (_selectedProducts.any((product) =>
         product['productName'] == name &&
         product['clasification'] == clasification)) {
       return;
     }
+
+    // Agregar producto y actualizar estado
     setState(() {
       _selectedProducts.add({
         'productName': name,
@@ -58,38 +69,46 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
         'cantidad': cantidad.toString(),
         'costo': costo.toString(),
         'productId': productId,
+        'estimarFlete': estimarFlete.toString(),
+        'isDescuentoInicial': isDescuentoInicial.toString(),
       });
+
+      checkFormValidity();
     });
+
     print("Productos seleccionados con detalles: $_selectedProducts");
   }
 
+//Funcion para verificar si el formulario es valido
   void checkFormValidity() {
     setState(() {
-      _isFormValid = _formKey.currentState?.validate() ?? false;
+      _isFormValid = (_formKey.currentState?.validate() ?? false) &&
+          _selectedProducts.isNotEmpty;
     });
   }
 
+//Funcion para guardar los datos del formulario
   void saveFormData() {
     if (_formKey.currentState?.validate() ?? false) {
       print('Proveedor seleccionado: $_proveedorSeleccionado');
       print('Productos seleccionados: $_selectedProducts');
 
-      // Generar el objeto de la compra
       Map<String, dynamic> nuevaCompra = {
-        "monto": _calculateMonto(),
-        "idProveedor": 6,
+        "monto": _calculoMonto(),
+        "idProveedor": _proveedorSeleccionado,
         "productos": _selectedProducts.map((product) {
           return {
             "cantidad": int.parse(product['cantidad'] ?? '0'),
             "costo": double.parse(product['costo'] ?? '0'),
             "idProducto": product['productId'],
             "idUsuario": 1,
-            "estimarFlete": true,
-            "isDescuentoInicial": true,
+            "estimarFlete": bool.parse(product['estimarFlete'] ?? 'false'),
+            "isDescuentoInicial":
+                bool.parse(product['isDescuentoInicial'] ?? 'false'),
           };
         }).toList(),
-        "totalCompra": _calculateTotalCompra(),
-        "totalPagar": _calculateTotalPagar(),
+        "totalCompra": _calculoTotalCompra(),
+        "totalPagar": _calculoTotalPagar(),
       };
 
       Provider.of<CompraProvider>(context, listen: false)
@@ -99,22 +118,26 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
     }
   }
 
-  double _calculateMonto() {
+//Funcion para calcular el monto total
+  double _calculoMonto() {
     return _selectedProducts.fold(0.0, (previousValue, product) {
       return previousValue +
-          (double.parse(product['precio'] ?? '0') *
+          (double.parse(product['costo'] ?? '0') *
               int.parse(product['cantidad'] ?? '0'));
     });
   }
 
-  double _calculateTotalCompra() {
-    return _calculateMonto();
+//Funcion para calcular el total de compra
+  double _calculoTotalCompra() {
+    return _calculoMonto();
   }
 
-  double _calculateTotalPagar() {
-    return _calculateMonto();
+//Funcion para calcular el total de pago
+  double _calculoTotalPagar() {
+    return _calculoMonto();
   }
 
+//Funcion para crear el cuerpo del dialogo de agregar producto
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -183,6 +206,7 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
     );
   }
 
+//Funcion para crear el header del dialogo de agregar producto
   Widget _buildHeader() {
     return SingleChildScrollView(
       child: Container(
@@ -223,12 +247,14 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
                       return const CircularProgressIndicator();
                     }
                     final proveedores = proveedorProvider.proveedores;
-                    return DropdownButtonFormField<String>(
+                    return DropdownButtonFormField<int>(
                       isExpanded: true,
                       value: _proveedorSeleccionado,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: 'Proveedor compra',
-                        border: OutlineInputBorder(),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
                       onChanged: (value) {
                         setState(() {
@@ -237,8 +263,8 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
                         checkFormValidity();
                       },
                       items: proveedores.map((proveedor) {
-                        return DropdownMenuItem<String>(
-                          value: proveedor['proveedor'],
+                        return DropdownMenuItem<int>(
+                          value: proveedor['idProveedor'],
                           child: Text(proveedor['proveedor']),
                         );
                       }).toList(),
@@ -296,12 +322,14 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
     );
   }
 
+//Funcion para verificar si el producto seleccionado ya existe
   bool isProductSelected(String name, String clasification) {
     return _selectedProducts.any((product) =>
         product['productName'] == name &&
         product['clasification'] == clasification);
   }
 
+  //Boton para guardar los datos del formulario
   Widget _buildFooter() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -311,12 +339,14 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
           SizedBox(
             width: 200,
             child: ElevatedButton(
-              onPressed: _isFormValid ? saveFormData : null,
+              onPressed: (_isFormValid && _selectedProducts.isNotEmpty)
+                  ? saveFormData
+                  : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
               ),
               child: const Text(
-                'Agregar productos',
+                'Registrar compra',
                 style: TextStyle(
                   color: Color.fromARGB(255, 244, 245, 246),
                 ),
@@ -328,62 +358,141 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
     );
   }
 
+//Dialogo para agregar producto
   Future<void> _showAddProductDialog(BuildContext context, String productName,
       String clasification, String productId) async {
     final TextEditingController cantidadController = TextEditingController();
     final TextEditingController costoController = TextEditingController();
+    bool estimarFlete = false;
+    bool isDescuentoInicial = false;
 
-    final result = await showDialog<bool>(
+    await showDialog<bool>(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: Text('Agregar $productName'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: cantidadController,
-                decoration: const InputDecoration(
-                  labelText: 'Cantidad',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.number,
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
               ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: costoController,
-                decoration: const InputDecoration(
-                  labelText: 'Precio',
-                  border: OutlineInputBorder(),
+              title: Text(
+                'Agregar Producto',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue.shade800,
                 ),
-                keyboardType: TextInputType.number,
               ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(false);
-              },
-              child: const Text('Cancelar'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                if (cantidadController.text.isNotEmpty &&
-                    costoController.text.isNotEmpty) {
-                  _addProductWithDetails(
-                    productName,
-                    clasification,
-                    int.parse(cantidadController.text),
-                    double.parse(costoController.text),
-                    productId,
-                  );
-                  Navigator.of(context).pop(true);
-                }
-              },
-              child: const Text('Agregar'),
-            ),
-          ],
+              content: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        productName,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: cantidadController,
+                        decoration: InputDecoration(
+                          labelText: 'Cantidad',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          prefixIcon: const Icon(Icons.shopping_cart),
+                        ),
+                        keyboardType: TextInputType.number,
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: costoController,
+                        decoration: InputDecoration(
+                          labelText: 'Precio',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          prefixIcon: const Icon(Icons.attach_money),
+                        ),
+                        keyboardType: TextInputType.number,
+                      ),
+                      const SizedBox(height: 16),
+                      SwitchListTile(
+                        title: const Text('Estimar Flete'),
+                        value: estimarFlete,
+                        onChanged: (value) {
+                          setState(() {
+                            estimarFlete = value;
+                          });
+                        },
+                        activeColor: Colors.blue.shade800,
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                      SwitchListTile(
+                        title: const Text('Descuento Inicial'),
+                        value: isDescuentoInicial,
+                        onChanged: (value) {
+                          setState(() {
+                            isDescuentoInicial = value;
+                          });
+                        },
+                        activeColor: Colors.blue.shade800,
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(false);
+                  },
+                  child: const Text(
+                    'Cancelar',
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 236, 129, 121),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue.shade800,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  onPressed: () {
+                    if (cantidadController.text.isNotEmpty &&
+                        costoController.text.isNotEmpty) {
+                      _addProductWithDetails(
+                        productName,
+                        clasification,
+                        int.parse(cantidadController.text),
+                        double.parse(costoController.text),
+                        productId,
+                        estimarFlete,
+                        isDescuentoInicial,
+                      );
+                      Navigator.of(context).pop(true);
+                    }
+                  },
+                  child: const Text(
+                    'Agregar',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
         );
       },
     );

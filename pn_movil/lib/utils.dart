@@ -93,3 +93,19 @@
             //     ],
             //   ),
             // ),
+
+
+
+            // Switch(
+            //             value: switchValue,
+            //             onChanged: (bool newValue) {
+            //               setState(() {
+            //                 switchValue = newValue;
+            //               });
+            //             },
+            //             activeColor: Colors.blue,
+            //             inactiveThumbColor:
+            //                 const Color.fromARGB(255, 255, 255, 255),
+            //             inactiveTrackColor:
+            //                 const Color.fromARGB(255, 206, 222, 235),
+            //           ),

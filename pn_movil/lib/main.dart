@@ -9,13 +9,15 @@ import 'package:pn_movil/providers/products_provider.dart';
 import 'package:pn_movil/providers/proveedor_provider.dart';
 import 'package:pn_movil/providers/user_provider.dart';
 import 'package:pn_movil/services/AuthService.dart';
-import 'package:pn_movil/views/Compras-solicitar/compras_crear_v2.dart';
+import 'package:pn_movil/views/Compras-solicitar/compras_solicitar_crear.dart';
 import 'package:pn_movil/views/Compras-solicitar/compras_solicitar.dart';
+import 'package:pn_movil/views/Compras-solicitar/compras_solicitar_editar.dart';
+import 'package:pn_movil/views/Compras-solicitar/compras_solitar_detalle.dart';
 import 'package:pn_movil/views/Pago/pago.dart';
 import 'package:pn_movil/views/Productos/crear_product.dart';
-import 'package:pn_movil/views/login.dart';
+import 'package:pn_movil/views/Login/login.dart';
 import 'package:pn_movil/views/Productos/products.dart';
-import 'package:pn_movil/views/vista_inicial.dart';
+import 'package:pn_movil/views/Panel/vista_inicial.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -71,7 +73,9 @@ class MyApp extends StatelessWidget {
           'productos': (_) => const Products(),
           'crearProduct': (_) => const CrearProduct(),
           'compras-solicitar': (_) => const Compras(),
-          'compras-solicitar-crear-v2': (_) => SeleccionarProductos(),
+          'compras-solicitar-crear': (_) => SeleccionarProductos(),
+          'compras-solicitar-editar': (_) => const ComprasSolicitarEditar(),
+          'compras-solicitar-detalle': (_) => const ComprasSolitarDetalle(),
           'pago': (_) => const Pago(),
         },
         theme: ThemeData.light().copyWith(
