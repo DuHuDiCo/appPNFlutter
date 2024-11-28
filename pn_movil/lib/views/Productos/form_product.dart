@@ -5,10 +5,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pn_movil/providers/clasificacion_provider.dart';
 import 'dart:io';
 import 'package:pn_movil/providers/products_provider.dart';
-import 'package:pn_movil/views/Productos/crear_product.dart';
 import 'package:pn_movil/views/Productos/products.dart';
 import 'package:provider/provider.dart';
-import 'package:http_parser/http_parser.dart';
 
 class FormularioProducto extends StatefulWidget {
   const FormularioProducto({super.key});
@@ -20,13 +18,13 @@ class FormularioProducto extends StatefulWidget {
 class _FormularioProductoState extends State<FormularioProducto> {
   XFile? _image;
   final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _precioController = TextEditingController();
   final TextEditingController _descripcionController = TextEditingController();
   int? _selectedClasificacion;
 
   @override
   void initState() {
     super.initState();
+
     // Cargar las clasificaciones al inicio
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<ClasificacionProvider>(context, listen: false)
@@ -34,106 +32,27 @@ class _FormularioProductoState extends State<FormularioProducto> {
     });
   }
 
-  // Método para seleccionar una imagen
-  Future<void> _pickImage() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? pickedImage =
-        await picker.pickImage(source: ImageSource.gallery);
-
-    setState(() {
-      _image = pickedImage;
-    });
-  }
-
   @override
   void dispose() {
     _titleController.dispose();
     _descripcionController.dispose();
-    _precioController.dispose();
     super.dispose();
   }
 
-  Future<void> _addProduct(BuildContext context) async {
-    final productsProvider =
-        Provider.of<ProductsProvider>(context, listen: false);
-
-    final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
-        GlobalKey<ScaffoldMessengerState>();
-
-    // Validar que todos los campos están llenos
-    if (_titleController.text.isEmpty ||
-        _selectedClasificacion == null ||
-        _descripcionController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Todos los campos deben ser completados")),
-      );
-      return;
-    }
-
-    var formData = FormData();
-
-    if (_image != null) {
-      // Convertir imagen a MultipartFile
-      final imagenFile = await MultipartFile.fromFile(
-        _image!.path,
-        filename: _image!.path.split('/').last,
-      );
-
-      formData = FormData.fromMap({
-        'producto': _titleController.text,
-        'descripcion': _descripcionController.text,
-        'imagen': imagenFile,
-        'clasificacionProducto': _selectedClasificacion,
-      });
-    } else {
-      formData = FormData.fromMap({
-        'producto': _titleController.text,
-        'descripcion': _descripcionController.text,
-        'clasificacionProducto': _selectedClasificacion,
-      });
-    }
-
-    try {
-      await productsProvider.addProduct(
-        context,
-        formData,
-      );
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Producto guardado exitosamente")),
-      );
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => Products()),
-      );
-    } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error al guardar el producto: $error")),
-      );
-    }
-  }
-
-// Función que mueve el archivo a un directorio más accesible
-  Future<File> moveFileToDocumentsDirectory(File image) async {
-    try {
-      // Obtén la ruta del directorio de documentos de la aplicación
-      final directory = await getApplicationDocumentsDirectory();
-      // Crea una nueva ruta en el directorio de documentos con el mismo nombre de archivo
-      final newPath = '${directory.path}/${image.path.split('/').last}';
-      // Mueve el archivo desde la ruta original a la nueva ruta
-      final newFile = await image.copy(newPath);
-
-      print("Nuevo archivo en: $newPath");
-
-      // Devuelve el nuevo archivo
-      return newFile;
-    } catch (e) {
-      print("Error al mover el archivo: $e");
-      rethrow;
-    }
-  }
-
+  // VISTA
   @override
   Widget build(BuildContext context) {
+    final Map<String, dynamic>? product =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+
+    if (product != null) {
+      _titleController.text = product['producto'];
+      _descripcionController.text = product['descripcion'];
+      _selectedClasificacion =
+          product['clasificacionProducto']['idClasificacionProducto'];
+      print(product);
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -174,7 +93,7 @@ class _FormularioProductoState extends State<FormularioProducto> {
         Consumer<ClasificacionProvider>(
           builder: (context, clasificacionProvider, child) {
             if (clasificacionProvider.isLoading) {
-              return CircularProgressIndicator(); // Mostrar mientras carga
+              return CircularProgressIndicator();
             }
 
             if (clasificacionProvider.clasificaciones.isEmpty) {
@@ -253,9 +172,9 @@ class _FormularioProductoState extends State<FormularioProducto> {
             ),
             backgroundColor: const Color.fromARGB(255, 90, 136, 204),
           ),
-          child: const Text(
-            'Guardar Producto',
-            style: TextStyle(
+          child: Text(
+            product != null ? 'Guardar Producto' : 'Editar Producto',
+            style: const TextStyle(
               fontSize: 18,
               color: Colors.white,
             ),
@@ -264,5 +183,93 @@ class _FormularioProductoState extends State<FormularioProducto> {
         const SizedBox(height: 30),
       ],
     );
+  }
+
+  // METODOS
+  Future<void> _addProduct(BuildContext context) async {
+    final productsProvider =
+        Provider.of<ProductsProvider>(context, listen: false);
+
+    // Validar que todos los campos están llenos
+    if (_titleController.text.isEmpty ||
+        _selectedClasificacion == null ||
+        _descripcionController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Todos los campos deben ser completados")),
+      );
+      return;
+    }
+
+    var formData = FormData();
+
+    if (_image != null) {
+      // Convertir imagen a MultipartFile
+      final imagenFile = await MultipartFile.fromFile(
+        _image!.path,
+        filename: _image!.path.split('/').last,
+      );
+
+      formData = FormData.fromMap({
+        'producto': _titleController.text,
+        'descripcion': _descripcionController.text,
+        'imagen': imagenFile,
+        'clasificacionProducto': _selectedClasificacion,
+      });
+    } else {
+      formData = FormData.fromMap({
+        'producto': _titleController.text,
+        'descripcion': _descripcionController.text,
+        'clasificacionProducto': _selectedClasificacion,
+      });
+    }
+
+    try {
+      await productsProvider.addProduct(
+        context,
+        formData,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Producto guardado exitosamente")),
+      );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => Products()),
+      );
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error al guardar el producto: $error")),
+      );
+    }
+  }
+
+// Función que mueve el archivo a un directorio más accesible
+  Future<File> moveFileToDocumentsDirectory(File image) async {
+    try {
+      // Obtén la ruta del directorio de documentos de la aplicación
+      final directory = await getApplicationDocumentsDirectory();
+      // Crea una nueva ruta en el directorio de documentos con el mismo nombre de archivo
+      final newPath = '${directory.path}/${image.path.split('/').last}';
+      // Mueve el archivo desde la ruta original a la nueva ruta
+      final newFile = await image.copy(newPath);
+
+      print("Nuevo archivo en: $newPath");
+
+      // Devuelve el nuevo archivo
+      return newFile;
+    } catch (e) {
+      print("Error al mover el archivo: $e");
+      rethrow;
+    }
+  }
+
+  // Método para seleccionar una imagen
+  Future<void> _pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? pickedImage =
+        await picker.pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      _image = pickedImage;
+    });
   }
 }

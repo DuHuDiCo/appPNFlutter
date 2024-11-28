@@ -144,7 +144,8 @@ class _ProductsState extends State<Products> {
       actions: [
         ElevatedButton(
           onPressed: () {
-            Navigator.pushReplacementNamed(context, 'crearProduct');
+            Navigator.pushReplacementNamed(context, 'crearProduct',
+                arguments: product);
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color.fromRGBO(112, 185, 244, 1),
