@@ -36,6 +36,7 @@ class _FormularioProductoState extends State<FormularioProducto> {
       if (productArgs != null) {
         setState(() {
           product = productArgs;
+          print(product);
           _titleController.text = product!['producto'];
           _descripcionController.text = product!['descripcion'];
           _selectedClasificacion =
@@ -233,9 +234,6 @@ class _FormularioProductoState extends State<FormularioProducto> {
 
     if (product != null) {
       try {
-        print(product['idProducto']);
-        print(_titleController.text);
-        print(_descripcionController.text);
         print(_selectedClasificacion);
         await productsProvider.editProduct(
           context,
