@@ -46,14 +46,8 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
     super.dispose();
   }
 
-  void _addProductWithDetails(
-      String name,
-      String clasification,
-      int cantidad,
-      double costo,
-      String productId,
-      bool estimarFlete,
-      bool isDescuentoInicial) {
+  void _addProductWithDetails(String name, String clasification, int cantidad,
+      double costo, String productId) {
     // Evitar duplicados
     if (_selectedProducts.any((product) =>
         product['productName'] == name &&
@@ -69,8 +63,6 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
         'cantidad': cantidad.toString(),
         'costo': costo.toString(),
         'productId': productId,
-        'estimarFlete': estimarFlete.toString(),
-        'isDescuentoInicial': isDescuentoInicial.toString(),
       });
 
       checkFormValidity();
@@ -420,29 +412,6 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
                         ),
                         keyboardType: TextInputType.number,
                       ),
-                      const SizedBox(height: 16),
-                      SwitchListTile(
-                        title: const Text('Estimar Flete'),
-                        value: estimarFlete,
-                        onChanged: (value) {
-                          setState(() {
-                            estimarFlete = value;
-                          });
-                        },
-                        activeColor: Colors.blue.shade800,
-                        contentPadding: EdgeInsets.zero,
-                      ),
-                      SwitchListTile(
-                        title: const Text('Descuento Inicial'),
-                        value: isDescuentoInicial,
-                        onChanged: (value) {
-                          setState(() {
-                            isDescuentoInicial = value;
-                          });
-                        },
-                        activeColor: Colors.blue.shade800,
-                        contentPadding: EdgeInsets.zero,
-                      ),
                     ],
                   ),
                 ),
@@ -476,8 +445,6 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
                         int.parse(cantidadController.text),
                         double.parse(costoController.text),
                         productId,
-                        estimarFlete,
-                        isDescuentoInicial,
                       );
                       Navigator.of(context).pop(true);
                     }

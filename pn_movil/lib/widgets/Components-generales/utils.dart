@@ -95,17 +95,26 @@
             // ),
 
 
-
-            // Switch(
-            //             value: switchValue,
-            //             onChanged: (bool newValue) {
-            //               setState(() {
-            //                 switchValue = newValue;
-            //               });
-            //             },
-            //             activeColor: Colors.blue,
-            //             inactiveThumbColor:
-            //                 const Color.fromARGB(255, 255, 255, 255),
-            //             inactiveTrackColor:
-            //                 const Color.fromARGB(255, 206, 222, 235),
-            //           ),
+//SwitchListTile de descuento inicial y de estimar flete
+                      // SwitchListTile(
+                      //   title: const Text('Estimar Flete'),
+                      //   value: estimarFlete,
+                      //   onChanged: (value) {
+                      //     setState(() {
+                      //       estimarFlete = value;
+                      //     });
+                      //   },
+                      //   activeColor: Colors.blue.shade800,
+                      //   contentPadding: EdgeInsets.zero,
+                      // ),
+                      // SwitchListTile(
+                      //   title: const Text('Descuento Inicial'),
+                      //   value: isDescuentoInicial,
+                      //   onChanged: (value) {
+                      //     setState(() {
+                      //       isDescuentoInicial = value;
+                      //     });
+                      //   },
+                      //   activeColor: Colors.blue.shade800,
+                      //   contentPadding: EdgeInsets.zero,
+                      // ),
