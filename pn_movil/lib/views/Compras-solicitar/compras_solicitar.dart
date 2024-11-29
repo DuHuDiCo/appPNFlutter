@@ -162,7 +162,8 @@ class _ComprasState extends State<Compras> {
                                 ElevatedButton(
                                   onPressed: () {
                                     Navigator.pushReplacementNamed(
-                                        context, 'compras-solicitar-editar');
+                                        context, 'compras-solicitar-editar',
+                                        arguments: compra);
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor:

@@ -79,6 +79,13 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
     });
   }
 
+//Funcion para verificar si el producto seleccionado ya existe
+  bool isProductSelected(String name, String clasification) {
+    return _selectedProducts.any((product) =>
+        product['productName'] == name &&
+        product['clasification'] == clasification);
+  }
+
 //Funcion para guardar los datos del formulario
   void saveFormData() {
     if (_formKey.currentState?.validate() ?? false) {
@@ -314,13 +321,6 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
     );
   }
 
-//Funcion para verificar si el producto seleccionado ya existe
-  bool isProductSelected(String name, String clasification) {
-    return _selectedProducts.any((product) =>
-        product['productName'] == name &&
-        product['clasification'] == clasification);
-  }
-
   //Boton para guardar los datos del formulario
   Widget _buildFooter() {
     return Padding(
@@ -355,8 +355,6 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
       String clasification, String productId) async {
     final TextEditingController cantidadController = TextEditingController();
     final TextEditingController costoController = TextEditingController();
-    bool estimarFlete = false;
-    bool isDescuentoInicial = false;
 
     await showDialog<bool>(
       context: context,
