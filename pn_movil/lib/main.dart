@@ -74,7 +74,7 @@ class MyApp extends StatelessWidget {
           'crearProduct': (_) => const CrearProduct(),
           'compras-solicitar': (_) => const Compras(),
           'compras-solicitar-crear': (_) => SeleccionarProductos(),
-          'compras-solicitar-editar': (_) => const ComprasSolicitarEditar(),
+          'compras-solicitar-editar': (_) => ComprasSolicitarEditar(),
           'compras-solicitar-detalle': (_) => const ComprasSolicitarDetalle(),
           'pago': (_) => const Pago(),
         },

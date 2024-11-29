@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pn_movil/providers/compra_provider.dart';
 import 'package:pn_movil/widgets/Components-cards/cards_listar_products.dart';
+import 'package:pn_movil/widgets/Components-generales/estado_compra.dart';
 import 'package:pn_movil/widgets/Components-navbar/drawer.dart';
 import 'package:pn_movil/widgets/Components-navbar/navbar.dart';
 import 'package:provider/provider.dart';
@@ -125,9 +126,7 @@ class _ComprasState extends State<Compras> {
                                   Text(
                                     'Realizada el ${DateFormat('dd/MM/yyyy').format(DateTime.parse(compra['fecha']))}',
                                     style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.grey[700],
-                                    ),
+                                        fontSize: 14, color: Colors.grey[700]),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
@@ -135,6 +134,8 @@ class _ComprasState extends State<Compras> {
                                     style: TextStyle(
                                         fontSize: 14, color: Colors.grey[700]),
                                   ),
+                                  const SizedBox(height: 4),
+                                  pagoWidget(compra['pago']),
                                 ],
                               ),
                             ),
@@ -161,7 +162,8 @@ class _ComprasState extends State<Compras> {
                                 ElevatedButton(
                                   onPressed: () {
                                     Navigator.pushReplacementNamed(
-                                        context, 'compras-solicitar-editar');
+                                        context, 'compras-solicitar-editar',
+                                        arguments: compra);
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor:
@@ -181,6 +183,7 @@ class _ComprasState extends State<Compras> {
                         ),
                       );
                     }),
+
                     const SizedBox(width: 10),
                   ],
                 ),
