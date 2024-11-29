@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pn_movil/providers/compra_provider.dart';
-import 'package:pn_movil/widgets/cards_listar_products.dart';
-import 'package:pn_movil/widgets/drawer.dart';
-import 'package:pn_movil/widgets/navbar.dart';
+import 'package:pn_movil/widgets/Components-cards/cards_listar_products.dart';
+import 'package:pn_movil/widgets/Components-navbar/drawer.dart';
+import 'package:pn_movil/widgets/Components-navbar/navbar.dart';
 import 'package:provider/provider.dart';
 
 class Compras extends StatefulWidget {
@@ -94,7 +94,7 @@ class _ComprasState extends State<Compras> {
                             child: IconButton(
                               onPressed: () {
                                 Navigator.pushReplacementNamed(
-                                    context, 'compras-solicitar-crear-v1');
+                                    context, 'compras-solicitar-crear');
                               },
                               icon: const Icon(Icons.add),
                               color: Colors.white,
@@ -131,12 +131,6 @@ class _ComprasState extends State<Compras> {
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    'Vendedor: ',
-                                    style: TextStyle(
-                                        fontSize: 14, color: Colors.grey[700]),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
                                     'Proveedor: ${compra['proveedor']['proveedor']}',
                                     style: TextStyle(
                                         fontSize: 14, color: Colors.grey[700]),
@@ -149,7 +143,8 @@ class _ComprasState extends State<Compras> {
                                 ElevatedButton(
                                   onPressed: () {
                                     Navigator.pushReplacementNamed(
-                                        context, 'compras-solicitar-detalle');
+                                        context, 'compras-solicitar-detalle',
+                                        arguments: compra);
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor:
@@ -165,7 +160,8 @@ class _ComprasState extends State<Compras> {
                                 ),
                                 ElevatedButton(
                                   onPressed: () {
-                                    anularCompra(context);
+                                    Navigator.pushReplacementNamed(
+                                        context, 'compras-solicitar-editar');
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor:
@@ -174,7 +170,7 @@ class _ComprasState extends State<Compras> {
                                     padding: const EdgeInsets.all(10),
                                   ),
                                   child: const Icon(
-                                    Icons.delete,
+                                    Icons.edit,
                                     color: Colors.white,
                                     size: 25,
                                   ),
@@ -193,38 +189,6 @@ class _ComprasState extends State<Compras> {
           );
         },
       ),
-    );
-  }
-
-  void anularCompra(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Anular compra"),
-          content: const Text("¿Esta seguro que desea anular la compra?"),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text("Cancelar"),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Compra anulada exitosamente")),
-                );
-              },
-              child: const Text(
-                "Confirmar",
-                style: TextStyle(color: Colors.red),
-              ),
-            ),
-          ],
-        );
-      },
     );
   }
 }

@@ -54,3 +54,36 @@ class Compra {
     };
   }
 }
+
+class CompraState extends ChangeNotifier {
+  double monto = 0;
+  int idProveedor = 0;
+  List<Producto> productos = [];
+  double totalCompra = 0;
+  double totalPagar = 0;
+
+  void setMonto(double value) {
+    monto = value;
+    notifyListeners();
+  }
+
+  void setIdProveedor(int value) {
+    idProveedor = value;
+    notifyListeners();
+  }
+
+  void addProducto(Producto producto) {
+    productos.add(producto);
+    notifyListeners();
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'monto': monto,
+      'idProveedor': idProveedor,
+      'productos': productos.map((p) => p.toJson()).toList(),
+      'totalCompra': totalCompra,
+      'totalPagar': totalPagar,
+    };
+  }
+}

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pn_movil/conexiones/ApiClient.dart';
 import 'package:pn_movil/conexiones/autentificacion.dart';
+import 'package:pn_movil/models/Compras.dart';
 import 'package:pn_movil/providers/clasificacion_provider.dart';
 import 'package:pn_movil/providers/compra_provider.dart';
 import 'package:pn_movil/providers/google_provider.dart';
@@ -8,13 +9,15 @@ import 'package:pn_movil/providers/products_provider.dart';
 import 'package:pn_movil/providers/proveedor_provider.dart';
 import 'package:pn_movil/providers/user_provider.dart';
 import 'package:pn_movil/services/AuthService.dart';
-import 'package:pn_movil/views/Compras-solicitar/compras_crear_v2.dart';
+import 'package:pn_movil/views/Compras-solicitar/compras_solicitar_crear.dart';
 import 'package:pn_movil/views/Compras-solicitar/compras_solicitar.dart';
-import 'package:pn_movil/views/Compras-solicitar/compras_crear_v1.dart';
+import 'package:pn_movil/views/Compras-solicitar/compras_solicitar_editar.dart';
+import 'package:pn_movil/views/Compras-solicitar/compras_solicitar_detalle.dart';
+import 'package:pn_movil/views/Pago/pago.dart';
 import 'package:pn_movil/views/Productos/crear_product.dart';
-import 'package:pn_movil/views/login.dart';
+import 'package:pn_movil/views/Login/login.dart';
 import 'package:pn_movil/views/Productos/products.dart';
-import 'package:pn_movil/views/vista_inicial.dart';
+import 'package:pn_movil/views/Panel/vista_inicial.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -34,6 +37,7 @@ class MyApp extends StatelessWidget {
         Provider<AuthService>(
           create: (context) => AuthService(context.read<ApiClient>()),
         ),
+        ChangeNotifierProvider(create: (_) => CompraState()),
         ChangeNotifierProvider<ProductsProvider>(
           create: (context) => ProductsProvider(context.read<ApiClient>()),
         ),
@@ -69,9 +73,10 @@ class MyApp extends StatelessWidget {
           'productos': (_) => const Products(),
           'crearProduct': (_) => const CrearProduct(),
           'compras-solicitar': (_) => const Compras(),
-          'compras-solicitar-crear-v1': (_) => const ComprasSolicitarCrearV1(),
-          'compras-solicitar-crear-v2': (_) => const SeleccionarProductos(),
-          'compras-solicitar-detalle': (_) => const ComprasSolicitarCrearV1(),
+          'compras-solicitar-crear': (_) => SeleccionarProductos(),
+          'compras-solicitar-editar': (_) => const ComprasSolicitarEditar(),
+          'compras-solicitar-detalle': (_) => const ComprasSolicitarDetalle(),
+          'pago': (_) => const Pago(),
         },
         theme: ThemeData.light().copyWith(
           scaffoldBackgroundColor: Colors.grey[300],
