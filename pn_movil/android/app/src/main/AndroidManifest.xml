@@ -10,7 +10,7 @@
 
 
     <application
-        android:label="pn_movil"
+        android:label="Pequeños Negocios"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 

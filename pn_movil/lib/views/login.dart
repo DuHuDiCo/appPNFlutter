@@ -147,8 +147,6 @@ class _LoginForm extends StatelessWidget {
                   ),
           ),
           const SizedBox(height: 30),
-          // Aquí agregamos el Google SignIn Button
-          GoogleSignInButton(),
         ],
       ),
     );
