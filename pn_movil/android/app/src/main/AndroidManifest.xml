@@ -12,7 +12,7 @@
     <application
         android:label="Pequeños Negocios"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/launcher_icon">
 
         <!-- Meta-data para la clave de API de Google Sign-In -->
         <meta-data
