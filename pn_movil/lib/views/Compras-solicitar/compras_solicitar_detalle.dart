@@ -7,6 +7,15 @@ import 'package:pn_movil/widgets/Components-navbar/navbar.dart';
 class ComprasSolicitarDetalle extends StatelessWidget {
   const ComprasSolicitarDetalle({super.key});
 
+  // Función para formatear un número a pesos colombianos
+  String formatCurrencyToCOP(dynamic value) {
+    final formatCurrency = NumberFormat.currency(
+      locale: 'es_CO',
+      symbol: '',
+    );
+    return '\$${formatCurrency.format(value).split(',')[0]}';
+  }
+
   @override
   Widget build(BuildContext context) {
     final Map<String, dynamic>? compra =
@@ -20,7 +29,7 @@ class ComprasSolicitarDetalle extends StatelessWidget {
           SingleChildScrollView(
             child: Column(
               children: [
-                const SizedBox(height: 20),
+                const SizedBox(height: 50),
                 _buildTitle('Detalle de la Compra'),
                 const SizedBox(height: 30),
                 _buildDetailsCard(compra),
@@ -56,7 +65,7 @@ class ComprasSolicitarDetalle extends StatelessWidget {
     }
     print('compra: $compra');
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: Card(
         elevation: 6,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -76,21 +85,21 @@ class ComprasSolicitarDetalle extends StatelessWidget {
               _buildInfoRow(
                 icon: Icons.person,
                 title: 'Proveedor:',
-                value: compra['idProveedor'] ?? 'Desconocida',
+                value: compra['proveedor']['proveedor'] ?? 'Desconocida',
                 iconColor: Colors.blue.shade700,
               ),
               const SizedBox(height: 10),
               _buildInfoRow(
                 icon: Icons.monetization_on,
                 title: 'Monto:',
-                value: '\$${(compra['monto'] ?? 0).toStringAsFixed(0)}',
+                value: formatCurrencyToCOP(compra['monto'] ?? 0),
                 iconColor: Colors.orange.shade700,
               ),
               const SizedBox(height: 10),
               _buildInfoRow(
                 icon: Icons.monetization_on,
                 title: 'Total a pagar:',
-                value: '\$${(compra['totalPagar'] ?? 0).toStringAsFixed(0)}',
+                value: formatCurrencyToCOP(compra['totalPagar'] ?? 0),
                 iconColor: Colors.orange.shade700,
               ),
             ],
@@ -124,7 +133,7 @@ class ComprasSolicitarDetalle extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 15),
+          const SizedBox(height: 40),
           SizedBox(
             height: 220,
             child: ListView.builder(

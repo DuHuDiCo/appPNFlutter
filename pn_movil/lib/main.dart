@@ -5,6 +5,7 @@ import 'package:pn_movil/models/Compras.dart';
 import 'package:pn_movil/providers/clasificacion_provider.dart';
 import 'package:pn_movil/providers/compra_provider.dart';
 import 'package:pn_movil/providers/google_provider.dart';
+import 'package:pn_movil/providers/pago_provider.dart';
 import 'package:pn_movil/providers/products_provider.dart';
 import 'package:pn_movil/providers/proveedor_provider.dart';
 import 'package:pn_movil/providers/user_provider.dart';
@@ -13,6 +14,7 @@ import 'package:pn_movil/views/Compras-solicitar/compras_solicitar_crear.dart';
 import 'package:pn_movil/views/Compras-solicitar/compras_solicitar.dart';
 import 'package:pn_movil/views/Compras-solicitar/compras_solicitar_editar.dart';
 import 'package:pn_movil/views/Compras-solicitar/compras_solicitar_detalle.dart';
+import 'package:pn_movil/views/Pago/crear_pago.dart';
 import 'package:pn_movil/views/Pago/pago.dart';
 import 'package:pn_movil/views/Productos/crear_product.dart';
 import 'package:pn_movil/views/Login/login.dart';
@@ -53,6 +55,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<UserProvider>(
           create: (context) => UserProvider(context.read<ApiClient>()),
         ),
+        ChangeNotifierProvider<PagoProvider>(
+          create: (context) => PagoProvider(context.read<ApiClient>()),
+        ),
         Provider<GoogleAuthController>(
           create: (_) => GoogleAuthController(),
         ),
@@ -76,7 +81,8 @@ class MyApp extends StatelessWidget {
           'compras-solicitar-crear': (_) => SeleccionarProductos(),
           'compras-solicitar-editar': (_) => ComprasSolicitarEditar(),
           'compras-solicitar-detalle': (_) => const ComprasSolicitarDetalle(),
-          'pago': (_) => const Pago(),
+          'realizar-pago': (_) => const Pago(),
+          'crear-pago': (_) => const CrearPago(),
         },
         theme: ThemeData.light().copyWith(
           scaffoldBackgroundColor: Colors.grey[300],

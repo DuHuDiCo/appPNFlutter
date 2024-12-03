@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 
 class ProductCardSelect extends StatelessWidget {
@@ -8,18 +6,20 @@ class ProductCardSelect extends StatelessWidget {
   final String clasification;
   final String productId;
   final void Function(
-      String clasification, String productName, String productId) onAddProduct;
+      String productName, String clasification, String productId) onAddProduct;
+  final void Function(String productName, String clasification) onRemoveProduct;
   final bool isSelected;
 
   const ProductCardSelect({
-    super.key,
+    Key? key,
     required this.imageUrl,
     required this.productName,
     required this.clasification,
     required this.onAddProduct,
+    required this.onRemoveProduct,
     required this.isSelected,
     required this.productId,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -55,22 +55,27 @@ class ProductCardSelect extends StatelessWidget {
               const SizedBox(height: 15),
               ElevatedButton(
                 onPressed: isSelected
-                    ? null
-                    : () {
-                        onAddProduct(productName, clasification,
-                            productId); // Pasamos el id aquí
-                      },
+                    ? () => onRemoveProduct(productName, clasification)
+                    : () => onAddProduct(productName, clasification, productId),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: isSelected
-                      ? Colors.grey
-                      : const Color.fromARGB(255, 56, 148, 255),
+                  backgroundColor: isSelected ? Colors.red : Colors.blue,
                 ),
-                child: Text(
-                  isSelected ? "Agregado" : "Agregar",
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                  ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      isSelected ? Icons.delete : Icons.add,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      isSelected ? "Eliminar" : "Agregar",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

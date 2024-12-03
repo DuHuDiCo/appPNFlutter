@@ -140,42 +140,69 @@ class _ComprasState extends State<Compras> {
                               ),
                             ),
                             Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.pushReplacementNamed(
-                                        context, 'compras-solicitar-detalle',
-                                        arguments: compra);
+                                PopupMenuButton<String>(
+                                  icon: const Icon(
+                                    Icons.more_vert,
+                                    color: Color.fromRGBO(112, 185, 244, 1),
+                                    size: 30,
+                                  ),
+                                  onSelected: (String value) {
+                                    switch (value) {
+                                      case 'detalle':
+                                        Navigator.pushReplacementNamed(context,
+                                            'compras-solicitar-detalle',
+                                            arguments: compra);
+                                        break;
+                                      case 'editar':
+                                        Navigator.pushReplacementNamed(
+                                            context, 'compras-solicitar-editar',
+                                            arguments: compra);
+                                        break;
+                                      case 'pagar':
+                                        Navigator.pushReplacementNamed(
+                                            context, 'crear-pago',
+                                            arguments: compra);
+                                        break;
+                                    }
                                   },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                        const Color.fromRGBO(112, 185, 244, 1),
-                                    shape: const CircleBorder(),
-                                    padding: const EdgeInsets.all(10),
-                                  ),
-                                  child: const Icon(
-                                    Icons.visibility,
-                                    color: Colors.white,
-                                    size: 25,
-                                  ),
-                                ),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.pushReplacementNamed(
-                                        context, 'compras-solicitar-editar',
-                                        arguments: compra);
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                        const Color.fromRGBO(112, 185, 244, 1),
-                                    shape: const CircleBorder(),
-                                    padding: const EdgeInsets.all(10),
-                                  ),
-                                  child: const Icon(
-                                    Icons.edit,
-                                    color: Colors.white,
-                                    size: 25,
-                                  ),
+                                  itemBuilder: (BuildContext context) =>
+                                      <PopupMenuEntry<String>>[
+                                    PopupMenuItem<String>(
+                                      value: 'detalle',
+                                      child: Row(
+                                        children: const [
+                                          Icon(Icons.visibility,
+                                              color: Colors.blue),
+                                          SizedBox(width: 10),
+                                          Text('Ver detalles'),
+                                        ],
+                                      ),
+                                    ),
+                                    PopupMenuItem<String>(
+                                      value: 'editar',
+                                      child: Row(
+                                        children: const [
+                                          Icon(Icons.edit, color: Colors.green),
+                                          SizedBox(width: 10),
+                                          Text('Editar'),
+                                        ],
+                                      ),
+                                    ),
+                                    PopupMenuItem<String>(
+                                      value: 'pagar',
+                                      child: Row(
+                                        children: const [
+                                          Icon(Icons.monetization_on,
+                                              color: Color.fromARGB(
+                                                  255, 230, 185, 37)),
+                                          SizedBox(width: 10),
+                                          Text('Pagar'),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
@@ -183,8 +210,6 @@ class _ComprasState extends State<Compras> {
                         ),
                       );
                     }),
-
-                    const SizedBox(width: 10),
                   ],
                 ),
               );

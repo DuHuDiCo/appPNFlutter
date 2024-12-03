@@ -46,16 +46,15 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
     super.dispose();
   }
 
+  // Agregar producto y actualizar estado
   void _addProductWithDetails(String name, String clasification, int cantidad,
       double costo, String productId) {
-    // Evitar duplicados
     if (_selectedProducts.any((product) =>
         product['productName'] == name &&
         product['clasification'] == clasification)) {
       return;
     }
 
-    // Agregar producto y actualizar estado
     setState(() {
       _selectedProducts.add({
         'productName': name,
@@ -71,12 +70,17 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
     print("Productos seleccionados con detalles: $_selectedProducts");
   }
 
-//Funcion para verificar si el formulario es valido
-  void checkFormValidity() {
+// Función para eliminar un producto seleccionado
+  void removeProduct(String name, String clasification) {
     setState(() {
-      _isFormValid = (_formKey.currentState?.validate() ?? false) &&
-          _selectedProducts.isNotEmpty;
+      _selectedProducts.removeWhere((product) =>
+          product['productName'] == name &&
+          product['clasification'] == clasification);
+
+      checkFormValidity();
     });
+
+    print("Productos seleccionados actualizados: $_selectedProducts");
   }
 
 //Funcion para verificar si el producto seleccionado ya existe
@@ -84,6 +88,14 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
     return _selectedProducts.any((product) =>
         product['productName'] == name &&
         product['clasification'] == clasification);
+  }
+
+//Funcion para verificar si el formulario es valido
+  void checkFormValidity() {
+    setState(() {
+      _isFormValid = (_formKey.currentState?.validate() ?? false) &&
+          _selectedProducts.isNotEmpty;
+    });
   }
 
 //Funcion para guardar los datos del formulario
@@ -188,6 +200,9 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
                         onAddProduct: (productName, clasification, productId) {
                           _showAddProductDialog(
                               context, productName, clasification, productId);
+                        },
+                        onRemoveProduct: (name, clasification) {
+                          removeProduct(name, clasification);
                         },
                         isSelected: isSelected,
                         productId: product['idProducto'].toString(),

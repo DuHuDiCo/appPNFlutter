@@ -46,6 +46,8 @@ class ComprasSolicitarEditar extends StatelessWidget {
                     },
                     isSelected: false,
                     productId: '1',
+                    onRemoveProduct:
+                        (String productName, String clasification) {},
                   ),
                 ],
               ),
