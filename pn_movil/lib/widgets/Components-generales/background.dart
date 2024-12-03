@@ -33,7 +33,7 @@ class HeaderIcon extends StatelessWidget {
         ),
         child: ClipOval(
           child: Image.asset(
-            'assets/algo.jpg',
+            'assets/logo.png',
             fit: BoxFit.cover,
             width: 90,
             height: 90,

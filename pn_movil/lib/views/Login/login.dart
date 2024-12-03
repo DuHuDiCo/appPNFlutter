@@ -174,7 +174,6 @@ class _LoginFormState extends State<_LoginForm> {
                   ),
           ),
           const SizedBox(height: 30),
-          GoogleSignInButton(),
         ],
       ),
     );
