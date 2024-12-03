@@ -26,7 +26,6 @@ class ProveedorProvider extends ChangeNotifier {
       if (response.statusCode == 200) {
         _proveedores =
             List<Map<String, dynamic>>.from(json.decode(response.body));
-        print(_proveedores);
       } else {
         throw Exception('Error al cargar proveedores');
       }

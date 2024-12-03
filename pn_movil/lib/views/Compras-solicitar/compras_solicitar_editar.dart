@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pn_movil/providers/products_provider.dart';
 import 'package:pn_movil/providers/proveedor_provider.dart';
 import 'package:pn_movil/widgets/Components-cards/card_container.dart';
 import 'package:pn_movil/widgets/Components-cards/cards_select_products.dart';
@@ -6,14 +7,60 @@ import 'package:pn_movil/widgets/Components-navbar/drawer.dart';
 import 'package:pn_movil/widgets/Components-navbar/navbar.dart';
 import 'package:provider/provider.dart';
 
-class ComprasSolicitarEditar extends StatelessWidget {
-  ComprasSolicitarEditar({super.key});
+class ComprasSolicitarEditar extends StatefulWidget {
+  const ComprasSolicitarEditar({super.key});
+
+  @override
+  _ComprasSolicitarEditarState createState() => _ComprasSolicitarEditarState();
+}
+
+class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
+  int? proveedorSeleccionado = 0;
+  List<Map<String, dynamic>> productos = [];
+
+  //Funcion para inicializar el estado
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<ProveedorProvider>(context, listen: false)
+          .loadProveedores(context);
+      Provider.of<ProductsProvider>(context, listen: false)
+          .loadProducts(context);
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Acceder a ModalRoute de forma segura
+    final Map<String, dynamic>? compra =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    print(compra);
+
+    if (compra?['productoCompras'] is List) {
+      productos = (compra!['productoCompras'] as List)
+          .map((item) => item as Map<String, dynamic>)
+          .toList();
+    } else {
+      print('productoCompras no es una lista o es null');
+    }
+
+    print(productos);
+
+    if (compra != null) {
+      // TRAER EL ID DEL PROVEEDOR
+      setState(() {
+        proveedorSeleccionado = compra['proveedor']['idProveedor'];
+      });
+    }
+  }
 
 //Funcion para crear el cuerpo del dialogo de agregar producto
   @override
   Widget build(BuildContext context) {
-    final Map<String, dynamic>? compra =
-        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    print(proveedorSeleccionado);
     return Scaffold(
       appBar: const Navbar(),
       drawer: const CustomDrawer(),
@@ -35,21 +82,25 @@ class ComprasSolicitarEditar extends StatelessWidget {
               Wrap(
                 spacing: 10.0,
                 runSpacing: 10.0,
-                children: [
-                  ProductCardSelect(
-                    imageUrl: 'assets/algo.jpg',
-                    productName: 'Producto A',
-                    clasification: 'Clasificación A',
+                children: productos.map((product) {
+                  return ProductCardSelect(
+                    imageUrl: (product['imagenes'] is List &&
+                            product['imagenes'].isNotEmpty)
+                        ? product['imagenes'][0]['urlPath']
+                        : 'assets/algo.jpg',
+                    productName: product['producto']['producto'] ??
+                        'Producto sin nombre',
+                    clasification: product['producto']['clasificacionProducto']
+                        ['clasificacionProducto'],
                     onAddProduct: (productName, clasification, productId) {
                       _showAddProductDialog(
                           context, productName, clasification, productId);
                     },
-                    isSelected: false,
-                    productId: '1',
-                    onRemoveProduct:
-                        (String productName, String clasification) {},
-                  ),
-                ],
+                    onRemoveProduct: (name, clasification) {},
+                    isSelected: true,
+                    productId: product['idProducto'].toString(),
+                  );
+                }).toList(),
               ),
               const SizedBox(height: 30),
               _buildFooter(),
@@ -110,7 +161,12 @@ class ComprasSolicitarEditar extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      onChanged: (value) {},
+                      onChanged: (int? newValue) {
+                        setState(() {
+                          proveedorSeleccionado = newValue;
+                        });
+                      },
+                      value: proveedorSeleccionado,
                       items: proveedores.map((proveedor) {
                         return DropdownMenuItem<int>(
                           value: proveedor['idProveedor'],
