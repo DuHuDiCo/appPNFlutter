@@ -82,7 +82,7 @@ class MyApp extends StatelessWidget {
           'compras-solicitar-editar': (_) => ComprasSolicitarEditar(),
           'compras-solicitar-detalle': (_) => const ComprasSolicitarDetalle(),
           'realizar-pago': (_) => const Pago(),
-          'crear-pago': (_) => const CrearPago(),
+          'crear-pago': (_) => CrearPago(),
         },
         theme: ThemeData.light().copyWith(
           scaffoldBackgroundColor: Colors.grey[300],

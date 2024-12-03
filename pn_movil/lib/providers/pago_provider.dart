@@ -93,7 +93,7 @@ class PagoProvider extends ChangeNotifier {
         data: formData,
       );
 
-      if (response.statusCode == 201) {
+      if (response.statusCode == 201 || response.statusCode == 200) {
         final pagoCreado = response.data as Map<String, dynamic>;
         _pago.add(pagoCreado);
 
@@ -109,17 +109,9 @@ class PagoProvider extends ChangeNotifier {
         throw Exception('Error al crear el pago: ${response.data}');
       }
     } catch (e) {
-      final errorMessage = e.toString().contains('No se ha iniciado sesión')
-          ? e.toString()
-          : 'Error inesperado: ${e.toString()}';
-
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(errorMessage)),
+        SnackBar(content: Text('Error al crear el pago: ${e.toString()}')),
       );
-      if (kDebugMode) print(errorMessage);
-    } finally {
-      _isLoading = false;
-      notifyListeners();
     }
   }
 }
