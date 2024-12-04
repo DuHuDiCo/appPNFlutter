@@ -44,6 +44,7 @@ class _InventarioState extends State<Inventario> {
     );
   }
 
+  // Método para construir el título
   Widget _buildTitle() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
