@@ -41,6 +41,8 @@ class _ClasificacionProductState extends State<ClasificacionProduct> {
                 textAlign: TextAlign.center,
               ),
             ),
+
+            //Barra de busqueda de clasificaciones
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Row(
@@ -82,6 +84,8 @@ class _ClasificacionProductState extends State<ClasificacionProduct> {
               ),
             ),
             const SizedBox(height: 16),
+
+            //Listado de clasificaciones
             ListItem(
               imageUrl: null,
               content: Row(
@@ -129,6 +133,7 @@ class _ClasificacionProductState extends State<ClasificacionProduct> {
     );
   }
 
+  //Función para crear la clasificación
   void modalClasificacion(BuildContext context) {
     final TextEditingController nombreController = TextEditingController();
 

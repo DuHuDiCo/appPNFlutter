@@ -31,6 +31,7 @@ class _ProductsState extends State<Products> {
     );
   }
 
+  //Funcion para construir el contenido principal
   Widget _buildBody(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
@@ -52,6 +53,7 @@ class _ProductsState extends State<Products> {
     );
   }
 
+  //Funcion para construir la lista de productos
   Widget _buildProductsList(List<Map<String, dynamic>> products) {
     return ListView(
       padding: const EdgeInsets.all(16.0),
@@ -76,6 +78,7 @@ class _ProductsState extends State<Products> {
     );
   }
 
+  //Funcion para construir la barra de búsqueda
   Widget _buildSearchBar() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -117,6 +120,7 @@ class _ProductsState extends State<Products> {
     );
   }
 
+  //Funcion para construir el item de producto
   Widget _buildProductItem(Map<String, dynamic> product) {
     return ListItem(
       imageUrl: (product['imagenes'] is List && product['imagenes'].isNotEmpty)
@@ -188,6 +192,7 @@ class _ProductsState extends State<Products> {
     );
   }
 
+  //Funcion para eliminar un producto
   void eliminarProducto(
       BuildContext context, int productId, ProductsProvider provider) {
     showDialog(

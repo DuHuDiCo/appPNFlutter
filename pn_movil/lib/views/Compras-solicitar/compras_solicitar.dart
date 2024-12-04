@@ -63,6 +63,8 @@ class _ComprasState extends State<Compras> {
                         textAlign: TextAlign.center,
                       ),
                     ),
+
+                    //Barra de busqueda de compras
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: Row(
@@ -85,6 +87,8 @@ class _ComprasState extends State<Compras> {
                             ),
                           ),
                           const SizedBox(width: 10),
+
+                          // Botón para redireccionar a la pantalla de crear la compra
                           Container(
                             width: 60,
                             height: 60,
@@ -107,6 +111,7 @@ class _ComprasState extends State<Compras> {
                     const SizedBox(height: 16),
                     // Listado de compras
                     ...compraProvider.compras.map((compra) {
+                      //Listado de compras
                       return ListItem(
                         imageUrl: null,
                         content: Row(
@@ -139,6 +144,8 @@ class _ComprasState extends State<Compras> {
                                 ],
                               ),
                             ),
+
+                            //Modal de opciones de acciones
                             Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:pn_movil/providers/login_provider.dart';
-import 'package:pn_movil/widgets/Components-generales/botton_google.dart';
 import 'package:pn_movil/widgets/Components-cards/card_container.dart';
 import 'package:pn_movil/widgets/Components-generales/background.dart';
 import 'package:pn_movil/widgets/Components-generales/custom_input.dart';
@@ -57,6 +56,7 @@ class Login extends StatelessWidget {
   }
 }
 
+//Formulario de inicio de sesión
 class _LoginForm extends StatefulWidget {
   const _LoginForm();
 

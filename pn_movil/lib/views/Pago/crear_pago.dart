@@ -74,6 +74,7 @@ class _CrearPagoState extends State<CrearPago> {
     );
   }
 
+  //Función para construir el formulario de creación de pago
   Widget _formulario(BuildContext context, Map<String, dynamic>? compra) {
     TextEditingController _totalPagoController = TextEditingController();
 

@@ -192,6 +192,7 @@ class _FormularioProductoState extends State<FormularioProducto> {
   }
 
   // METODOS
+  //Metodo para crear un producto
   Future<void> _addProduct(BuildContext context) async {
     final productsProvider =
         Provider.of<ProductsProvider>(context, listen: false);
