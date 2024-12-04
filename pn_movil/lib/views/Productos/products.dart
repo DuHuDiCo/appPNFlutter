@@ -193,25 +193,22 @@ class _ProductsState extends State<Products> {
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
-        // Usamos dialogContext en el builder
         return AlertDialog(
           title: const Text("Eliminar producto"),
           content: const Text("¿Está seguro que desea eliminar el producto?"),
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(dialogContext).pop(); // Cerramos el diálogo
+                Navigator.of(dialogContext).pop();
               },
               child: const Text("Cancelar"),
             ),
             TextButton(
               onPressed: () async {
-                Navigator.of(dialogContext)
-                    .pop(); // Cerramos el diálogo primero
+                Navigator.of(dialogContext).pop();
 
                 try {
                   await provider.deleteProduct(context, productId);
-                  // Mostramos un SnackBar usando el contexto principal
                   Future.delayed(Duration.zero, () {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
