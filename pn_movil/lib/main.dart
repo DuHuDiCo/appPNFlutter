@@ -41,9 +41,6 @@ class MyApp extends StatelessWidget {
         Provider<AuthService>(
           create: (context) => AuthService(context.read<ApiClient>()),
         ),
-        ChangeNotifierProvider<InventarioProvider>(
-          create: (context) => InventarioProvider(context.read<ApiClient>()),
-        ),
         ChangeNotifierProvider(create: (_) => CompraState()),
         ChangeNotifierProvider<ProductsProvider>(
           create: (context) => ProductsProvider(context.read<ApiClient>()),
@@ -62,6 +59,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<PagoProvider>(
           create: (context) => PagoProvider(context.read<ApiClient>()),
+        ),
+        ChangeNotifierProvider<InventarioProvider>(
+          create: (context) => InventarioProvider(context.read<ApiClient>()),
         ),
         Provider<GoogleAuthController>(
           create: (_) => GoogleAuthController(),

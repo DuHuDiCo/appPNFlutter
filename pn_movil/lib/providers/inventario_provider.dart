@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:pn_movil/conexiones/apiClient.dart';
+import 'package:pn_movil/conexiones/ApiClient.dart';
 
 class InventarioProvider extends ChangeNotifier {
   final ApiClient _apiClient;
