@@ -64,7 +64,6 @@ class _CrearPagoState extends State<CrearPago> {
                   ),
                 ],
               ),
-              const SizedBox(height: 10),
               Expanded(
                 child: _formulario(context, compra),
               ),

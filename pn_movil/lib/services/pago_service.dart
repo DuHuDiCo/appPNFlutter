@@ -2,13 +2,13 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:pn_movil/conexiones/ApiClient.dart';
 import 'package:pn_movil/providers/pago_provider.dart';
 
 class PagoService {
   final ApiClient apiClient;
 
-  // Constructor que acepta una instancia de ApiClient
   PagoService(this.apiClient);
 
   // Método para seleccionar una imagen
@@ -37,12 +37,29 @@ class PagoService {
       return;
     }
 
+    if (totalPago == 0 || totalPago.isNaN) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('El total del pago no puede estar vacío.'),
+        ),
+      );
+      return;
+    }
+
+    if (totalPago < 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('El total del pago no puede ser negativo.'),
+        ),
+      );
+      return;
+    }
+
     final Map<String, dynamic> pago = {
       'idCompra': idCompra,
       'totalPago': totalPago,
     };
 
-    // Llamar al método de crearPago desde PagoProvider
     try {
       await PagoProvider(apiClient)
           .crearPago(context, pago, imagenSeleccionada);
@@ -51,5 +68,26 @@ class PagoService {
         SnackBar(content: Text('Error al crear el pago: $e')),
       );
     }
+  }
+
+  /// Método para eliminar el pago
+  Future<void> eliminarPago(BuildContext context, int pagoId) async {
+    try {
+      await PagoProvider(apiClient).deletePago(context, pagoId);
+      Navigator.of(context).pop();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al eliminar el pago: $e')),
+      );
+    }
+  }
+
+  // Método para formatear una cantidad de moneda a pesos colombianos
+  String formatCurrencyToCOP(dynamic value) {
+    final formatCurrency = NumberFormat.currency(
+      locale: 'es_CO',
+      symbol: '',
+    );
+    return '\$${formatCurrency.format(value).split(',')[0]}';
   }
 }

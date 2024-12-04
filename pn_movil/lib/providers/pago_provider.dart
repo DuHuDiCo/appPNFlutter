@@ -114,4 +114,33 @@ class PagoProvider extends ChangeNotifier {
       );
     }
   }
+
+//Metodo para eliminar un pago
+  Future<void> deletePago(BuildContext context, int pagoId) async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+
+      final response = await _apiClient.delete('/api/v1/pago/$pagoId');
+
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        // Eliminar el pago de la lista localmente
+        _pago.removeWhere((pago) => pago['idPago'] == pagoId);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Pago eliminado exitosamente')),
+        );
+      } else {
+        throw Exception('Error al eliminar el pago: ${response.body}');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+      if (kDebugMode) print(e);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
 }

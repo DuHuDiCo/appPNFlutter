@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:pn_movil/conexiones/ApiClient.dart';
 import 'package:pn_movil/providers/pago_provider.dart';
+import 'package:pn_movil/services/pago_service.dart';
 import 'package:pn_movil/widgets/Components-cards/cards_listar_products.dart';
 import 'package:pn_movil/widgets/Components-navbar/drawer.dart';
 import 'package:pn_movil/widgets/Components-navbar/navbar.dart';
@@ -14,9 +16,12 @@ class Pago extends StatefulWidget {
 }
 
 class _PagoState extends State<Pago> {
+  late final PagoService pagoService;
+
   @override
   void initState() {
     super.initState();
+    pagoService = PagoService(ApiClient('https://apppn.duckdns.org'));
   }
 
   @override
@@ -84,6 +89,7 @@ class _PagoState extends State<Pago> {
     );
   }
 
+//Metodo para construir el contenido principal
   Widget _buildMainContent() {
     Future.microtask(() => context.read<PagoProvider>().loadPagos(context));
 
@@ -131,7 +137,7 @@ class _PagoState extends State<Pago> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Total: \$${pago['totalPago']}',
+                            'Total pago: ${pagoService.formatCurrencyToCOP(pago["totalPago"])}',
                             style: TextStyle(
                                 fontSize: 14, color: Colors.grey[700]),
                           ),
@@ -149,25 +155,27 @@ class _PagoState extends State<Pago> {
                           ),
                           onSelected: (String value) {
                             switch (value) {
-                              case 'detalle':
-                                Navigator.pushReplacementNamed(
-                                    context, 'pagos-detalle',
-                                    arguments: pago);
+                              case 'comprobante':
+                              case 'comprobante':
+                                // Llamamos a la función que muestra el diálogo con la imagen
+                                _mostrarComprobanteDialog(
+                                    context, pago['archivos']['urlPath']);
                                 break;
+
                               case 'eliminar':
-                                _confirmarEliminacion(pago['numeroPago']);
+                                _confirmarEliminacion(context, pago['idPago']);
                                 break;
                             }
                           },
                           itemBuilder: (BuildContext context) =>
                               <PopupMenuEntry<String>>[
                             PopupMenuItem<String>(
-                              value: 'detalle',
+                              value: 'comprobante',
                               child: Row(
                                 children: const [
                                   Icon(Icons.visibility, color: Colors.blue),
                                   SizedBox(width: 10),
-                                  Text('Ver detalles'),
+                                  Text('Ver comprobante'),
                                 ],
                               ),
                             ),
@@ -196,14 +204,14 @@ class _PagoState extends State<Pago> {
   }
 
 // Método para confirmar eliminación
-  void _confirmarEliminacion(int numeroPago) {
+  void _confirmarEliminacion(BuildContext context, int idPago) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Confirmar eliminación'),
-          content: Text(
-              '¿Estás seguro de que deseas eliminar el pago #$numeroPago?'),
+          content:
+              Text('¿Estás seguro de que deseas eliminar el pago #$idPago?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
@@ -211,13 +219,59 @@ class _PagoState extends State<Pago> {
             ),
             TextButton(
               onPressed: () {
-                // Lógica para eliminar el pago
-                Navigator.of(context).pop();
-                // Muestra una notificación de éxito o actualiza la lista
+                Future.microtask(() {
+                  pagoService.eliminarPago(context, idPago);
+                });
               },
               child: const Text('Eliminar'),
             ),
           ],
+        );
+      },
+    );
+  }
+
+//Metodo para mostrar el dialogo de comprobante
+  void _mostrarComprobanteDialog(BuildContext context, String imageUrl) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return Dialog(
+          insetPadding: EdgeInsets.zero,
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: Image.network(
+                  imageUrl,
+                  fit: BoxFit.cover,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) {
+                      return child;
+                    }
+                    return Center(
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded /
+                                (loadingProgress.expectedTotalBytes ?? 1)
+                            : null,
+                      ),
+                    );
+                  },
+                ),
+              ),
+              Positioned(
+                top: 40,
+                right: 20,
+                child: IconButton(
+                  icon: Icon(Icons.close, color: Colors.white, size: 30),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ),
+            ],
+          ),
         );
       },
     );
