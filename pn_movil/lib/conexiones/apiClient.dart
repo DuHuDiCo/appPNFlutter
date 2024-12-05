@@ -69,6 +69,7 @@ class ApiClient {
   Future<http.Response> get(String endpoint, {bool includeAuth = true}) async {
     final headers = await _getHeaders(includeAuth: includeAuth);
     final url = Uri.parse('$baseUrl$endpoint');
+    print(url);
     return http.get(url, headers: headers);
   }
 

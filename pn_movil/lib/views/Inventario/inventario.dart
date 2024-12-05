@@ -4,6 +4,7 @@ import 'package:pn_movil/conexiones/apiClient.dart';
 import 'package:pn_movil/providers/inventario_provider.dart';
 import 'package:pn_movil/services/inventario_service.dart';
 import 'package:pn_movil/widgets/Components-cards/cards_listar_products.dart';
+import 'package:pn_movil/widgets/Components-navbar/drawer.dart';
 import 'package:pn_movil/widgets/Components-navbar/navbar.dart';
 import 'package:provider/provider.dart';
 
@@ -16,14 +17,17 @@ class Inventario extends StatefulWidget {
 
 class _InventarioState extends State<Inventario> {
   late final InventarioService inventarioService;
+  bool selectedIsNull = false;
+
   @override
   void initState() {
     super.initState();
     inventarioService =
         InventarioService(ApiClient('https://apppn.duckdns.org'));
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<InventarioProvider>(context, listen: false)
-          .loadInventarios(context);
+      context
+          .read<InventarioProvider>()
+          .loadInventarios(context, isNull: selectedIsNull == true);
     });
   }
 
@@ -31,20 +35,23 @@ class _InventarioState extends State<Inventario> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const Navbar(),
-      drawer: const Drawer(),
+      drawer: const CustomDrawer(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             _buildTitle(),
             _buildSearchBar(),
+            Expanded(
+              child: _buildMainContent(),
+            ),
           ],
         ),
       ),
     );
   }
 
-  // Método para construir el título
+  //Metodo del titulo de inventario
   Widget _buildTitle() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -60,25 +67,86 @@ class _InventarioState extends State<Inventario> {
     );
   }
 
-  // Método para construir la barra de búsqueda
+  //Metodo que construye el select de busqueda de filtros del inventario
   Widget _buildSearchBar() {
+    List<bool> filterOptions = [false, true];
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         children: [
           Expanded(
-            child: TextField(
+            child: DropdownButtonFormField<bool>(
+              value: selectedIsNull,
+              onChanged: (bool? newValue) {
+                if (newValue != null) {
+                  setState(() {
+                    selectedIsNull = newValue;
+                  });
+                  _updateInventarios();
+                }
+              },
               decoration: InputDecoration(
-                hintText: 'Buscar inventario...',
-                prefixIcon: const Icon(Icons.search, color: Colors.grey),
                 filled: true,
-                fillColor: Colors.white,
-                contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                fillColor: Colors.blue.shade50,
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
-                  borderSide: BorderSide.none,
+                  borderSide: BorderSide(
+                    color: Colors.blue.shade300,
+                    width: 1.0,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: BorderSide(
+                    color: Colors.blue.shade300,
+                    width: 1.0,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: BorderSide(
+                    color: const Color.fromARGB(255, 175, 177, 178),
+                    width: 2.0,
+                  ),
                 ),
               ),
+              icon: Icon(
+                Icons.arrow_drop_down,
+                color: const Color.fromARGB(255, 175, 177, 178),
+                size: 30.0,
+              ),
+              style: TextStyle(
+                fontSize: 16.0,
+                color: const Color.fromARGB(255, 175, 177, 178),
+                fontWeight: FontWeight.w500,
+              ),
+              dropdownColor: Colors.white,
+              items: filterOptions.map<DropdownMenuItem<bool>>((bool value) {
+                return DropdownMenuItem<bool>(
+                  value: value,
+                  child: Row(
+                    children: [
+                      Icon(
+                        value ? Icons.check_circle : Icons.cancel,
+                        color: value ? Colors.green : Colors.red,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        value ? 'Con facturación' : 'Sin facturación',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
             ),
           ),
         ],
@@ -86,17 +154,12 @@ class _InventarioState extends State<Inventario> {
     );
   }
 
-  //Metodo para construir el contenido principal
+  // Método para construir el contenido principal del inventario
   Widget _buildMainContent() {
-    Future.microtask(
-        () => context.read<InventarioProvider>().loadInventarios(context));
-
     return Consumer<InventarioProvider>(
       builder: (context, inventarioProvider, child) {
         if (inventarioProvider.isLoading) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
+          return const Center(child: CircularProgressIndicator());
         }
 
         if (inventarioProvider.inventarios.isEmpty) {
@@ -108,53 +171,47 @@ class _InventarioState extends State<Inventario> {
           );
         }
 
-        return Expanded(
-          child: ListView.builder(
-            itemCount: inventarioProvider.inventarios.length,
-            itemBuilder: (context, index) {
-              final inventario = inventarioProvider.inventarios[index];
-              return ListItem(
-                imageUrl: null,
-                content: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Inventario #${inventario['idInventory']}',
-                            style: const TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Fecha: ${DateFormat('dd/MM/yyyy').format(DateTime.parse(inventario['dateInventory']))}',
-                            style: TextStyle(
-                                fontSize: 14, color: Colors.grey[700]),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Total inventario: ${inventarioService.formatCurrencyToCOP(inventario["totalInventoryValue"])}',
-                            style: TextStyle(
-                                fontSize: 14, color: Colors.grey[700]),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Cantidad: ${inventario["quantity"]}',
-                            style: TextStyle(
-                                fontSize: 14, color: Colors.grey[700]),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
+        return ListView.builder(
+          itemCount: inventarioProvider.inventarios.length,
+          itemBuilder: (context, index) {
+            final inventario = inventarioProvider.inventarios[index];
+            final totalPorInventario =
+                inventarioProvider.calcularTotalPorInventario(inventario);
+            return ListItem(
+              imageUrl: null,
+              content: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Inventario #${inventario['idInventory']}',
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    'Realizado el ${DateFormat('dd/MM/yyyy').format(DateTime.parse(inventario['dateInventory']))}',
+                    style: const TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
+                  Text(
+                    'Cantidad general: ${inventario['quantity']}',
+                    style: const TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
+                  Text(
+                    'Total: ${inventarioService.formatCurrencyToCOP(totalPorInventario)}',
+                    style: const TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
+                ],
+              ),
+            );
+          },
         );
       },
     );
+  }
+
+  //Metodo para actualizar los inventarios
+  void _updateInventarios() {
+    context
+        .read<InventarioProvider>()
+        .loadInventarios(context, isNull: selectedIsNull == true);
   }
 }

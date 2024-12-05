@@ -16,9 +16,7 @@ class AuthService {
   );
 
   final ApiClient _apiClient;
-
   AuthService(this._apiClient);
-
   get token => null;
 
   // Método de autenticación con Google

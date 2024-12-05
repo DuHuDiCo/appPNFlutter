@@ -36,14 +36,10 @@ class _ComprasState extends State<Compras> {
                 return Center(child: CircularProgressIndicator());
               }
 
-              if (compraProvider.compras.isEmpty) {
-                return Center(child: Text('No hay compras disponibles'));
-              }
-
               return Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Colors.blue.shade50, Colors.white],
+                    colors: [Colors.white, Colors.blue.shade50],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   ),
@@ -77,18 +73,35 @@ class _ComprasState extends State<Compras> {
                                     color: Colors.grey),
                                 filled: true,
                                 fillColor: Colors.white,
-                                contentPadding:
-                                    const EdgeInsets.symmetric(vertical: 12),
+                                contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 12, horizontal: 16),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10.0),
-                                  borderSide: BorderSide.none,
+                                  borderSide: BorderSide(
+                                    color: Colors.blue.shade300,
+                                    width: 1.0,
+                                  ),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: BorderSide(
+                                    color: const Color.fromARGB(
+                                        255, 175, 177, 178),
+                                    width: 1.0,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: BorderSide(
+                                    color: const Color.fromARGB(
+                                        255, 175, 177, 178),
+                                    width: 2.0,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
                           const SizedBox(width: 10),
-
-                          // Botón para redireccionar a la pantalla de crear la compra
                           Container(
                             width: 60,
                             height: 60,

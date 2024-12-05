@@ -36,7 +36,7 @@ class _ProductsState extends State<Products> {
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Colors.blue.shade50, Colors.white],
+          colors: [Colors.white, Colors.blue.shade50],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
@@ -49,6 +49,66 @@ class _ProductsState extends State<Products> {
             return _buildProductsList(productsProvider.products);
           }
         },
+      ),
+    );
+  }
+
+  //Funcion para construir la barra de búsqueda
+  Widget _buildSearchBar() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'Buscar productos...',
+                prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                filled: true,
+                fillColor: Colors.white,
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: BorderSide(
+                    color: Colors.blue.shade300,
+                    width: 1.0,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: BorderSide(
+                    color: const Color.fromARGB(255, 175, 177, 178),
+                    width: 1.0,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: BorderSide(
+                    color: const Color.fromARGB(255, 175, 177, 178),
+                    width: 2.0,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              color: const Color.fromRGBO(112, 185, 244, 1),
+              borderRadius: BorderRadius.circular(30),
+            ),
+            child: IconButton(
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, 'crearProduct');
+              },
+              icon: const Icon(Icons.add),
+              color: Colors.white,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -75,48 +135,6 @@ class _ProductsState extends State<Products> {
         ...products.map((product) => _buildProductItem(product)).toList(),
         const SizedBox(height: 12),
       ],
-    );
-  }
-
-  //Funcion para construir la barra de búsqueda
-  Widget _buildSearchBar() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Buscar productos...',
-                prefixIcon: const Icon(Icons.search, color: Colors.grey),
-                filled: true,
-                fillColor: Colors.white,
-                contentPadding: const EdgeInsets.symmetric(vertical: 12),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 10),
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              color: const Color.fromRGBO(112, 185, 244, 1),
-              borderRadius: BorderRadius.circular(30),
-            ),
-            child: IconButton(
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, 'crearProduct');
-              },
-              icon: const Icon(Icons.add),
-              color: Colors.white,
-            ),
-          ),
-        ],
-      ),
     );
   }
 
