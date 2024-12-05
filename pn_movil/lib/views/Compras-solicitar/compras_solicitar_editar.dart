@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pn_movil/providers/products_provider.dart';
 import 'package:pn_movil/providers/proveedor_provider.dart';
 import 'package:pn_movil/widgets/Components-cards/card_container.dart';
+import 'package:pn_movil/widgets/Components-cards/cards_edit_products.dart';
 import 'package:pn_movil/widgets/Components-cards/cards_select_products.dart';
 import 'package:pn_movil/widgets/Components-navbar/drawer.dart';
 import 'package:pn_movil/widgets/Components-navbar/navbar.dart';
@@ -17,6 +18,7 @@ class ComprasSolicitarEditar extends StatefulWidget {
 class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
   int? proveedorSeleccionado = 0;
   List<Map<String, dynamic>> productos = [];
+  Map<String, dynamic> compra = {};
 
   //Funcion para inicializar el estado
   @override
@@ -35,12 +37,11 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
     super.didChangeDependencies();
 
     // Acceder a ModalRoute de forma segura
-    final Map<String, dynamic>? compra =
-        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    compra = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
     print(compra);
 
-    if (compra?['productoCompras'] is List) {
-      productos = (compra!['productoCompras'] as List)
+    if (compra['productoCompras'] is List) {
+      productos = (compra['productoCompras'] as List)
           .map((item) => item as Map<String, dynamic>)
           .toList();
     } else {
@@ -83,7 +84,7 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                 spacing: 10.0,
                 runSpacing: 10.0,
                 children: productos.map((product) {
-                  return ProductCardSelect(
+                  return ProductCardEdit(
                     imageUrl: (product['imagenes'] is List &&
                             product['imagenes'].isNotEmpty)
                         ? product['imagenes'][0]['urlPath']
@@ -92,13 +93,17 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                         'Producto sin nombre',
                     clasification: product['producto']['clasificacionProducto']
                         ['clasificacionProducto'],
-                    onAddProduct: (productName, clasification, productId) {
-                      _showAddProductDialog(
-                          context, productName, clasification, productId);
+                    onEditProduct: (productName, cantidad, precio, productId) {
+                      _showEditProductDialog(
+                          context, productName, cantidad, precio, productId);
                     },
-                    onRemoveProduct: (name, clasification) {},
-                    isSelected: true,
-                    productId: product['idProducto'].toString(),
+                    onRemoveProduct: (name, idProductoCompra) {
+                      eliminarProducto(context, product['idProductoCompra']);
+                    },
+                    productId: product['producto']['idProducto'],
+                    cantidad: product['cantidad'],
+                    precio: product['costo'],
+                    productIdCompra: product['idProductoCompra'],
                   );
                 }).toList(),
               ),
@@ -208,7 +213,9 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          _showEditProductDialog(context, '', 0, 0, 0);
+                        },
                         icon: const Icon(Icons.add),
                         color: Colors.white,
                       ),
@@ -225,10 +232,16 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
   }
 
   //Dialogo para agregar producto
-  Future<void> _showAddProductDialog(BuildContext context, String productName,
-      String clasification, String productId) async {
+  Future<void> _showEditProductDialog(BuildContext context, String productName,
+      int cantidad, double precio, int productId) async {
     final TextEditingController cantidadController = TextEditingController();
     final TextEditingController costoController = TextEditingController();
+
+    // Inicializamos los valores de los campos
+    if (cantidad != 0 && precio != 0) {
+      cantidadController.text = cantidad.toString();
+      costoController.text = precio.toStringAsFixed(2);
+    }
 
     await showDialog<bool>(
       context: context,
@@ -240,7 +253,7 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                 borderRadius: BorderRadius.circular(16),
               ),
               title: Text(
-                'Agregar Producto',
+                productId != 0 ? 'Editar Producto' : 'Agregar Producto',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -308,9 +321,28 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  onPressed: () {},
-                  child: const Text(
-                    'Agregar',
+                  onPressed: () {
+                    // Obtenemos los valores del formulario
+                    final nuevaCantidad =
+                        int.tryParse(cantidadController.text) ?? cantidad;
+                    final nuevoPrecio =
+                        double.tryParse(costoController.text) ?? precio;
+
+                    // Buscamos el producto en la lista y actualizamos
+                    final productoIndex = productos.indexWhere((producto) =>
+                        producto['producto']['idProducto'] == productId);
+
+                    if (productoIndex != -1) {
+                      setState(() {
+                        productos[productoIndex]['cantidad'] = nuevaCantidad;
+                        productos[productoIndex]['costo'] = nuevoPrecio;
+                      });
+                    }
+                    print(productos);
+                    Navigator.of(context).pop(true); // Cerramos el diálogo
+                  },
+                  child: Text(
+                    productId != 0 ? 'Actualizar' : 'Agregar',
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -320,6 +352,49 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
               ],
             );
           },
+        );
+      },
+    );
+  }
+
+  void eliminarProducto(BuildContext context, int idProductoCompra) {
+    print(idProductoCompra);
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text("Eliminar producto"),
+          content: const Text("¿Está seguro que desea eliminar el producto?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop(); // Cierra el diálogo
+              },
+              child: const Text("Cancelar"),
+            ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  compra['productoCompras'].removeWhere((product) =>
+                      product['idProductoCompra'] == idProductoCompra);
+                });
+
+                print(productos);
+
+                Navigator.of(dialogContext).pop(); // Cierra el diálogo
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Producto eliminado exitosamente"),
+                  ),
+                );
+              },
+              child: const Text(
+                "Confirmar",
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
         );
       },
     );

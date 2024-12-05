@@ -1,25 +1,30 @@
 import 'package:flutter/material.dart';
 
-class ProductCardSelect extends StatelessWidget {
+class ProductCardEdit extends StatelessWidget {
   final String imageUrl;
   final String productName;
   final String clasification;
-  final String productId;
+  final int cantidad;
+  final double precio;
+  final int productId;
+  final int productIdCompra;
   final void Function(
-      String productName, String clasification, String productId) onAddProduct;
-  final void Function(String productName, String clasification) onRemoveProduct;
-  final bool isSelected;
+          String productName, int cantidad, double precio, int productId)
+      onEditProduct;
+  final void Function(String productName, int productIdCompra) onRemoveProduct;
 
-  const ProductCardSelect({
-    Key? key,
+  const ProductCardEdit({
+    super.key,
     required this.imageUrl,
     required this.productName,
     required this.clasification,
-    required this.onAddProduct,
     required this.onRemoveProduct,
-    required this.isSelected,
     required this.productId,
-  }) : super(key: key);
+    required this.onEditProduct,
+    required this.cantidad,
+    required this.precio,
+    required this.productIdCompra,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -53,30 +58,36 @@ class ProductCardSelect extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 15),
-              ElevatedButton(
-                onPressed: isSelected
-                    ? () => onRemoveProduct(productName, clasification)
-                    : () => onAddProduct(productName, clasification, productId),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: isSelected ? Colors.red : Colors.blue,
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      isSelected ? Icons.delete : Icons.add,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: () =>
+                        onEditProduct(productName, cantidad, precio, productId),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      shape: const CircleBorder(), // Botón circular
+                      padding: const EdgeInsets.all(8), // Ajusta el tamaño
+                    ),
+                    child: const Icon(
+                      Icons.edit,
                       color: Colors.white,
                     ),
-                    const SizedBox(width: 8),
-                    Text(
-                      isSelected ? "Eliminar" : "Agregar",
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                      ),
+                  ),
+                  const SizedBox(width: 10),
+                  ElevatedButton(
+                    onPressed: () => onRemoveProduct(productName, productId),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      shape: const CircleBorder(), // Botón circular
+                      padding: const EdgeInsets.all(8), // Ajusta el tamaño
                     ),
-                  ],
-                ),
+                    child: const Icon(
+                      Icons.delete,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
