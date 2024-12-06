@@ -16,9 +16,14 @@ class ComprasSolicitarEditar extends StatefulWidget {
 }
 
 class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   int? proveedorSeleccionado = 0;
+  bool loadingProductos = false;
+  final List<Map<String, String>> _selectedProducts = [];
+
   List<Map<String, dynamic>> productos = [];
   Map<String, dynamic> compra = {};
+  bool _isFormValid = false;
 
   //Funcion para inicializar el estado
   @override
@@ -80,32 +85,66 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
             children: [
               _buildHeader(),
               const SizedBox(height: 30),
-              Wrap(
-                spacing: 10.0,
-                runSpacing: 10.0,
-                children: productos.map((product) {
-                  return ProductCardEdit(
-                    imageUrl: (product['imagenes'] is List &&
-                            product['imagenes'].isNotEmpty)
-                        ? product['imagenes'][0]['urlPath']
-                        : 'assets/algo.jpg',
-                    productName: product['producto']['producto'] ??
-                        'Producto sin nombre',
-                    clasification: product['producto']['clasificacionProducto']
-                        ['clasificacionProducto'],
-                    onEditProduct: (productName, cantidad, precio, productId) {
-                      _showEditProductDialog(
-                          context, productName, cantidad, precio, productId);
-                    },
-                    onRemoveProduct: (name, idProductoCompra) {
-                      eliminarProducto(context, product['idProductoCompra']);
-                    },
-                    productId: product['producto']['idProducto'],
-                    cantidad: product['cantidad'],
-                    precio: product['costo'],
-                    productIdCompra: product['idProductoCompra'],
+              Consumer<ProductsProvider>(
+                builder: (context, provider, child) {
+                  return Wrap(
+                    spacing: 10.0,
+                    runSpacing: 10.0,
+                    children: loadingProductos
+                        ? provider.products.map((product) {
+                            bool isSelected = isProductSelected(
+                                product['producto'],
+                                product['clasificacionProducto']
+                                    ['clasificacionProducto']);
+                            return ProductCardSelect(
+                              imageUrl: (product['imagenes'] is List &&
+                                      product['imagenes'].isNotEmpty)
+                                  ? product['imagenes'][0]['urlPath']
+                                  : 'assets/algo.jpg',
+                              productName:
+                                  product['producto'] ?? 'Producto sin nombre',
+                              clasification: product['clasificacionProducto']
+                                  ['clasificacionProducto'],
+                              onAddProduct:
+                                  (productName, clasification, productId) {
+                                _showEditProductDialog(context, productName,
+                                    clasification, 0, 0, product['idProducto']);
+                              },
+                              onRemoveProduct: (name, clasification) {
+                                removeProduct(name, clasification);
+                              },
+                              isSelected: isSelected,
+                              productId: product['idProducto'].toString(),
+                            );
+                          }).toList()
+                        : productos.map((product) {
+                            return ProductCardEdit(
+                              imageUrl: (product['imagenes'] is List &&
+                                      product['imagenes'].isNotEmpty)
+                                  ? product['imagenes'][0]['urlPath']
+                                  : 'assets/algo.jpg',
+                              productName: product['producto']['producto'] ??
+                                  'Producto sin nombre',
+                              clasification: product['producto']
+                                      ['clasificacionProducto']
+                                  ['clasificacionProducto'],
+                              onEditProduct:
+                                  (productName, cantidad, precio, productId) {
+                                _showEditProductDialog(context, productName, '',
+                                    cantidad, precio, productId);
+                              },
+                              onRemoveProduct: (name, idProductoCompra) {
+                                eliminarProducto(
+                                    context, product['idProductoCompra']);
+                              },
+                              productId: product['producto']['idProducto'],
+                              cantidad: product['cantidad'],
+                              precio: product['costo'],
+                              productIdCompra: product['idProductoCompra'],
+                            );
+                          }).toList(),
                   );
-                }).toList(),
+                },
               ),
               const SizedBox(height: 30),
               _buildFooter(),
@@ -189,13 +228,11 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                   children: [
                     Row(
                       children: [
-                        Icon(
-                          Icons.add_circle_outline,
-                          color: Colors.blue.shade800,
-                        ),
                         const SizedBox(width: 8),
                         Text(
-                          'Agregar Productos',
+                          loadingProductos
+                              ? 'Agregar Productos'
+                              : 'Mis Productos',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -213,10 +250,14 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: IconButton(
-                        onPressed: () {
-                          _showEditProductDialog(context, '', 0, 0, 0);
+                        onPressed: () async {
+                          setState(() {
+                            loadingProductos = loadingProductos ? false : true;
+                          });
                         },
-                        icon: const Icon(Icons.add),
+                        icon: Icon(
+                          loadingProductos ? Icons.arrow_back : Icons.add,
+                        ),
                         color: Colors.white,
                       ),
                     ),
@@ -231,9 +272,9 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
     );
   }
 
-  //Dialogo para agregar producto
+  //Dialogo para editar producto
   Future<void> _showEditProductDialog(BuildContext context, String productName,
-      int cantidad, double precio, int productId) async {
+      String clasification, int cantidad, double precio, int productId) async {
     final TextEditingController cantidadController = TextEditingController();
     final TextEditingController costoController = TextEditingController();
 
@@ -322,21 +363,35 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                     ),
                   ),
                   onPressed: () {
-                    // Obtenemos los valores del formulario
-                    final nuevaCantidad =
-                        int.tryParse(cantidadController.text) ?? cantidad;
-                    final nuevoPrecio =
-                        double.tryParse(costoController.text) ?? precio;
+                    if (productId > 0) {
+                      // Obtenemos los valores del formulario
+                      final nuevaCantidad =
+                          int.tryParse(cantidadController.text) ?? cantidad;
+                      final nuevoPrecio =
+                          double.tryParse(costoController.text) ?? precio;
 
-                    // Buscamos el producto en la lista y actualizamos
-                    final productoIndex = productos.indexWhere((producto) =>
-                        producto['producto']['idProducto'] == productId);
+                      // Buscamos el producto en la lista y actualizamos
+                      final productoIndex = productos.indexWhere((producto) =>
+                          producto['producto']['idProducto'] == productId);
 
-                    if (productoIndex != -1) {
-                      setState(() {
-                        productos[productoIndex]['cantidad'] = nuevaCantidad;
-                        productos[productoIndex]['costo'] = nuevoPrecio;
-                      });
+                      if (productoIndex != -1) {
+                        setState(() {
+                          productos[productoIndex]['cantidad'] = nuevaCantidad;
+                          productos[productoIndex]['costo'] = nuevoPrecio;
+                        });
+                      }
+                    } else {
+                      if (cantidadController.text.isNotEmpty &&
+                          costoController.text.isNotEmpty) {
+                        _addProductWithDetails(
+                          productName,
+                          clasification,
+                          int.parse(cantidadController.text),
+                          double.parse(costoController.text),
+                          productId.toString(),
+                        );
+                        Navigator.of(context).pop(true);
+                      }
                     }
                     print(productos);
                     Navigator.of(context).pop(true); // Cerramos el diálogo
@@ -425,5 +480,57 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
         ],
       ),
     );
+  }
+
+  // Agregar producto y actualizar estado
+  void _addProductWithDetails(String name, String clasification, int cantidad,
+      double costo, String productId) {
+    if (_selectedProducts.any((product) =>
+        product['productName'] == name &&
+        product['clasification'] == clasification)) {
+      return;
+    }
+
+    setState(() {
+      _selectedProducts.add({
+        'productName': name,
+        'clasification': clasification,
+        'cantidad': cantidad.toString(),
+        'costo': costo.toString(),
+        'productId': productId,
+      });
+
+      checkFormValidity();
+    });
+
+    print("Productos seleccionados con detalles: $_selectedProducts");
+  }
+
+  //Funcion para verificar si el formulario es valido
+  void checkFormValidity() {
+    setState(() {
+      _isFormValid = (_formKey.currentState?.validate() ?? false) &&
+          _selectedProducts.isNotEmpty;
+    });
+  }
+
+  //Funcion para verificar si el producto seleccionado ya existe
+  bool isProductSelected(String name, String clasification) {
+    return _selectedProducts.any((product) =>
+        product['productName'] == name &&
+        product['clasification'] == clasification);
+  }
+
+  // Función para eliminar un producto seleccionado
+  void removeProduct(String name, String clasification) {
+    setState(() {
+      _selectedProducts.removeWhere((product) =>
+          product['productName'] == name &&
+          product['clasification'] == clasification);
+
+      checkFormValidity();
+    });
+
+    print("Productos seleccionados actualizados: $_selectedProducts");
   }
 }
