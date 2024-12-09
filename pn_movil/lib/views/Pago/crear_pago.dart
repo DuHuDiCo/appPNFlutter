@@ -1,9 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:pn_movil/conexiones/ApiClient.dart';
+import 'dart:io';
+
+import 'package:pn_movil/services/pago_service.dart';
 import 'package:pn_movil/widgets/Components-navbar/drawer.dart';
 import 'package:pn_movil/widgets/Components-navbar/navbar.dart';
 
-class CrearPago extends StatelessWidget {
+class CrearPago extends StatefulWidget {
   const CrearPago({super.key});
+
+  @override
+  State<CrearPago> createState() => _CrearPagoState();
+}
+
+class _CrearPagoState extends State<CrearPago> {
+  late final PagoService pagoService;
+  File? _imagenSeleccionada;
+
+  @override
+  void initState() {
+    super.initState();
+    pagoService = PagoService(ApiClient('https://apppn.duckdns.org'));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,16 +43,42 @@ class CrearPago extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 30),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: _formulario(compra),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    Icons.payment,
+                    color: Colors.blue,
+                    size: 30,
+                  ),
+                  const SizedBox(width: 8),
+                  const Text(
+                    'Crear Pago',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue,
+                    ),
+                  ),
+                ],
+              ),
+              Expanded(
+                child: _formulario(context, compra),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  //WIDGET DEL FORMULARIO DEL PAGO
-  Widget _formulario(Map<String, dynamic>? compra) {
+  //Función para construir el formulario de creación de pago
+  Widget _formulario(BuildContext context, Map<String, dynamic>? compra) {
+    TextEditingController _totalPagoController = TextEditingController();
+
     if (compra == null || compra['idCompra'] == null) {
-      print('Argumentos no válidos: $compra');
       return const Center(
         child: Text(
           'No se pudo cargar la información de la compra.',
@@ -43,50 +88,136 @@ class CrearPago extends StatelessWidget {
     }
 
     final int idCompra = compra['idCompra'] as int;
-    print('ID de la compra: $idCompra');
 
     return Center(
-      child: Card(
-        margin: const EdgeInsets.all(16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15),
-        ),
-        elevation: 4,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: SingleChildScrollView(
+      child: SingleChildScrollView(
+        // Añadir ScrollView aquí
+        child: Card(
+          margin: const EdgeInsets.all(12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          elevation: 4,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.payment,
-                      color: Colors.blue,
-                      size: 30,
-                    ),
-                    const SizedBox(width: 8),
-                    const Text(
-                      'Crear Pago',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
                 Text(
-                  'Compra: #$idCompra',
+                  'Realizando pago de la compra #$idCompra',
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 16),
+                GestureDetector(
+                  onTap: () async {
+                    if (_imagenSeleccionada == null) {
+                      final File? nuevaImagen =
+                          await pagoService.seleccionarImagen();
+                      if (nuevaImagen != null) {
+                        setState(() {
+                          _imagenSeleccionada = nuevaImagen;
+                        });
+                      }
+                    } else {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return Dialog(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Image.file(
+                                _imagenSeleccionada!,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    }
+                  },
+                  child: Stack(
+                    children: [
+                      Container(
+                        height: 310,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.grey,
+                            width: 2,
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: _imagenSeleccionada == null
+                            ? Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.image,
+                                        size: 40, color: Colors.grey),
+                                    const SizedBox(height: 8),
+                                    const Text(
+                                      'Seleccionar comprobante de pago',
+                                      style: TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : Image.file(
+                                _imagenSeleccionada!,
+                                fit: BoxFit.cover,
+                              ),
+                      ),
+                      if (_imagenSeleccionada != null)
+                        Positioned(
+                          top: 10,
+                          right: 10,
+                          child: Container(
+                            padding: const EdgeInsets.all(3),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  blurRadius: 4,
+                                  offset: Offset(0, 6),
+                                ),
+                              ],
+                            ),
+                            child: IconButton(
+                              icon: const Icon(
+                                Icons.edit,
+                                color: Colors.blue,
+                                size: 30,
+                              ),
+                              onPressed: () async {
+                                final File? nuevaImagen =
+                                    await pagoService.seleccionarImagen();
+                                if (nuevaImagen != null) {
+                                  setState(() {
+                                    _imagenSeleccionada = nuevaImagen;
+                                  });
+                                }
+                              },
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
                 TextField(
+                  controller: _totalPagoController,
                   decoration: InputDecoration(
                     labelText: 'Total pago',
                     border: OutlineInputBorder(
@@ -98,7 +229,12 @@ class CrearPago extends StatelessWidget {
                 const SizedBox(height: 16),
                 Center(
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      double totalPago =
+                          double.tryParse(_totalPagoController.text) ?? 0;
+                      pagoService.guardarPago(
+                          context, idCompra, _imagenSeleccionada, totalPago);
+                    },
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                           vertical: 15, horizontal: 50),
@@ -116,7 +252,7 @@ class CrearPago extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 5),
               ],
             ),
           ),

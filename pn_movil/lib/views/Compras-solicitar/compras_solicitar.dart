@@ -36,14 +36,10 @@ class _ComprasState extends State<Compras> {
                 return Center(child: CircularProgressIndicator());
               }
 
-              if (compraProvider.compras.isEmpty) {
-                return Center(child: Text('No hay compras disponibles'));
-              }
-
               return Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Colors.blue.shade50, Colors.white],
+                    colors: [Colors.white, Colors.blue.shade50],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   ),
@@ -63,6 +59,8 @@ class _ComprasState extends State<Compras> {
                         textAlign: TextAlign.center,
                       ),
                     ),
+
+                    //Barra de busqueda de compras
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: Row(
@@ -75,11 +73,30 @@ class _ComprasState extends State<Compras> {
                                     color: Colors.grey),
                                 filled: true,
                                 fillColor: Colors.white,
-                                contentPadding:
-                                    const EdgeInsets.symmetric(vertical: 12),
+                                contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 12, horizontal: 16),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10.0),
-                                  borderSide: BorderSide.none,
+                                  borderSide: BorderSide(
+                                    color: Colors.blue.shade300,
+                                    width: 1.0,
+                                  ),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: BorderSide(
+                                    color: const Color.fromARGB(
+                                        255, 175, 177, 178),
+                                    width: 1.0,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: BorderSide(
+                                    color: const Color.fromARGB(
+                                        255, 175, 177, 178),
+                                    width: 2.0,
+                                  ),
                                 ),
                               ),
                             ),
@@ -107,6 +124,7 @@ class _ComprasState extends State<Compras> {
                     const SizedBox(height: 16),
                     // Listado de compras
                     ...compraProvider.compras.map((compra) {
+                      //Listado de compras
                       return ListItem(
                         imageUrl: null,
                         content: Row(
@@ -135,7 +153,7 @@ class _ComprasState extends State<Compras> {
                                         fontSize: 14, color: Colors.grey[700]),
                                   ),
                                   const SizedBox(height: 4),
-                                  pagoWidget(compra['pago']),
+                                  estadoPagoWidget(compra['pago']),
                                 ],
                               ),
                             ),
@@ -151,58 +169,74 @@ class _ComprasState extends State<Compras> {
                                   onSelected: (String value) {
                                     switch (value) {
                                       case 'detalle':
-                                        Navigator.pushReplacementNamed(context,
-                                            'compras-solicitar-detalle',
-                                            arguments: compra);
+                                        Navigator.pushReplacementNamed(
+                                          context,
+                                          'compras-solicitar-detalle',
+                                          arguments: compra,
+                                        );
                                         break;
                                       case 'editar':
                                         Navigator.pushReplacementNamed(
-                                            context, 'compras-solicitar-editar',
-                                            arguments: compra);
+                                          context,
+                                          'compras-solicitar-editar',
+                                          arguments: compra,
+                                        );
                                         break;
                                       case 'pagar':
                                         Navigator.pushReplacementNamed(
-                                            context, 'crear-pago',
-                                            arguments: compra);
+                                          context,
+                                          'crear-pago',
+                                          arguments: compra,
+                                        );
                                         break;
                                     }
                                   },
-                                  itemBuilder: (BuildContext context) =>
-                                      <PopupMenuEntry<String>>[
-                                    PopupMenuItem<String>(
-                                      value: 'detalle',
-                                      child: Row(
-                                        children: const [
-                                          Icon(Icons.visibility,
-                                              color: Colors.blue),
-                                          SizedBox(width: 10),
-                                          Text('Ver detalles'),
-                                        ],
+                                  itemBuilder: (BuildContext context) {
+                                    // Lista de opciones inicial
+                                    List<PopupMenuEntry<String>> menuItems = [
+                                      PopupMenuItem<String>(
+                                        value: 'detalle',
+                                        child: Row(
+                                          children: const [
+                                            Icon(Icons.visibility,
+                                                color: Colors.blue),
+                                            SizedBox(width: 10),
+                                            Text('Ver detalles'),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                    PopupMenuItem<String>(
-                                      value: 'editar',
-                                      child: Row(
-                                        children: const [
-                                          Icon(Icons.edit, color: Colors.green),
-                                          SizedBox(width: 10),
-                                          Text('Editar'),
-                                        ],
+                                      PopupMenuItem<String>(
+                                        value: 'editar',
+                                        child: Row(
+                                          children: const [
+                                            Icon(Icons.edit,
+                                                color: Colors.green),
+                                            SizedBox(width: 10),
+                                            Text('Editar'),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                    PopupMenuItem<String>(
-                                      value: 'pagar',
-                                      child: Row(
-                                        children: const [
-                                          Icon(Icons.monetization_on,
-                                              color: Color.fromARGB(
-                                                  255, 230, 185, 37)),
-                                          SizedBox(width: 10),
-                                          Text('Pagar'),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
+                                    ];
+
+                                    if (compra['pago'] == null) {
+                                      menuItems.add(
+                                        PopupMenuItem<String>(
+                                          value: 'pagar',
+                                          child: Row(
+                                            children: const [
+                                              Icon(Icons.monetization_on,
+                                                  color: Color.fromARGB(
+                                                      255, 230, 185, 37)),
+                                              SizedBox(width: 10),
+                                              Text('Pagar'),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    }
+
+                                    return menuItems;
+                                  },
                                 ),
                               ],
                             ),

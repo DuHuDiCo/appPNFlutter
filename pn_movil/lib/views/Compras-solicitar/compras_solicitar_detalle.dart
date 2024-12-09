@@ -33,7 +33,7 @@ class ComprasSolicitarDetalle extends StatelessWidget {
                 _buildTitle('Detalle de la Compra'),
                 const SizedBox(height: 30),
                 _buildDetailsCard(compra),
-                const SizedBox(height: 30),
+                const SizedBox(height: 40),
                 _buildAdicionesSection(compra),
               ],
             ),
@@ -43,6 +43,7 @@ class ComprasSolicitarDetalle extends StatelessWidget {
     );
   }
 
+  //Metodo para construir el título
   Widget _buildTitle(String title) {
     return Center(
       child: Text(
@@ -56,6 +57,7 @@ class ComprasSolicitarDetalle extends StatelessWidget {
     );
   }
 
+  //Metodo para construir el detalle de la compra
   Widget _buildDetailsCard(Map<String, dynamic>? compra) {
     if (compra == null) {
       print('compra: $compra');
@@ -109,6 +111,7 @@ class ComprasSolicitarDetalle extends StatelessWidget {
     );
   }
 
+  //Metodo para construir la sección de adiciones
   Widget _buildAdicionesSection(Map<String, dynamic>? compra) {
     if (compra == null) {
       return const Center(
@@ -179,6 +182,7 @@ class ComprasSolicitarDetalle extends StatelessWidget {
     );
   }
 
+  //Metodo para construir una fila de información
   Widget _buildInfoRow({
     required IconData icon,
     required String title,

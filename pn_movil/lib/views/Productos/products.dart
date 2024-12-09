@@ -31,11 +31,12 @@ class _ProductsState extends State<Products> {
     );
   }
 
+  //Funcion para construir el contenido principal
   Widget _buildBody(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Colors.blue.shade50, Colors.white],
+          colors: [Colors.white, Colors.blue.shade50],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
@@ -52,30 +53,7 @@ class _ProductsState extends State<Products> {
     );
   }
 
-  Widget _buildProductsList(List<Map<String, dynamic>> products) {
-    return ListView(
-      padding: const EdgeInsets.all(16.0),
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16.0),
-          child: Text(
-            'Explora nuestros productos',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.blue.shade800,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        _buildSearchBar(),
-        const SizedBox(height: 16),
-        ...products.map((product) => _buildProductItem(product)).toList(),
-        const SizedBox(height: 12),
-      ],
-    );
-  }
-
+  //Funcion para construir la barra de búsqueda
   Widget _buildSearchBar() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -88,10 +66,28 @@ class _ProductsState extends State<Products> {
                 prefixIcon: const Icon(Icons.search, color: Colors.grey),
                 filled: true,
                 fillColor: Colors.white,
-                contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
-                  borderSide: BorderSide.none,
+                  borderSide: BorderSide(
+                    color: Colors.blue.shade300,
+                    width: 1.0,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: BorderSide(
+                    color: const Color.fromARGB(255, 175, 177, 178),
+                    width: 1.0,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: BorderSide(
+                    color: const Color.fromARGB(255, 175, 177, 178),
+                    width: 2.0,
+                  ),
                 ),
               ),
             ),
@@ -117,6 +113,32 @@ class _ProductsState extends State<Products> {
     );
   }
 
+  //Funcion para construir la lista de productos
+  Widget _buildProductsList(List<Map<String, dynamic>> products) {
+    return ListView(
+      padding: const EdgeInsets.all(16.0),
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16.0),
+          child: Text(
+            'Explora nuestros productos',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.blue.shade800,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+        _buildSearchBar(),
+        const SizedBox(height: 16),
+        ...products.map((product) => _buildProductItem(product)).toList(),
+        const SizedBox(height: 12),
+      ],
+    );
+  }
+
+  //Funcion para construir el item de producto
   Widget _buildProductItem(Map<String, dynamic> product) {
     return ListItem(
       imageUrl: (product['imagenes'] is List && product['imagenes'].isNotEmpty)
@@ -188,30 +210,28 @@ class _ProductsState extends State<Products> {
     );
   }
 
+  //Funcion para eliminar un producto
   void eliminarProducto(
       BuildContext context, int productId, ProductsProvider provider) {
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
-        // Usamos dialogContext en el builder
         return AlertDialog(
           title: const Text("Eliminar producto"),
           content: const Text("¿Está seguro que desea eliminar el producto?"),
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(dialogContext).pop(); // Cerramos el diálogo
+                Navigator.of(dialogContext).pop();
               },
               child: const Text("Cancelar"),
             ),
             TextButton(
               onPressed: () async {
-                Navigator.of(dialogContext)
-                    .pop(); // Cerramos el diálogo primero
+                Navigator.of(dialogContext).pop();
 
                 try {
                   await provider.deleteProduct(context, productId);
-                  // Mostramos un SnackBar usando el contexto principal
                   Future.delayed(Duration.zero, () {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
