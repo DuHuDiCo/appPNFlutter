@@ -33,7 +33,7 @@ class ComprasSolicitarDetalle extends StatelessWidget {
                 _buildTitle('Detalle de la Compra'),
                 const SizedBox(height: 30),
                 _buildDetailsCard(compra),
-                const SizedBox(height: 30),
+                const SizedBox(height: 40),
                 _buildAdicionesSection(compra),
               ],
             ),

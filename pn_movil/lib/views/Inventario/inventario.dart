@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:pn_movil/conexiones/apiClient.dart';
 import 'package:pn_movil/providers/inventario_provider.dart';
 import 'package:pn_movil/services/inventario_service.dart';
+import 'package:pn_movil/views/Inventario/detalle_inventario.dart';
 import 'package:pn_movil/widgets/Components-cards/cards_listar_products.dart';
 import 'package:pn_movil/widgets/Components-navbar/drawer.dart';
 import 'package:pn_movil/widgets/Components-navbar/navbar.dart';
@@ -179,25 +180,52 @@ class _InventarioState extends State<Inventario> {
                 inventarioProvider.calcularTotalPorInventario(inventario);
             return ListItem(
               imageUrl: null,
-              content: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              content: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Inventario #${inventario['idInventory']}',
-                    style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.bold),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Inventario #${inventario['idInventory']}',
+                          style: const TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Realizado el ${DateFormat('dd/MM/yyyy').format(DateTime.parse(inventario['dateInventory']))}',
+                          style:
+                              const TextStyle(fontSize: 14, color: Colors.grey),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Cantidad general: ${inventario['quantity']}',
+                          style:
+                              const TextStyle(fontSize: 14, color: Colors.grey),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Total: ${inventarioService.formatCurrencyToCOP(totalPorInventario)}',
+                          style:
+                              const TextStyle(fontSize: 14, color: Colors.grey),
+                        ),
+                      ],
+                    ),
                   ),
-                  Text(
-                    'Realizado el ${DateFormat('dd/MM/yyyy').format(DateTime.parse(inventario['dateInventory']))}',
-                    style: const TextStyle(fontSize: 14, color: Colors.grey),
-                  ),
-                  Text(
-                    'Cantidad general: ${inventario['quantity']}',
-                    style: const TextStyle(fontSize: 14, color: Colors.grey),
-                  ),
-                  Text(
-                    'Total: ${inventarioService.formatCurrencyToCOP(totalPorInventario)}',
-                    style: const TextStyle(fontSize: 14, color: Colors.grey),
+                  IconButton(
+                    onPressed: () {
+                      Navigator.pushReplacementNamed(
+                          context, 'detalle-inventario',
+                          arguments: inventario);
+                    },
+                    icon: const Icon(Icons.visibility),
+                    color: Colors.white,
+                    style: IconButton.styleFrom(
+                      backgroundColor: const Color.fromRGBO(112, 185, 244, 1),
+                      shape: const CircleBorder(),
+                      padding: const EdgeInsets.all(12),
+                    ),
                   ),
                 ],
               ),

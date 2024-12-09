@@ -98,6 +98,27 @@ class CustomDrawer extends StatelessWidget {
               ],
             ),
             ExpansionTile(
+              leading: const Icon(Icons.inventory, color: Colors.white),
+              title: const Text(
+                'Facturacion',
+                style: TextStyle(color: Colors.white),
+              ),
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(left: 16.0),
+                  child: ListTile(
+                    leading: const Icon(Icons.inventory_2_rounded,
+                        color: Colors.white),
+                    title: const Text('Facturacion',
+                        style: TextStyle(color: Colors.white)),
+                    onTap: () {
+                      Navigator.pushReplacementNamed(context, 'facturacion');
+                    },
+                  ),
+                ),
+              ],
+            ),
+            ExpansionTile(
               leading: const Icon(Icons.business_sharp, color: Colors.white),
               title: const Text(
                 'Productos',

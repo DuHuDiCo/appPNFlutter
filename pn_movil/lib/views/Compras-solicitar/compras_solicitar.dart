@@ -153,12 +153,10 @@ class _ComprasState extends State<Compras> {
                                         fontSize: 14, color: Colors.grey[700]),
                                   ),
                                   const SizedBox(height: 4),
-                                  pagoWidget(compra['pago']),
+                                  estadoPagoWidget(compra['pago']),
                                 ],
                               ),
                             ),
-
-                            //Modal de opciones de acciones
                             Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
@@ -171,58 +169,74 @@ class _ComprasState extends State<Compras> {
                                   onSelected: (String value) {
                                     switch (value) {
                                       case 'detalle':
-                                        Navigator.pushReplacementNamed(context,
-                                            'compras-solicitar-detalle',
-                                            arguments: compra);
+                                        Navigator.pushReplacementNamed(
+                                          context,
+                                          'compras-solicitar-detalle',
+                                          arguments: compra,
+                                        );
                                         break;
                                       case 'editar':
                                         Navigator.pushReplacementNamed(
-                                            context, 'compras-solicitar-editar',
-                                            arguments: compra);
+                                          context,
+                                          'compras-solicitar-editar',
+                                          arguments: compra,
+                                        );
                                         break;
                                       case 'pagar':
                                         Navigator.pushReplacementNamed(
-                                            context, 'crear-pago',
-                                            arguments: compra);
+                                          context,
+                                          'crear-pago',
+                                          arguments: compra,
+                                        );
                                         break;
                                     }
                                   },
-                                  itemBuilder: (BuildContext context) =>
-                                      <PopupMenuEntry<String>>[
-                                    PopupMenuItem<String>(
-                                      value: 'detalle',
-                                      child: Row(
-                                        children: const [
-                                          Icon(Icons.visibility,
-                                              color: Colors.blue),
-                                          SizedBox(width: 10),
-                                          Text('Ver detalles'),
-                                        ],
+                                  itemBuilder: (BuildContext context) {
+                                    // Lista de opciones inicial
+                                    List<PopupMenuEntry<String>> menuItems = [
+                                      PopupMenuItem<String>(
+                                        value: 'detalle',
+                                        child: Row(
+                                          children: const [
+                                            Icon(Icons.visibility,
+                                                color: Colors.blue),
+                                            SizedBox(width: 10),
+                                            Text('Ver detalles'),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                    PopupMenuItem<String>(
-                                      value: 'editar',
-                                      child: Row(
-                                        children: const [
-                                          Icon(Icons.edit, color: Colors.green),
-                                          SizedBox(width: 10),
-                                          Text('Editar'),
-                                        ],
+                                      PopupMenuItem<String>(
+                                        value: 'editar',
+                                        child: Row(
+                                          children: const [
+                                            Icon(Icons.edit,
+                                                color: Colors.green),
+                                            SizedBox(width: 10),
+                                            Text('Editar'),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                    PopupMenuItem<String>(
-                                      value: 'pagar',
-                                      child: Row(
-                                        children: const [
-                                          Icon(Icons.monetization_on,
-                                              color: Color.fromARGB(
-                                                  255, 230, 185, 37)),
-                                          SizedBox(width: 10),
-                                          Text('Pagar'),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
+                                    ];
+
+                                    if (compra['pago'] == null) {
+                                      menuItems.add(
+                                        PopupMenuItem<String>(
+                                          value: 'pagar',
+                                          child: Row(
+                                            children: const [
+                                              Icon(Icons.monetization_on,
+                                                  color: Color.fromARGB(
+                                                      255, 230, 185, 37)),
+                                              SizedBox(width: 10),
+                                              Text('Pagar'),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    }
+
+                                    return menuItems;
+                                  },
                                 ),
                               ],
                             ),

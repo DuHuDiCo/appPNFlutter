@@ -175,7 +175,6 @@ class _PagoState extends State<Pago> {
                             switch (value) {
                               case 'comprobante':
                               case 'comprobante':
-                                // Llamamos a la función que muestra el diálogo con la imagen
                                 _mostrarComprobanteDialog(
                                     context, pago['archivos']['urlPath']);
                                 break;

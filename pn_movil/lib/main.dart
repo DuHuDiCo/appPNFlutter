@@ -15,6 +15,9 @@ import 'package:pn_movil/views/Compras-solicitar/compras_solicitar_crear.dart';
 import 'package:pn_movil/views/Compras-solicitar/compras_solicitar.dart';
 import 'package:pn_movil/views/Compras-solicitar/compras_solicitar_editar.dart';
 import 'package:pn_movil/views/Compras-solicitar/compras_solicitar_detalle.dart';
+import 'package:pn_movil/views/Facturacion/facturacion.dart';
+import 'package:pn_movil/views/Facturacion/facturacion_crear.dart';
+import 'package:pn_movil/views/Inventario/detalle_inventario.dart';
 import 'package:pn_movil/views/Inventario/inventario.dart';
 import 'package:pn_movil/views/Pago/crear_pago.dart';
 import 'package:pn_movil/views/Pago/pago.dart';
@@ -89,6 +92,9 @@ class MyApp extends StatelessWidget {
           'realizar-pago': (_) => const Pago(),
           'crear-pago': (_) => const CrearPago(),
           'inventario': (_) => const Inventario(),
+          'detalle-inventario': (_) => const DetalleInventario(),
+          'facturacion': (_) => const Facturacion(),
+          'facturacion-crear': (_) => const FacturacionCrear(),
         },
         theme: ThemeData.light().copyWith(
           scaffoldBackgroundColor: Colors.grey[300],

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-Widget pagoWidget(dynamic pago) {
+Widget estadoPagoWidget(dynamic pago) {
   Color backgroundColor;
   Color textColor;
   String pagoTexto;
