@@ -121,30 +121,10 @@ class PagoProvider extends ChangeNotifier {
       _isLoading = true;
       notifyListeners();
 
-      // Buscar la compra que contiene el pago
-      final compra = _pago.firstWhere(
-        (c) =>
-            c['pagos'] != null && c['pagos'].any((p) => p['idPago'] == pagoId),
-        orElse: () => <String, dynamic>{},
-      );
-
-      if (compra == null) {
-        throw Exception('Compra asociada al pago no encontrada');
-      }
-
-      // Acceder al idInventory desde la compra
-      final idInventory = compra['productoCompras'][0]
-              ['productoCompraInventory'][0]['inventory']['idInventory'] ??
-          '0';
-      final inventarioId = int.tryParse(idInventory) ?? 0;
-
-      print('ID del Inventario: $inventarioId');
-
-      // Realizar la petición para eliminar el pago
-      final response =
-          await _apiClient.delete('/api/v1/pago/$pagoId/$inventarioId');
+      final response = await _apiClient.delete('/api/v1/pago/$pagoId');
 
       if (response.statusCode == 200 || response.statusCode == 204) {
+        // Eliminar el pago de la lista localmente
         _pago.removeWhere((pago) => pago['idPago'] == pagoId);
 
         ScaffoldMessenger.of(context).showSnackBar(
