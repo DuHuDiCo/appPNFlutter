@@ -234,7 +234,8 @@ class _CrearPagoState extends State<CrearPago> {
                       width: 150,
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.of(context).pushReplacementNamed('pagos');
+                          Navigator.of(context)
+                              .pushReplacementNamed('realizar-pago');
                         },
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 15),
