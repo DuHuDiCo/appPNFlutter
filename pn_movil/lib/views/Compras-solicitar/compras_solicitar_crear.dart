@@ -336,7 +336,7 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
     );
   }
 
-  //Boton para guardar los datos del formulario
+// Función para crear el footer del dialogo de agregar producto
   Widget _buildFooter() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -344,7 +344,25 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(
-            width: 200,
+            width: 150,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pushReplacementNamed('compras-solicitar');
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+              ),
+              child: const Text(
+                'Regresar',
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 20),
+          SizedBox(
+            width: 150,
             child: ElevatedButton(
               onPressed: (_isFormValid && _selectedProducts.isNotEmpty)
                   ? saveFormData
@@ -353,7 +371,7 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
                 backgroundColor: Colors.blue,
               ),
               child: const Text(
-                'Registrar compra',
+                'Registrar',
                 style: TextStyle(
                   color: Color.fromARGB(255, 244, 245, 246),
                 ),

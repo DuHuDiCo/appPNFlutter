@@ -180,7 +180,8 @@ class _PagoState extends State<Pago> {
                                 break;
 
                               case 'eliminar':
-                                _confirmarEliminacion(context, pago['idPago']);
+                                _confirmarEliminacion(
+                                    context, pago['idPago'], pagoService);
                                 break;
                             }
                           },
@@ -221,26 +222,48 @@ class _PagoState extends State<Pago> {
   }
 
 // Método para confirmar eliminación
-  void _confirmarEliminacion(BuildContext context, int idPago) {
+  void _confirmarEliminacion(
+      BuildContext context, int idPago, PagoService pagoService) {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: const Text('Confirmar eliminación'),
+          title: const Text('Eliminar pago'),
           content:
               Text('¿Estás seguro de que deseas eliminar el pago #$idPago?'),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+              },
               child: const Text('Cancelar'),
             ),
             TextButton(
-              onPressed: () {
-                Future.microtask(() {
-                  pagoService.eliminarPago(context, idPago);
-                });
+              onPressed: () async {
+                Navigator.of(dialogContext).pop();
+
+                try {
+                  await pagoService.eliminarPago(context, idPago);
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Pago eliminado exitosamente'),
+                    ),
+                  );
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => const Pago()),
+                    (Route<dynamic> route) => false,
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error: $e')),
+                  );
+                }
               },
-              child: const Text('Eliminar'),
+              child: const Text(
+                'Confirmar',
+                style: TextStyle(color: Colors.red),
+              ),
             ),
           ],
         );

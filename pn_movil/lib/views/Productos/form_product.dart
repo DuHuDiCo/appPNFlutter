@@ -167,26 +167,57 @@ class _FormularioProductoState extends State<FormularioProducto> {
           ),
         ),
         const SizedBox(height: 30),
-        ElevatedButton(
-          onPressed: () {
-            _addProduct(context);
-          },
-          style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 50),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 140,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pushReplacementNamed('productos');
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                ),
+                child: const Text(
+                  'Regresar',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
             ),
-            backgroundColor: const Color.fromARGB(255, 90, 136, 204),
-          ),
-          child: Text(
-            product != null ? 'Editar Producto' : 'Guardar Producto',
-            style: const TextStyle(
-              fontSize: 18,
-              color: Colors.white,
+            const SizedBox(width: 20),
+            SizedBox(
+              width: 140,
+              child: ElevatedButton(
+                onPressed: () {
+                  _addProduct(context);
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  backgroundColor:
+                      const Color.fromARGB(255, 90, 136, 204), // Fondo azul
+                ),
+                child: Text(
+                  product != null ? 'Actualizar' : 'Guardar',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.white, // Texto blanco
+                  ),
+                ),
+              ),
             ),
-          ),
+          ],
         ),
-        const SizedBox(height: 30),
       ],
     );
   }

@@ -84,21 +84,6 @@ class Facturacion extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 10),
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              color: const Color.fromRGBO(112, 185, 244, 1),
-              borderRadius: BorderRadius.circular(30),
-            ),
-            child: IconButton(
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, 'crear-facturacion');
-              },
-              icon: const Icon(Icons.add),
-              color: Colors.white,
-            ),
-          ),
         ],
       ),
     );
