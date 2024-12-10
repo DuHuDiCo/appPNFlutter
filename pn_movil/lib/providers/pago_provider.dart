@@ -127,10 +127,10 @@ class PagoProvider extends ChangeNotifier {
           ['productoCompraInventory'][0]['inventory']['idInventory'];
       print('ID del inventario: $inventarioId');
 
-      //   // Construir la URL con el pagoId y el idInventario como query
+      // Construir la URL con el pagoId y el idInventario como query
       final url = '/api/v1/pago/$pagoId?idInventario=$inventarioId';
 
-      //   // Realizar la petición para eliminar el pago
+      // Realizar la petición para eliminar el pago
       final response = await _apiClient.delete(url);
 
       if (response.statusCode == 200 || response.statusCode == 204) {

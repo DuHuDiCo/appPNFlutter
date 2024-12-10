@@ -25,88 +25,66 @@ import 'package:pn_movil/views/Productos/crear_product.dart';
 import 'package:pn_movil/views/Login/login.dart';
 import 'package:pn_movil/views/Productos/products.dart';
 import 'package:pn_movil/views/Panel/vista_inicial.dart';
-import 'package:provider/provider.dart';
+import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 
 void main() async {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Llamada asíncrona para obtener los medios iniciales
+  // List<SharedMediaFile>? sharedMedia = await initializeSharedMedia();
+
+  // runApp(MyApp(sharedMedia: sharedMedia));
 }
 
+// Future<List<SharedMediaFile>?> initializeSharedMedia() async {
+//   try {
+//     // Intentamos obtener los medios iniciales compartidos
+//     List<SharedMediaFile> sharedMedia = await ReceiveSharingIntent.getInitialMedia();
+//     return sharedMedia;
+//   } catch (e) {
+//     // Si hay un error, lo manejamos
+//     print('Error al obtener los medios iniciales: $e');
+//     return null;
+//   }
+// }
+
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final List<SharedMediaFile>? sharedMedia;
+
+  const MyApp({Key? key, this.sharedMedia}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        Provider<ApiClient>(
-          create: (_) => ApiClient('https://apppn.duckdns.org/api/v1'),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Login',
+      initialRoute: sharedMedia != null ? 'crear-pago' : 'login',
+      routes: {
+        'login': (_) => const Login(),
+        'home': (_) => const VistaInicial(),
+        'productos': (_) => const Products(),
+        'crearProduct': (_) => const CrearProduct(),
+        'compras-solicitar': (_) => const Compras(),
+        'compras-solicitar-crear': (_) => SeleccionarProductos(),
+        'compras-solicitar-editar': (_) => ComprasSolicitarEditar(),
+        'compras-solicitar-detalle': (_) => const ComprasSolicitarDetalle(),
+        'realizar-pago': (_) => const Pago(),
+        'crear-pago': (_) => CrearPago(sharedMedia: sharedMedia),
+        'inventario': (_) => const Inventario(),
+        'detalle-inventario': (_) => const DetalleInventario(),
+        'facturacion': (_) => const Facturacion(),
+        'facturacion-crear': (_) => const FacturacionCrear(),
+      },
+      theme: ThemeData.light().copyWith(
+        scaffoldBackgroundColor: Colors.grey[300],
+        appBarTheme: const AppBarTheme(
+          elevation: 0,
+          centerTitle: true,
+          color: Color.fromARGB(255, 149, 10, 0),
         ),
-        Provider<AuthService>(
-          create: (context) => AuthService(context.read<ApiClient>()),
-        ),
-        ChangeNotifierProvider(create: (_) => CompraState()),
-        ChangeNotifierProvider<ProductsProvider>(
-          create: (context) => ProductsProvider(context.read<ApiClient>()),
-        ),
-        ChangeNotifierProvider<ClasificacionProvider>(
-          create: (context) => ClasificacionProvider(context.read<ApiClient>()),
-        ),
-        ChangeNotifierProvider<CompraProvider>(
-          create: (context) => CompraProvider(context.read<ApiClient>()),
-        ),
-        ChangeNotifierProvider<ProveedorProvider>(
-          create: (context) => ProveedorProvider(context.read<ApiClient>()),
-        ),
-        ChangeNotifierProvider<UserProvider>(
-          create: (context) => UserProvider(context.read<ApiClient>()),
-        ),
-        ChangeNotifierProvider<PagoProvider>(
-          create: (context) => PagoProvider(context.read<ApiClient>()),
-        ),
-        ChangeNotifierProvider<InventarioProvider>(
-          create: (context) => InventarioProvider(context.read<ApiClient>()),
-        ),
-        Provider<GoogleAuthController>(
-          create: (_) => GoogleAuthController(),
-        ),
-        ChangeNotifierProvider<GoogleSignInProvider>(
-          create: (context) => GoogleSignInProvider(
-            context.read<AuthService>(),
-            context.read<GoogleAuthController>(),
-          ),
-        ),
-      ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Login',
-        initialRoute: 'login',
-        routes: {
-          'login': (_) => const Login(),
-          'home': (_) => const VistaInicial(),
-          'productos': (_) => const Products(),
-          'crearProduct': (_) => const CrearProduct(),
-          'compras-solicitar': (_) => const Compras(),
-          'compras-solicitar-crear': (_) => SeleccionarProductos(),
-          'compras-solicitar-editar': (_) => ComprasSolicitarEditar(),
-          'compras-solicitar-detalle': (_) => const ComprasSolicitarDetalle(),
-          'realizar-pago': (_) => const Pago(),
-          'crear-pago': (_) => const CrearPago(),
-          'inventario': (_) => const Inventario(),
-          'detalle-inventario': (_) => const DetalleInventario(),
-          'facturacion': (_) => const Facturacion(),
-          'facturacion-crear': (_) => const FacturacionCrear(),
-        },
-        theme: ThemeData.light().copyWith(
-          scaffoldBackgroundColor: Colors.grey[300],
-          appBarTheme: const AppBarTheme(
-            elevation: 0,
-            centerTitle: true,
-            color: Color.fromARGB(255, 149, 10, 0),
-          ),
-          floatingActionButtonTheme: const FloatingActionButtonThemeData(
-            backgroundColor: Color.fromARGB(255, 149, 10, 0),
-            elevation: 0,
-          ),
+        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+          backgroundColor: Color.fromARGB(255, 149, 10, 0),
+          elevation: 0,
         ),
       ),
     );

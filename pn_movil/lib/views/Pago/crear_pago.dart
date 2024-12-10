@@ -6,9 +6,13 @@ import 'dart:io';
 import 'package:pn_movil/services/pago_service.dart';
 import 'package:pn_movil/widgets/Components-navbar/drawer.dart';
 import 'package:pn_movil/widgets/Components-navbar/navbar.dart';
+import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 
 class CrearPago extends StatefulWidget {
-  const CrearPago({super.key});
+  final List<SharedMediaFile>? sharedMedia;
+
+  const CrearPago(
+      {super.key, this.sharedMedia}); // Aquí pasas el parámetro sharedMedia
 
   @override
   State<CrearPago> createState() => _CrearPagoState();
@@ -22,6 +26,14 @@ class _CrearPagoState extends State<CrearPago> {
   void initState() {
     super.initState();
     pagoService = PagoService(ApiClient('https://apppn.duckdns.org'));
+
+    // Usar sharedMedia si está disponible
+    if (widget.sharedMedia != null && widget.sharedMedia!.isNotEmpty) {
+      final sharedFile = widget
+          .sharedMedia!.first; // Suponiendo que solo usas el primer archivo
+      _imagenSeleccionada = File(
+          sharedFile.path); // Asegúrate de convertir a File si es necesario
+    }
   }
 
   @override
