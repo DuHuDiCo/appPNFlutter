@@ -1,9 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:pn_movil/conexiones/apiClient.dart';
+import 'package:pn_movil/providers/facturacion_provider.dart';
+import 'package:pn_movil/services/facturacion_service.dart';
 import 'package:pn_movil/widgets/Components-navbar/drawer.dart';
 import 'package:pn_movil/widgets/Components-navbar/navbar.dart';
+import 'package:provider/provider.dart';
 
-class Facturacion extends StatelessWidget {
+class Facturacion extends StatefulWidget {
   const Facturacion({super.key});
+
+  @override
+  _FacturacionState createState() => _FacturacionState();
+}
+
+class _FacturacionState extends State<Facturacion> {
+  late final FacturacionService facturacionService;
+
+  @override
+  void initState() {
+    super.initState();
+    facturacionService =
+        FacturacionService(ApiClient('https://apppn.duckdns.org'));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +39,7 @@ class Facturacion extends StatelessWidget {
             _buildSearchBar(context),
 
             // Contenido principal
-            // _buildMainContent(),
+            _buildMainContent(),
           ],
         ),
       ),
@@ -86,6 +104,45 @@ class Facturacion extends StatelessWidget {
           const SizedBox(width: 10),
         ],
       ),
+    );
+  }
+
+  // Metodo para construir el contenido principal
+  Widget _buildMainContent() {
+    return Consumer<FacturacionProvider>(
+      builder: (context, facturaProvider, child) {
+        if (facturaProvider.isLoading) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        if (facturaProvider.facturas.isEmpty) {
+          return const Center(
+            child: Text(
+              'No hay facturas disponibles.',
+              style: TextStyle(fontSize: 18, color: Colors.grey),
+            ),
+          );
+        }
+
+        return ListView.builder(
+          itemCount: facturaProvider.facturas.length,
+          itemBuilder: (context, index) {
+            final factura = facturaProvider.facturas[index];
+            return Card(
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: ListTile(
+                title: Text('Factura ID: ${factura['idInventario']}'),
+                subtitle: Text(
+                  'Productos: ${factura['productos'].length}, '
+                  'Total: \$${factura['productos'].fold<double>(0, (sum, item) => sum + item['valorVenta'])}',
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:pn_movil/conexiones/apiClient.dart';
+import 'package:pn_movil/conexiones/ApiClient.dart';
 import 'package:pn_movil/providers/inventario_provider.dart';
 import 'package:pn_movil/services/inventario_service.dart';
 import 'package:pn_movil/views/Inventario/detalle_inventario.dart';

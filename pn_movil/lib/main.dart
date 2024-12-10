@@ -4,6 +4,7 @@ import 'package:pn_movil/conexiones/autentificacion.dart';
 import 'package:pn_movil/models/Compras.dart';
 import 'package:pn_movil/providers/clasificacion_provider.dart';
 import 'package:pn_movil/providers/compra_provider.dart';
+import 'package:pn_movil/providers/facturacion_provider.dart';
 import 'package:pn_movil/providers/google_provider.dart';
 import 'package:pn_movil/providers/inventario_provider.dart';
 import 'package:pn_movil/providers/pago_provider.dart';
@@ -65,6 +66,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<InventarioProvider>(
           create: (context) => InventarioProvider(context.read<ApiClient>()),
+        ),
+        ChangeNotifierProvider<FacturacionProvider>(
+          create: (context) => FacturacionProvider(context.read<ApiClient>()),
         ),
         Provider<GoogleAuthController>(
           create: (_) => GoogleAuthController(),

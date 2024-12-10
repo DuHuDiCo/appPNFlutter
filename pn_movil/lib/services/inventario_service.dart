@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:pn_movil/conexiones/apiClient.dart';
+import 'package:pn_movil/conexiones/ApiClient.dart';
 
 class InventarioService {
   final ApiClient apiClient;
