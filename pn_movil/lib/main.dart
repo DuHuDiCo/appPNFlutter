@@ -3,6 +3,7 @@ import 'package:pn_movil/conexiones/ApiClient.dart';
 import 'package:pn_movil/conexiones/autentificacion.dart';
 import 'package:pn_movil/models/Compras.dart';
 import 'package:pn_movil/providers/clasificacion_provider.dart';
+import 'package:pn_movil/providers/clientes_provider.dart';
 import 'package:pn_movil/providers/compra_provider.dart';
 import 'package:pn_movil/providers/facturacion_provider.dart';
 import 'package:pn_movil/providers/google_provider.dart';
@@ -51,6 +52,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<ClasificacionProvider>(
           create: (context) => ClasificacionProvider(context.read<ApiClient>()),
+        ),
+        ChangeNotifierProvider<ClientesProvider>(
+          create: (context) => ClientesProvider(context.read<ApiClient>()),
         ),
         ChangeNotifierProvider<CompraProvider>(
           create: (context) => CompraProvider(context.read<ApiClient>()),

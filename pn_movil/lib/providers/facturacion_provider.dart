@@ -51,7 +51,7 @@ class FacturacionProvider extends ChangeNotifier {
       notifyListeners();
 
       final response = await _apiClient.post(
-        '/facturacion',
+        '/api/v1/facturacion/',
         factura,
       );
 
@@ -62,8 +62,7 @@ class FacturacionProvider extends ChangeNotifier {
 
         await loadFacturas(context);
       } else {
-        final error =
-            json.decode(response.body)['message'] ?? 'Error desconocido';
+        final error = json.decode(response.body)['message'];
         throw Exception(error);
       }
     } catch (e) {

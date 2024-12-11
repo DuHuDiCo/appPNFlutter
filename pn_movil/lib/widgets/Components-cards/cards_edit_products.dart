@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class ProductCardSelect extends StatelessWidget {
   final String imageUrl;
   final String productName;
+  // final int cantidad;
   final String clasification;
   final String productId;
   final void Function(
@@ -14,6 +15,7 @@ class ProductCardSelect extends StatelessWidget {
     Key? key,
     required this.imageUrl,
     required this.productName,
+    // required this.cantidad,
     required this.clasification,
     required this.onAddProduct,
     required this.onRemoveProduct,
@@ -52,7 +54,14 @@ class ProductCardSelect extends StatelessWidget {
                   fontSize: 14,
                 ),
               ),
-              const SizedBox(height: 15),
+              const SizedBox(height: 5),
+              // Text(
+              //   cantidad.toString(),
+              //   style: const TextStyle(
+              //     fontSize: 14,
+              //   ),
+              // ),
+              const SizedBox(height: 5),
               ElevatedButton(
                 onPressed: isSelected
                     ? () => onRemoveProduct(productName, clasification)
