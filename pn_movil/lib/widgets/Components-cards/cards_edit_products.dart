@@ -1,11 +1,14 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 class ProductCardSelect extends StatelessWidget {
   final String imageUrl;
   final String productName;
-  // final int cantidad;
+  final int cantidad;
   final String clasification;
   final String productId;
+  final String costo;
   final void Function(
       String productName, String clasification, String productId) onAddProduct;
   final void Function(String productName, String clasification) onRemoveProduct;
@@ -15,12 +18,13 @@ class ProductCardSelect extends StatelessWidget {
     Key? key,
     required this.imageUrl,
     required this.productName,
-    // required this.cantidad,
+    required this.cantidad,
     required this.clasification,
     required this.onAddProduct,
     required this.onRemoveProduct,
     required this.isSelected,
     required this.productId,
+    required this.costo,
   }) : super(key: key);
 
   @override
@@ -55,12 +59,19 @@ class ProductCardSelect extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 5),
-              // Text(
-              //   cantidad.toString(),
-              //   style: const TextStyle(
-              //     fontSize: 14,
-              //   ),
-              // ),
+              Text(
+                costo,
+                style: const TextStyle(
+                  fontSize: 14,
+                ),
+              ),
+              const SizedBox(height: 5),
+              Text(
+                'C/N: ' + cantidad.toString(),
+                style: const TextStyle(
+                  fontSize: 14,
+                ),
+              ),
               const SizedBox(height: 5),
               ElevatedButton(
                 onPressed: isSelected

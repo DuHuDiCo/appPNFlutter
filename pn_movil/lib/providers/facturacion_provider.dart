@@ -21,7 +21,9 @@ class FacturacionProvider extends ChangeNotifier {
       _isLoading = true;
       notifyListeners();
 
-      final response = await _apiClient.get('/facturacion/');
+      final idUser = 0;
+
+      final response = await _apiClient.get('/facturacion/?idUser=$idUser');
       if (response.statusCode == 200) {
         _facturas = List<Map<String, dynamic>>.from(json.decode(response.body));
         print("Facturaciones cargadas: $_facturas");
@@ -31,7 +33,7 @@ class FacturacionProvider extends ChangeNotifier {
     } catch (e) {
       final errorMessage = e.toString().contains('No se ha iniciado sesión')
           ? e.toString()
-          : 'Error al cargar facturaciones';
+          : 'Error al cargar facturaciones noo';
       print(_facturas);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(errorMessage)),

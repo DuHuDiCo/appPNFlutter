@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:pn_movil/conexiones/ApiClient.dart';
 import 'package:pn_movil/providers/facturacion_provider.dart';
 
@@ -8,17 +9,19 @@ class FacturacionService extends ChangeNotifier {
 
   final List<Map<String, String>> _selectedProducts = [];
 
+  bool get hasSelectedProducts => _selectedProducts.isNotEmpty;
+
   FacturacionService(this.apiClient);
 
   void addProducts(Map<String, String> producto) {
     _selectedProducts.add(producto);
+    notifyListeners();
     print(_selectedProducts);
   }
 
   //Funcion para verificar si el producto seleccionado ya existe
   bool isProductSelected(int idProductoCompra) {
     return _selectedProducts.any((product) {
-      // Convertimos idProductoCompra a String para hacer la comparación
       var productId = product['idProductoCompra'];
       print(productId);
 
@@ -30,12 +33,11 @@ class FacturacionService extends ChangeNotifier {
   void removeProduct(int idProductoCompra) {
     _selectedProducts.removeWhere((product) =>
         product['idProductoCompra'] == idProductoCompra.toString());
-
     notifyListeners();
-
     print("Productos seleccionados actualizados: $_selectedProducts");
   }
 
+  // Función para guardar la facturación
   Future<void> guardarFacturacion(
       BuildContext context, int idInventario) async {
     final Map<String, dynamic> factura = {
@@ -53,5 +55,14 @@ class FacturacionService extends ChangeNotifier {
       );
       if (kDebugMode) print(e);
     }
+  }
+
+  //Funcion para formatear una cantidad de moneda a pesos colombianos
+  String formatCurrencyToCOP(dynamic value) {
+    final formatCurrency = NumberFormat.currency(
+      locale: 'es_CO',
+      symbol: '',
+    );
+    return '\$${formatCurrency.format(value).split(',')[0]}';
   }
 }

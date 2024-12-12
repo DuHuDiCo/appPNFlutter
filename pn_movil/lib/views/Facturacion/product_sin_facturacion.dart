@@ -1,29 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:pn_movil/conexiones/ApiClient.dart';
-import 'package:pn_movil/providers/facturacion_provider.dart';
-import 'package:pn_movil/services/facturacion_service.dart';
+import 'package:pn_movil/providers/products_sin_facturacion_provider.dart';
 import 'package:pn_movil/widgets/Components-cards/cards_listar_products.dart';
 import 'package:pn_movil/widgets/Components-navbar/drawer.dart';
 import 'package:pn_movil/widgets/Components-navbar/navbar.dart';
 import 'package:provider/provider.dart';
 
-class Facturacion extends StatefulWidget {
-  const Facturacion({super.key});
-
-  @override
-  _FacturacionState createState() => _FacturacionState();
-}
-
-class _FacturacionState extends State<Facturacion> {
-  late final FacturacionService facturacionService;
-
-  @override
-  void initState() {
-    super.initState();
-    facturacionService =
-        FacturacionService(ApiClient('https://apppn.duckdns.org'));
-  }
+class ProductSinFacturacion extends StatelessWidget {
+  const ProductSinFacturacion({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +15,7 @@ class _FacturacionState extends State<Facturacion> {
       appBar: Navbar(),
       drawer: CustomDrawer(),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.0),
         child: Column(
           children: [
             // Título principal
@@ -41,21 +25,21 @@ class _FacturacionState extends State<Facturacion> {
             _buildSearchBar(context),
 
             // Contenido principal
-            _buildMainContent(),
+            _buildMainContent(context),
           ],
         ),
       ),
     );
   }
 
-  //Metodo para construir el título
+//Metodo para construir el título
   Widget _buildTitle() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
       child: Text(
-        'Explora nuestras facturaciones',
+        'Explora los Productos sin facturación',
         style: TextStyle(
-          fontSize: 24,
+          fontSize: 21,
           fontWeight: FontWeight.bold,
           color: Colors.blue.shade800,
         ),
@@ -73,7 +57,7 @@ class _FacturacionState extends State<Facturacion> {
           Expanded(
             child: TextField(
               decoration: InputDecoration(
-                hintText: 'Buscar facturaciones...',
+                hintText: 'Buscar productos sin facturación...',
                 prefixIcon: const Icon(Icons.search, color: Colors.grey),
                 filled: true,
                 fillColor: Colors.white,
@@ -109,19 +93,21 @@ class _FacturacionState extends State<Facturacion> {
     );
   }
 
-  Widget _buildMainContent() {
-    Future.microtask(
-        () => context.read<FacturacionProvider>().loadFacturas(context));
+  ///Metodo para construir el contenido principal
+  Widget _buildMainContent(BuildContext context) {
+    Future.microtask(() => context
+        .read<ProductsSinFacturacionProvider>()
+        .loadProductosSinFacturacion(context));
 
-    return Consumer<FacturacionProvider>(
-      builder: (context, facturaProvider, child) {
-        if (facturaProvider.isLoading) {
+    return Consumer<ProductsSinFacturacionProvider>(
+      builder: (context, productosSinFacturacionProvider, child) {
+        if (productosSinFacturacionProvider.isLoading) {
           return const Center(
             child: CircularProgressIndicator(),
           );
         }
 
-        if (facturaProvider.facturas.isEmpty) {
+        if (productosSinFacturacionProvider.productosSinFacturacion.isEmpty) {
           return const Center(
             child: Text(
               'No hay facturas disponibles.',
@@ -132,9 +118,11 @@ class _FacturacionState extends State<Facturacion> {
 
         return Expanded(
           child: ListView.builder(
-            itemCount: facturaProvider.facturas.length,
+            itemCount:
+                productosSinFacturacionProvider.productosSinFacturacion.length,
             itemBuilder: (context, index) {
-              final factura = facturaProvider.facturas[index];
+              final productoSinFacturacion = productosSinFacturacionProvider
+                  .productosSinFacturacion[index];
 
               return ListItem(
                 imageUrl: null,
@@ -146,22 +134,17 @@ class _FacturacionState extends State<Facturacion> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Factura #${factura['idFacturacion']}',
+                            'Factura #${productoSinFacturacion['idProductoCompraInventory']}',
                             style: const TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(height: 4),
-                          Text(
-                            'Fecha: ${DateFormat('dd/MM/yyyy').format(DateTime.parse(factura['fecha']))}',
-                            style: TextStyle(
-                                fontSize: 14, color: Colors.grey[700]),
-                          ),
+                          // Text(
+                          //   'Fecha: ${DateFormat('dd/MM/yyyy').format(DateTime.parse(productoSinFacturacion['fecha']))}',
+                          //   style: TextStyle(
+                          //       fontSize: 14, color: Colors.grey[700]),
+                          // ),
                           const SizedBox(height: 4),
-                          Text(
-                            'Total facturacion: ${facturacionService.formatCurrencyToCOP(factura["totalFacturacion"])}',
-                            style: TextStyle(
-                                fontSize: 14, color: Colors.grey[700]),
-                          ),
                         ],
                       ),
                     ),

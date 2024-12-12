@@ -17,6 +17,7 @@ class FacturacionCrear extends StatefulWidget {
 class _FacturacionCrearState extends State<FacturacionCrear> {
   late final FacturacionService facturacionService;
   List<Map<String, dynamic>> productosSeleccionados = [];
+  bool isRegistrarButtonEnabled = false;
 
   @override
   void initState() {
@@ -68,7 +69,7 @@ class _FacturacionCrearState extends State<FacturacionCrear> {
             _buildMainContent(inventario),
 
             // Botón para guardar la facturación
-            _buildFooter(inventario),
+            _buildFooter(facturacionService, inventario),
           ],
         ),
       ),
@@ -119,49 +120,57 @@ class _FacturacionCrearState extends State<FacturacionCrear> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 10),
-              GridView.builder(
-                shrinkWrap:
-                    true, // Hace que el GridView use solo el espacio necesario
-                physics:
-                    NeverScrollableScrollPhysics(), // Desactiva el scroll interno
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 10.0,
-                  mainAxisSpacing: 10.0,
-                  childAspectRatio: 0.6,
-                ),
-                itemCount: productos.length,
-                itemBuilder: (BuildContext context, int index) {
-                  final product = productos[index];
-                  final productData = product['productoCompra'] ?? {};
-                  final producto = productData['producto'] ?? {};
-                  bool isSelected = facturacionService.isProductSelected(
-                    productData['idProductoCompra'],
-                  );
-                  print(isSelected);
-                  return ProductCardSelect(
-                    imageUrl: (producto['imagenes'] is List &&
-                            producto['imagenes'].isNotEmpty)
-                        ? producto['imagenes'][0]['urlPath']
-                        : 'assets/algo.jpg',
-                    productName: producto['producto'] ?? 'Producto sin nombre',
-                    clasification: producto['clasificacionProducto']
-                            ?['clasificacionProducto'] ??
-                        'Sin clasificar',
-                    // cantidad: inventario['quantity'],
-                    onAddProduct: (productName, clasification, productId) {
-                      _showAddProductDialog(
-                          context, productName, clasification, productId);
-                    },
-                    onRemoveProduct: (name, clasification) {
-                      setState(() {
-                        facturacionService
-                            .removeProduct(productData['idProductoCompra']);
-                      });
-                    },
-                    isSelected: isSelected,
-                    productId:
-                        productData['idProductoCompra']?.toString() ?? '',
+              LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints) {
+                  return SizedBox(
+                    height: 500,
+                    child: GridView.builder(
+                      physics: const BouncingScrollPhysics(),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 10.0,
+                        mainAxisSpacing: 10.0,
+                        childAspectRatio: 0.6,
+                      ),
+                      itemCount: productos.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        final product = productos[index];
+                        final productData = product['productoCompra'] ?? {};
+                        final producto = productData['producto'] ?? {};
+                        bool isSelected = facturacionService.isProductSelected(
+                          productData['idProductoCompra'],
+                        );
+                        return ProductCardSelect(
+                          imageUrl: (producto['imagenes'] is List &&
+                                  producto['imagenes'].isNotEmpty)
+                              ? producto['imagenes'][0]['urlPath']
+                              : 'assets/algo.jpg',
+                          productName:
+                              producto['producto'] ?? 'Producto sin nombre',
+                          clasification: producto['clasificacionProducto']
+                                  ?['clasificacionProducto'] ??
+                              'Sin clasificar',
+                          costo: facturacionService
+                              .formatCurrencyToCOP(productData['costo']),
+                          cantidad: productData['cantidad'],
+                          onAddProduct:
+                              (productName, clasification, productId) {
+                            _showAddProductDialog(
+                                context, productName, clasification, productId);
+                          },
+                          onRemoveProduct: (name, clasification) {
+                            setState(() {
+                              facturacionService.removeProduct(
+                                  productData['idProductoCompra']);
+                            });
+                          },
+                          isSelected: isSelected,
+                          productId:
+                              productData['idProductoCompra']?.toString() ?? '',
+                        );
+                      },
+                    ),
                   );
                 },
               ),
@@ -169,61 +178,6 @@ class _FacturacionCrearState extends State<FacturacionCrear> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  // Función para crear el footer del dialogo de agregar facturacion
-  Widget _buildFooter(Map<String, dynamic>? inventario) {
-    if (inventario == null) {
-      return const Center(
-        child: Text('No se pudo cargar la información de la compra.'),
-      );
-    }
-
-    final int idInventario = inventario['idInventory'] as int;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: 150,
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pushReplacementNamed('facturacion');
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-              ),
-              child: const Text(
-                'Regresar',
-                style: TextStyle(
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 20),
-          SizedBox(
-            width: 150,
-            child: ElevatedButton(
-              onPressed: () {
-                facturacionService.guardarFacturacion(context, idInventario);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-              ),
-              child: const Text(
-                'Registrar',
-                style: TextStyle(
-                  color: Color.fromARGB(255, 244, 245, 246),
-                ),
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -395,6 +349,72 @@ class _FacturacionCrearState extends State<FacturacionCrear> {
           },
         );
       },
+    );
+  }
+
+  //Metodo para construir el footer del dialogo de agregar producto
+  Widget _buildFooter(
+      FacturacionService facturacionService, Map<String, dynamic>? inventario) {
+    if (inventario == null) {
+      return const Center(
+        child: Text('No se pudo cargar la información de la compra.'),
+      );
+    }
+
+    final int idInventario = inventario['idInventory'] as int;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 150,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pushReplacementNamed('inventario');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                  ),
+                  child: const Text(
+                    'Regresar',
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 20),
+              SizedBox(
+                width: 150,
+                child: ElevatedButton(
+                  onPressed: facturacionService.hasSelectedProducts
+                      ? () => facturacionService.guardarFacturacion(
+                          context, idInventario)
+                      : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: facturacionService.hasSelectedProducts
+                        ? Colors.blue
+                        : Colors.grey,
+                  ),
+                  child: const Text(
+                    'Registrar',
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 244, 245, 246),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

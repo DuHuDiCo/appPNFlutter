@@ -94,7 +94,8 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
   void checkFormValidity() {
     setState(() {
       _isFormValid = (_formKey.currentState?.validate() ?? false) &&
-          _selectedProducts.isNotEmpty;
+          _selectedProducts.isNotEmpty &&
+          _proveedorSeleccionado != null;
     });
   }
 

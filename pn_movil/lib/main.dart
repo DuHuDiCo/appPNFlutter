@@ -10,6 +10,7 @@ import 'package:pn_movil/providers/google_provider.dart';
 import 'package:pn_movil/providers/inventario_provider.dart';
 import 'package:pn_movil/providers/pago_provider.dart';
 import 'package:pn_movil/providers/products_provider.dart';
+import 'package:pn_movil/providers/products_sin_facturacion_provider.dart';
 import 'package:pn_movil/providers/proveedor_provider.dart';
 import 'package:pn_movil/providers/user_provider.dart';
 import 'package:pn_movil/services/AuthService.dart';
@@ -19,6 +20,7 @@ import 'package:pn_movil/views/Compras-solicitar/compras_solicitar_editar.dart';
 import 'package:pn_movil/views/Compras-solicitar/compras_solicitar_detalle.dart';
 import 'package:pn_movil/views/Facturacion/facturacion.dart';
 import 'package:pn_movil/views/Facturacion/facturacion_crear.dart';
+import 'package:pn_movil/views/Facturacion/product_sin_facturacion.dart';
 import 'package:pn_movil/views/Inventario/detalle_inventario.dart';
 import 'package:pn_movil/views/Inventario/inventario.dart';
 import 'package:pn_movil/views/Pago/crear_pago.dart';
@@ -74,6 +76,10 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<FacturacionProvider>(
           create: (context) => FacturacionProvider(context.read<ApiClient>()),
         ),
+        ChangeNotifierProvider<ProductsSinFacturacionProvider>(
+          create: (context) =>
+              ProductsSinFacturacionProvider(context.read<ApiClient>()),
+        ),
         Provider<GoogleAuthController>(
           create: (_) => GoogleAuthController(),
         ),
@@ -103,6 +109,7 @@ class MyApp extends StatelessWidget {
           'detalle-inventario': (_) => const DetalleInventario(),
           'facturacion': (_) => const Facturacion(),
           'facturacion-crear': (_) => const FacturacionCrear(),
+          'productos-sin-facturacion': (_) => const ProductSinFacturacion(),
         },
         theme: ThemeData.light().copyWith(
           scaffoldBackgroundColor: Colors.grey[300],
