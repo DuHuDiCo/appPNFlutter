@@ -92,10 +92,9 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                     runSpacing: 10.0,
                     children: loadingProductos
                         ? provider.products.map((product) {
-                            bool isSelected = isProductSelected(
-                                product['producto'],
-                                product['clasificacionProducto']
-                                    ['clasificacionProducto']);
+                            bool isSelected =
+                                isProductSelected(product['idProducto']);
+                            print(isSelected);
                             return ProductCardSelect(
                               imageUrl: (product['imagenes'] is List &&
                                       product['imagenes'].isNotEmpty)
@@ -105,14 +104,19 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                                   product['producto'] ?? 'Producto sin nombre',
                               clasification: product['clasificacionProducto']
                                   ['clasificacionProducto'],
-                              onAddProduct:
-                                  (productName, clasification, productId) {
-                                _showEditProductDialog(context, productName,
-                                    clasification, 0, 0, product['idProducto']);
-                              },
-                              onRemoveProduct: (name, clasification) {
-                                removeProduct(name, clasification);
-                              },
+                              onAddProduct: isSelected
+                                  ? (productName, clasification, productId) {
+                                      _showEditProductDialog(
+                                        context,
+                                        productName,
+                                        clasification,
+                                        0,
+                                        0,
+                                        product['idProducto'],
+                                      );
+                                    }
+                                  : null,
+                              onRemoveProduct: (name, clasification) {},
                               isSelected: isSelected,
                               productId: product['idProducto'].toString(),
                             );
@@ -515,10 +519,11 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
   }
 
   //Funcion para verificar si el producto seleccionado ya existe
-  bool isProductSelected(String name, String clasification) {
-    return _selectedProducts.any((product) =>
-        product['productName'] == name &&
-        product['clasification'] == clasification);
+  bool isProductSelected(int idProducto) {
+    return _selectedProducts.any((product) {
+      var id = product['idProducto'];
+      return id == idProducto.toString();
+    });
   }
 
   // Función para eliminar un producto seleccionado

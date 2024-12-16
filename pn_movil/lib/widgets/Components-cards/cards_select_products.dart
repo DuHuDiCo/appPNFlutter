@@ -6,7 +6,7 @@ class ProductCardSelect extends StatelessWidget {
   final String clasification;
   final String productId;
   final void Function(
-      String productName, String clasification, String productId) onAddProduct;
+      String productName, String clasification, String productId)? onAddProduct;
   final void Function(String productName, String clasification) onRemoveProduct;
   final bool isSelected;
 
@@ -56,7 +56,8 @@ class ProductCardSelect extends StatelessWidget {
               ElevatedButton(
                 onPressed: isSelected
                     ? () => onRemoveProduct(productName, clasification)
-                    : () => onAddProduct(productName, clasification, productId),
+                    : () =>
+                        onAddProduct!(productName, clasification, productId),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: isSelected ? Colors.red : Colors.blue,
                 ),
