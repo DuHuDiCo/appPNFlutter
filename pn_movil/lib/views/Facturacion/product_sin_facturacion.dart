@@ -1,13 +1,61 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:pn_movil/conexiones/ApiClient.dart';
+import 'package:pn_movil/providers/clientes_provider.dart';
 import 'package:pn_movil/providers/products_sin_facturacion_provider.dart';
+import 'package:pn_movil/services/facturacion_service.dart';
 import 'package:pn_movil/widgets/Components-cards/cards_listar_products.dart';
 import 'package:pn_movil/widgets/Components-navbar/drawer.dart';
 import 'package:pn_movil/widgets/Components-navbar/navbar.dart';
 import 'package:provider/provider.dart';
 
-class ProductSinFacturacion extends StatelessWidget {
+class ProductSinFacturacion extends StatefulWidget {
   const ProductSinFacturacion({super.key});
+
+  @override
+  State<ProductSinFacturacion> createState() => _ProductSinFacturacionState();
+}
+
+class _ProductSinFacturacionState extends State<ProductSinFacturacion> {
+  late final FacturacionService facturacionService;
+  List<Map<String, dynamic>> productoSeleccionado = [];
+
+  @override
+  void initState() {
+    super.initState();
+    facturacionService =
+        FacturacionService(ApiClient('https://apppn.duckdns.org'));
+
+    Future.microtask(() => context
+        .read<ProductsSinFacturacionProvider>()
+        .loadProductosSinFacturacion(context));
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<ClientesProvider>(context, listen: false)
+          .loadClientes(context);
+    });
+  }
+
+  void _addProductWithDetails(String name, String clasification, int cantidad,
+      double valorVenta, String productId, int clientId, double descuento) {
+    if (productoSeleccionado.any((product) =>
+        product['productName'] == name &&
+        product['clasification'] == clasification)) {
+      return;
+    }
+
+    setState(() {
+      facturacionService.addProducts({
+        'cantidad': cantidad.toString(),
+        'idCliente': clientId.toString(),
+        'valorVenta': valorVenta.toString(),
+        'descuentoPagoInicial': descuento.toString(),
+        'idProductoCompra': productId,
+      });
+    });
+
+    print(productoSeleccionado);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,10 +143,6 @@ class ProductSinFacturacion extends StatelessWidget {
 
   ///Metodo para construir el contenido principal
   Widget _buildMainContent(BuildContext context) {
-    Future.microtask(() => context
-        .read<ProductsSinFacturacionProvider>()
-        .loadProductosSinFacturacion(context));
-
     return Consumer<ProductsSinFacturacionProvider>(
       builder: (context, productosSinFacturacionProvider, child) {
         if (productosSinFacturacionProvider.isLoading) {
@@ -168,11 +212,17 @@ class ProductSinFacturacion extends StatelessWidget {
                 actions: [
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.pushReplacementNamed(
-                        context,
-                        'facturacion-crear',
-                        arguments: productoSinFacturacion['inventory'],
-                      );
+                      _showAddProductDialog(
+                          productoSinFacturacion['productoCompra']['producto']
+                              ['producto'],
+                          productoSinFacturacion['productoCompra']['producto']
+                                  ['clasificacionProducto']
+                              ['clasificacionProducto'],
+                          productoSinFacturacion['productoCompra']
+                                      ['idProductoCompra']
+                                  ?.toString() ??
+                              '',
+                          productoSinFacturacion);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromRGBO(112, 185, 244, 1),
@@ -203,6 +253,181 @@ class ProductSinFacturacion extends StatelessWidget {
               );
             },
           ),
+        );
+      },
+    );
+  }
+
+  //Dialogo para agregar producto
+  Future<void> _showAddProductDialog(String productName, String clasification,
+      String productId, Map<String, dynamic>? productoSinFacturacion) async {
+    final TextEditingController cantidadController = TextEditingController();
+    final TextEditingController valorVentaController = TextEditingController();
+    final TextEditingController descuentoPagoInicialController =
+        TextEditingController();
+    int? _selectedCliente;
+
+    await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              title: Text(
+                'Facturar Producto',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue.shade800,
+                ),
+              ),
+              content: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const SizedBox(height: 16),
+                      Consumer<ClientesProvider>(
+                        builder: (context, clientesProvider, child) {
+                          if (clientesProvider.isLoading) {
+                            return CircularProgressIndicator();
+                          }
+
+                          if (clientesProvider.clientes.isEmpty) {
+                            return Text("No hay clientes disponibles");
+                          }
+
+                          final clientes = clientesProvider.clientes;
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: InputDecorator(
+                              decoration: InputDecoration(
+                                labelText: 'Selecciona un cliente',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                filled: true,
+                                fillColor: Colors.grey[100]?.withOpacity(0.8),
+                                prefixIcon: const Icon(Icons.category),
+                              ),
+                              child: DropdownButton<int>(
+                                isExpanded: true,
+                                value: _selectedCliente,
+                                hint: Text('Clientes'),
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    _selectedCliente = newValue;
+                                  });
+                                },
+                                items: clientes.map((cliente) {
+                                  return DropdownMenuItem<int>(
+                                    value: cliente['idClient'],
+                                    child: Text(cliente['name'] +
+                                        ' ' +
+                                        cliente['lastname']),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: cantidadController,
+                        decoration: InputDecoration(
+                          labelText: 'Cantidad',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          prefixIcon: const Icon(Icons.shopping_cart),
+                        ),
+                        keyboardType: TextInputType.number,
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: valorVentaController,
+                        decoration: InputDecoration(
+                          labelText: 'Valor de venta',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          prefixIcon: const Icon(Icons.attach_money),
+                        ),
+                        keyboardType: TextInputType.number,
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: descuentoPagoInicialController,
+                        decoration: InputDecoration(
+                          labelText: 'Descuento pago inicial',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          prefixIcon: const Icon(Icons.discount_sharp),
+                        ),
+                        keyboardType: TextInputType.number,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(false);
+                  },
+                  child: const Text(
+                    'Cancelar',
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 236, 129, 121),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue.shade800,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  onPressed: () {
+                    if (cantidadController.text.isNotEmpty &&
+                        valorVentaController.text.isNotEmpty &&
+                        descuentoPagoInicialController.text.isNotEmpty) {
+                      _addProductWithDetails(
+                        productName,
+                        clasification,
+                        int.parse(cantidadController.text),
+                        double.parse(valorVentaController.text),
+                        productId,
+                        _selectedCliente!,
+                        double.parse(descuentoPagoInicialController.text),
+                      );
+                      final idInventario =
+                          productoSinFacturacion?['inventory']['idInventory'];
+                      facturacionService.guardarFacturacion(
+                          context, idInventario);
+
+                      // Navigator.of(context).pop(true);
+                    }
+                  },
+                  child: const Text(
+                    'Facturar',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
         );
       },
     );

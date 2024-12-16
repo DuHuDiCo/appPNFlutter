@@ -16,7 +16,7 @@ class FacturacionService extends ChangeNotifier {
   void addProducts(Map<String, String> producto) {
     _selectedProducts.add(producto);
     notifyListeners();
-    print(_selectedProducts);
+    print('Productos seleccionados actualizados: $_selectedProducts');
   }
 
   //Funcion para verificar si el producto seleccionado ya existe
@@ -49,6 +49,8 @@ class FacturacionService extends ChangeNotifier {
 
     try {
       await FacturacionProvider(apiClient).crearFactura(context, factura);
+      print('Factura creada exitosamente');
+      print(factura);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.toString())),

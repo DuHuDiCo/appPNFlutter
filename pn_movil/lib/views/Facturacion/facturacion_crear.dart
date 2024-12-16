@@ -55,6 +55,9 @@ class _FacturacionCrearState extends State<FacturacionCrear> {
     final Map<String, dynamic>? inventario =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
 
+    final Map<String, dynamic>? factura =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+
     print(' inventario Desde Vista: $inventario');
 
     return Scaffold(
@@ -68,7 +71,7 @@ class _FacturacionCrearState extends State<FacturacionCrear> {
             _buildTitle(inventario),
 
             // Contenido principal
-            _buildMainContent(inventario),
+            _buildMainContent(inventario, factura),
 
             // Botón para guardar la facturación
             _buildFooter(facturacionService, inventario),
@@ -118,7 +121,8 @@ class _FacturacionCrearState extends State<FacturacionCrear> {
   }
 
   //Meotodo para construir
-  Widget _buildMainContent(Map<String, dynamic>? inventario) {
+  Widget _buildMainContent(
+      Map<String, dynamic>? inventario, Map<String, dynamic>? factura) {
     if (inventario == null) {
       return const Center(
         child: Text('No se pudo cargar la información de la compra.'),
@@ -171,8 +175,8 @@ class _FacturacionCrearState extends State<FacturacionCrear> {
                           cantidad: productData['cantidad'],
                           onAddProduct:
                               (productName, clasification, productId) {
-                            _showAddProductDialog(
-                                context, productName, clasification, productId);
+                            _showAddProductDialog(context, productName,
+                                clasification, productId, factura);
                           },
                           onRemoveProduct: (name, clasification) {
                             setState(() {
@@ -198,13 +202,20 @@ class _FacturacionCrearState extends State<FacturacionCrear> {
   }
 
   //Dialogo para agregar producto
-  Future<void> _showAddProductDialog(BuildContext context, String productName,
-      String clasification, String productId) async {
+  Future<void> _showAddProductDialog(
+      BuildContext context,
+      String productName,
+      String clasification,
+      String productId,
+      Map<String, dynamic>? factura) async {
     final TextEditingController cantidadController = TextEditingController();
     final TextEditingController valorVentaController = TextEditingController();
     final TextEditingController descuentoPagoInicialController =
         TextEditingController();
     int? _selectedCliente;
+    String? cantidadError;
+
+    int cantidadProducto = factura?['productos']?[0]?['cantidad'] ?? 0;
 
     await showDialog<bool>(
       context: context,
@@ -284,8 +295,24 @@ class _FacturacionCrearState extends State<FacturacionCrear> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           prefixIcon: const Icon(Icons.shopping_cart),
+                          errorText: cantidadError, // Mostrar mensaje de error
                         ),
                         keyboardType: TextInputType.number,
+                        onChanged: (value) {
+                          setState(() {
+                            final int? cantidadIngresada = int.tryParse(value);
+
+                            if (cantidadIngresada == null ||
+                                cantidadIngresada <= 0) {
+                              cantidadError = "Ingre se una cantidad válida.";
+                            } else if (cantidadIngresada > cantidadProducto) {
+                              cantidadError =
+                                  "La cantidad no puede superar los $cantidadProducto disponibles.";
+                            } else {
+                              cantidadError = null;
+                            }
+                          });
+                        },
                       ),
                       const SizedBox(height: 16),
                       TextField(
