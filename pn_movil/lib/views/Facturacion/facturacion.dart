@@ -148,70 +148,50 @@ class _FacturacionState extends State<Facturacion> {
                           Text(
                             'Factura #${factura['idFacturacion']}',
                             style: const TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             'Fecha: ${DateFormat('dd/MM/yyyy').format(DateTime.parse(factura['fecha']))}',
                             style: TextStyle(
-                                fontSize: 14, color: Colors.grey[700]),
+                              fontSize: 14,
+                              color: Colors.grey[700],
+                            ),
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Total facturacion: ${facturacionService.formatCurrencyToCOP(factura["totalFacturacion"])}',
+                            'Total facturación: ${facturacionService.formatCurrencyToCOP(factura["totalFacturacion"])}',
                             style: TextStyle(
-                                fontSize: 14, color: Colors.grey[700]),
+                              fontSize: 14,
+                              color: Colors.grey[700],
+                            ),
                           ),
                         ],
                       ),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        PopupMenuButton<String>(
-                          icon: const Icon(
-                            Icons.more_vert,
-                            color: Color.fromRGBO(112, 185, 244, 1),
-                            size: 30,
-                          ),
-                          onSelected: (String value) {
-                            switch (value) {
-                              case 'comprobante':
-                                // _mostrarComprobanteDialog(
-                                //     context, factura['idFacturacion']);
-                                break;
-
-                              case 'eliminar':
-                                // _confirmarEliminacion(
-                                //     context, factura['idFacturacion']);
-                                break;
-                            }
-                          },
-                          itemBuilder: (BuildContext context) =>
-                              <PopupMenuEntry<String>>[
-                            PopupMenuItem<String>(
-                              value: 'comprobante',
-                              child: Row(
-                                children: const [
-                                  Icon(Icons.visibility, color: Colors.blue),
-                                  SizedBox(width: 10),
-                                  Text('Ver comprobante'),
-                                ],
-                              ),
-                            ),
-                            PopupMenuItem<String>(
-                              value: 'eliminar',
-                              child: Row(
-                                children: const [
-                                  Icon(Icons.delete, color: Colors.red),
-                                  SizedBox(width: 10),
-                                  Text('Eliminar'),
-                                ],
-                              ),
-                            ),
-                          ],
+                    const SizedBox(width: 16),
+                    // Botón redondo
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Color.fromRGBO(112, 185, 244, 1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: IconButton(
+                        onPressed: () {
+                          Navigator.pushReplacementNamed(
+                            context,
+                            'productos-facturacion-detalle',
+                            arguments: factura,
+                          );
+                        },
+                        icon: const Icon(
+                          Icons.visibility,
+                          color: Colors.white,
                         ),
-                      ],
+                        tooltip: 'Ver detalles',
+                      ),
                     ),
                   ],
                 ),

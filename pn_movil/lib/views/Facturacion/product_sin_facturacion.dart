@@ -125,79 +125,81 @@ class ProductSinFacturacion extends StatelessWidget {
                   .productosSinFacturacion[index];
 
               return ListItem(
-                imageUrl: null,
-                content: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                imageUrl: (productoSinFacturacion['productoCompra']['producto']
+                            ['imagenes'] is List &&
+                        productoSinFacturacion['productoCompra']['producto']
+                                ['imagenes']
+                            .isNotEmpty)
+                    ? productoSinFacturacion['productoCompra']['producto']
+                        ['imagenes'][0]['urlPath']
+                    : 'assets/algo.jpg',
+                content: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Factura #${productoSinFacturacion['idProductoCompraInventory']}',
-                            style: const TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 4),
-                          // Text(
-                          //   'Fecha: ${DateFormat('dd/MM/yyyy').format(DateTime.parse(productoSinFacturacion['fecha']))}',
-                          //   style: TextStyle(
-                          //       fontSize: 14, color: Colors.grey[700]),
-                          // ),
-                          const SizedBox(height: 4),
-                        ],
-                      ),
+                    Text(
+                      productoSinFacturacion['productoCompra']['producto']
+                              ['producto'] ??
+                          'Producto sin nombre',
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        PopupMenuButton<String>(
-                          icon: const Icon(
-                            Icons.more_vert,
-                            color: Color.fromRGBO(112, 185, 244, 1),
-                            size: 30,
-                          ),
-                          onSelected: (String value) {
-                            switch (value) {
-                              case 'comprobante':
-                                // _mostrarComprobanteDialog(
-                                //     context, factura['idFacturacion']);
-                                break;
-
-                              case 'eliminar':
-                                // _confirmarEliminacion(
-                                //     context, factura['idFacturacion']);
-                                break;
-                            }
-                          },
-                          itemBuilder: (BuildContext context) =>
-                              <PopupMenuEntry<String>>[
-                            PopupMenuItem<String>(
-                              value: 'comprobante',
-                              child: Row(
-                                children: const [
-                                  Icon(Icons.visibility, color: Colors.blue),
-                                  SizedBox(width: 10),
-                                  Text('Ver comprobante'),
-                                ],
-                              ),
-                            ),
-                            PopupMenuItem<String>(
-                              value: 'eliminar',
-                              child: Row(
-                                children: const [
-                                  Icon(Icons.delete, color: Colors.red),
-                                  SizedBox(width: 10),
-                                  Text('Eliminar'),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                    const SizedBox(height: 4),
+                    Text(
+                      '${productoSinFacturacion['productoCompra']['producto']['clasificacionProducto']['clasificacionProducto'] ?? 'Clasificación no disponible'}',
+                      style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Cantidad: ${productoSinFacturacion['productoCompra']['cantidad']}',
+                      style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Inventario # ${productoSinFacturacion['inventory']['idInventory']}',
+                      style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Fecha: ${DateFormat('dd/MM/yyyy').format(DateTime.parse(productoSinFacturacion['inventory']['dateInventory']))}',
+                      style: TextStyle(fontSize: 14, color: Colors.grey[700]),
                     ),
                   ],
                 ),
+                actions: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushReplacementNamed(
+                        context,
+                        'facturacion-crear',
+                        arguments: productoSinFacturacion['inventory'],
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromRGBO(112, 185, 244, 1),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        Icon(
+                          Icons.add,
+                          color: Colors.white,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Facturar',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                ],
               );
             },
           ),

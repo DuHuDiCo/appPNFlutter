@@ -55,6 +55,8 @@ class _FacturacionCrearState extends State<FacturacionCrear> {
     final Map<String, dynamic>? inventario =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
 
+    print(' inventario Desde Vista: $inventario');
+
     return Scaffold(
       appBar: Navbar(),
       drawer: CustomDrawer(),
@@ -63,7 +65,7 @@ class _FacturacionCrearState extends State<FacturacionCrear> {
         child: Column(
           children: [
             // Título principal
-            _buildTitle(),
+            _buildTitle(inventario),
 
             // Contenido principal
             _buildMainContent(inventario),
@@ -76,29 +78,42 @@ class _FacturacionCrearState extends State<FacturacionCrear> {
     );
   }
 
-  //Metodo para construir el título
-  Widget _buildTitle() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.receipt_long,
-            color: Colors.blue.shade800,
-            size: 28,
+// Método para construir el título
+  Widget _buildTitle(Map<String, dynamic>? inventario) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.receipt_long,
+                color: Colors.blue.shade800,
+                size: 28,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Crear facturación',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue.shade800,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 8),
-          Text(
-            'Crear facturación',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.blue.shade800,
-            ),
+        ),
+        Text(
+          'Estos son tus productos del inventario # ${inventario?['idInventory']}',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.normal,
+            color: Colors.black54,
           ),
-        ],
-      ),
+          textAlign: TextAlign.center,
+        ),
+      ],
     );
   }
 

@@ -20,6 +20,7 @@ import 'package:pn_movil/views/Compras-solicitar/compras_solicitar_editar.dart';
 import 'package:pn_movil/views/Compras-solicitar/compras_solicitar_detalle.dart';
 import 'package:pn_movil/views/Facturacion/facturacion.dart';
 import 'package:pn_movil/views/Facturacion/facturacion_crear.dart';
+import 'package:pn_movil/views/Facturacion/facturacion_detalle.dart';
 import 'package:pn_movil/views/Facturacion/product_sin_facturacion.dart';
 import 'package:pn_movil/views/Inventario/detalle_inventario.dart';
 import 'package:pn_movil/views/Inventario/inventario.dart';
@@ -110,6 +111,7 @@ class MyApp extends StatelessWidget {
           'facturacion': (_) => const Facturacion(),
           'facturacion-crear': (_) => const FacturacionCrear(),
           'productos-sin-facturacion': (_) => const ProductSinFacturacion(),
+          'productos-facturacion-detalle': (_) => const FacturacionDetalle(),
         },
         theme: ThemeData.light().copyWith(
           scaffoldBackgroundColor: Colors.grey[300],
