@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pn_movil/providers/compra_provider.dart';
 import 'package:pn_movil/providers/products_provider.dart';
 import 'package:pn_movil/providers/proveedor_provider.dart';
@@ -431,6 +432,9 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
                           prefixIcon: const Icon(Icons.shopping_cart),
                         ),
                         keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
                       ),
                       const SizedBox(height: 16),
                       TextField(
@@ -443,6 +447,9 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
                           prefixIcon: const Icon(Icons.attach_money),
                         ),
                         keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
                       ),
                     ],
                   ),
