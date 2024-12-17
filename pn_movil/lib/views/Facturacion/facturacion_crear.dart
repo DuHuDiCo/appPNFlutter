@@ -295,24 +295,8 @@ class _FacturacionCrearState extends State<FacturacionCrear> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           prefixIcon: const Icon(Icons.shopping_cart),
-                          errorText: cantidadError, // Mostrar mensaje de error
                         ),
                         keyboardType: TextInputType.number,
-                        onChanged: (value) {
-                          setState(() {
-                            final int? cantidadIngresada = int.tryParse(value);
-
-                            if (cantidadIngresada == null ||
-                                cantidadIngresada <= 0) {
-                              cantidadError = "Ingre se una cantidad válida.";
-                            } else if (cantidadIngresada > cantidadProducto) {
-                              cantidadError =
-                                  "La cantidad no puede superar los $cantidadProducto disponibles.";
-                            } else {
-                              cantidadError = null;
-                            }
-                          });
-                        },
                       ),
                       const SizedBox(height: 16),
                       TextField(

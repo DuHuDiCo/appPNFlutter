@@ -72,13 +72,7 @@ class CompraProvider extends ChangeNotifier {
         throw Exception('Error al crear la compra: ${response.body}');
       }
     } catch (e) {
-      final errorMessage = e.toString().contains('No se ha iniciado sesión')
-          ? e.toString()
-          : 'Error inesperado: ${e.toString()}';
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(errorMessage)),
-      );
-      if (kDebugMode) print(errorMessage);
+      print(e);
     } finally {
       _isLoading = false;
       notifyListeners();

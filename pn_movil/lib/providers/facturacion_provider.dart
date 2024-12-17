@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pn_movil/conexiones/ApiClient.dart';
+import 'package:pn_movil/views/Facturacion/facturacion.dart';
 
 class FacturacionProvider extends ChangeNotifier {
   final ApiClient _apiClient;
@@ -31,14 +32,7 @@ class FacturacionProvider extends ChangeNotifier {
         throw Exception('Error al cargar facturaciones');
       }
     } catch (e) {
-      final errorMessage = e.toString().contains('No se ha iniciado sesión')
-          ? e.toString()
-          : 'Error al cargar facturaciones noo';
       print(_facturas);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(errorMessage)),
-      );
-      if (kDebugMode) print(errorMessage);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -61,12 +55,13 @@ class FacturacionProvider extends ChangeNotifier {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Factura creada exitosamente')),
         );
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => Facturacion()),
+        );
 
         await loadFacturas(context);
-      } else {
-        final error = json.decode(response.body)['message'];
-        throw Exception(error);
-      }
+      } else {}
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.toString())),

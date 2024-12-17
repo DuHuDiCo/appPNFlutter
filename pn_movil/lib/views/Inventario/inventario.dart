@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 import 'package:pn_movil/conexiones/ApiClient.dart';
 import 'package:pn_movil/providers/inventario_provider.dart';
 import 'package:pn_movil/services/inventario_service.dart';
-import 'package:pn_movil/views/Inventario/detalle_inventario.dart';
 import 'package:pn_movil/widgets/Components-cards/cards_listar_products.dart';
 import 'package:pn_movil/widgets/Components-navbar/drawer.dart';
 import 'package:pn_movil/widgets/Components-navbar/navbar.dart';

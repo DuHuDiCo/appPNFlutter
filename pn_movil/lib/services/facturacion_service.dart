@@ -13,6 +13,7 @@ class FacturacionService extends ChangeNotifier {
 
   FacturacionService(this.apiClient);
 
+  // Función para agregar un producto seleccionado
   void addProducts(Map<String, String> producto) {
     _selectedProducts.add(producto);
     notifyListeners();

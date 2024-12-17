@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pn_movil/conexiones/ApiClient.dart';
 import 'package:pn_movil/providers/inventario_provider.dart';
-import 'package:pn_movil/widgets/Components-cards/cards_listar_products.dart';
 import 'package:pn_movil/widgets/Components-cards/resumen_compra.dart';
 import 'package:pn_movil/widgets/Components-navbar/drawer.dart';
 import 'package:pn_movil/services/inventario_service.dart';

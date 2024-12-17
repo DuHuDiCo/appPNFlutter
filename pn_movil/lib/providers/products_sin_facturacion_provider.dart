@@ -32,14 +32,7 @@ class ProductsSinFacturacionProvider extends ChangeNotifier {
         throw Exception('Error al cargar productos sin facturación');
       }
     } catch (e) {
-      final errorMessage = e.toString().contains('No se ha iniciado sesión')
-          ? e.toString()
-          : 'Error al cargar productos sin facturación';
       print(_productosSinFacturacion);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(errorMessage)),
-      );
-      if (kDebugMode) print(errorMessage);
     } finally {
       _isLoading = false;
       notifyListeners();

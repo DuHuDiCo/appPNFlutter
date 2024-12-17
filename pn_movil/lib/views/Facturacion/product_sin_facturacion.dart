@@ -194,7 +194,7 @@ class _ProductSinFacturacionState extends State<ProductSinFacturacion> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Cantidad: ${productoSinFacturacion['productoCompra']['cantidad']}',
+                      'Cantidad: ${productoSinFacturacion['cantidadInventario']}',
                       style: TextStyle(fontSize: 14, color: Colors.grey[700]),
                     ),
                     const SizedBox(height: 4),
@@ -266,6 +266,11 @@ class _ProductSinFacturacionState extends State<ProductSinFacturacion> {
     final TextEditingController descuentoPagoInicialController =
         TextEditingController();
     int? _selectedCliente;
+
+    int cantidadProducto =
+        productoSinFacturacion?['productoCompra']?['cantidad'] ?? 0;
+
+    print(cantidadProducto);
 
     await showDialog<bool>(
       context: context,
