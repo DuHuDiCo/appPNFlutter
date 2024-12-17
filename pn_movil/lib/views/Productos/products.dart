@@ -232,13 +232,6 @@ class _ProductsState extends State<Products> {
 
                 try {
                   await provider.deleteProduct(context, productId);
-                  Future.delayed(Duration.zero, () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Producto eliminado exitosamente'),
-                      ),
-                    );
-                  });
                 } catch (e) {
                   Future.delayed(Duration.zero, () {
                     ScaffoldMessenger.of(context).showSnackBar(

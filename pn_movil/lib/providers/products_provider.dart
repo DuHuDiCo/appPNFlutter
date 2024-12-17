@@ -85,6 +85,10 @@ class ProductsProvider extends ChangeNotifier {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Producto eliminado exitosamente')),
         );
+      }
+      if (response.statusCode == 400) {
+        throw Exception(
+            'Error al eliminar producto: El producto ya pertenece a una compra');
       } else {
         throw Exception('Error al eliminar producto: ${response.body}');
       }
