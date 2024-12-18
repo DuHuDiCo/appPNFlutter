@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pn_movil/conexiones/ApiClient.dart';
 import 'package:pn_movil/providers/clientes_provider.dart';
 import 'package:pn_movil/services/facturacion_service.dart';
@@ -175,8 +176,13 @@ class _FacturacionCrearState extends State<FacturacionCrear> {
                           cantidad: productData['cantidad'],
                           onAddProduct:
                               (productName, clasification, productId) {
-                            _showAddProductDialog(context, productName,
-                                clasification, productId, factura);
+                            _showAddProductDialog(
+                                context,
+                                productName,
+                                clasification,
+                                productData['cantidad'],
+                                productId,
+                                factura);
                           },
                           onRemoveProduct: (name, clasification) {
                             setState(() {
@@ -206,16 +212,47 @@ class _FacturacionCrearState extends State<FacturacionCrear> {
       BuildContext context,
       String productName,
       String clasification,
+      int cantidad,
       String productId,
       Map<String, dynamic>? factura) async {
     final TextEditingController cantidadController = TextEditingController();
     final TextEditingController valorVentaController = TextEditingController();
     final TextEditingController descuentoPagoInicialController =
         TextEditingController();
-    int? _selectedCliente;
-    String? cantidadError;
 
-    int cantidadProducto = factura?['productos']?[0]?['cantidad'] ?? 0;
+    int? _selectedCliente;
+    String? clienteError;
+    String? errorCantidad;
+    String? errorValorVenta;
+    String? errorDescuentoPagoInicial;
+
+    void validateField() {
+      setState(() {
+        if (_selectedCliente == null) {
+          clienteError = 'Este campo no puede estar vacío';
+        } else {
+          clienteError = null;
+        }
+
+        if (cantidadController.text.isEmpty) {
+          errorCantidad = 'Este campo no puede estar vacío';
+        } else {
+          errorCantidad = null;
+        }
+
+        if (valorVentaController.text.isEmpty) {
+          errorValorVenta = 'Este campo no puede estar vacío';
+        } else {
+          errorValorVenta = null;
+        }
+
+        if (descuentoPagoInicialController.text.isEmpty) {
+          errorDescuentoPagoInicial = 'Este campo no puede estar vacío';
+        } else {
+          errorDescuentoPagoInicial = null;
+        }
+      });
+    }
 
     await showDialog<bool>(
       context: context,
@@ -263,6 +300,7 @@ class _FacturacionCrearState extends State<FacturacionCrear> {
                                 filled: true,
                                 fillColor: Colors.grey[100]?.withOpacity(0.8),
                                 prefixIcon: const Icon(Icons.category),
+                                errorText: clienteError,
                               ),
                               child: DropdownButton<int>(
                                 isExpanded: true,
@@ -271,6 +309,7 @@ class _FacturacionCrearState extends State<FacturacionCrear> {
                                 onChanged: (newValue) {
                                   setState(() {
                                     _selectedCliente = newValue;
+                                    clienteError = null;
                                   });
                                 },
                                 items: clientes.map((cliente) {
@@ -295,8 +334,19 @@ class _FacturacionCrearState extends State<FacturacionCrear> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           prefixIcon: const Icon(Icons.shopping_cart),
+                          errorText: errorCantidad,
                         ),
                         keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                        onChanged: (value) {
+                          if (value.isNotEmpty) {
+                            setState(() {
+                              errorCantidad = null;
+                            });
+                          }
+                        },
                       ),
                       const SizedBox(height: 16),
                       TextField(
@@ -307,8 +357,19 @@ class _FacturacionCrearState extends State<FacturacionCrear> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           prefixIcon: const Icon(Icons.attach_money),
+                          errorText: errorValorVenta,
                         ),
                         keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                        onChanged: (value) {
+                          if (value.isNotEmpty) {
+                            setState(() {
+                              errorValorVenta = null;
+                            });
+                          }
+                        },
                       ),
                       const SizedBox(height: 16),
                       TextField(
@@ -319,8 +380,19 @@ class _FacturacionCrearState extends State<FacturacionCrear> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           prefixIcon: const Icon(Icons.discount_sharp),
+                          errorText: errorDescuentoPagoInicial,
                         ),
                         keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                        onChanged: (value) {
+                          if (value.isNotEmpty) {
+                            setState(() {
+                              errorDescuentoPagoInicial = null;
+                            });
+                          }
+                        },
                       ),
                     ],
                   ),
@@ -347,19 +419,37 @@ class _FacturacionCrearState extends State<FacturacionCrear> {
                     ),
                   ),
                   onPressed: () {
-                    if (cantidadController.text.isNotEmpty &&
+                    setState(() {
+                      validateField();
+                    });
+                    if (_selectedCliente != null &&
+                        cantidadController.text.isNotEmpty &&
                         valorVentaController.text.isNotEmpty &&
                         descuentoPagoInicialController.text.isNotEmpty) {
-                      _addProductWithDetails(
-                        productName,
-                        clasification,
-                        int.parse(cantidadController.text),
-                        double.parse(valorVentaController.text),
-                        productId,
-                        _selectedCliente!,
-                        double.parse(descuentoPagoInicialController.text),
-                      );
-                      Navigator.of(context).pop(true);
+                      int cantidadIngresada =
+                          int.parse(cantidadController.text);
+                      if (cantidadIngresada > cantidad) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                                'La cantidad ingresada supera el límite permitido.'),
+                            duration:
+                                Duration(seconds: 3), // Duración del snackbar
+                            backgroundColor: Colors.red, // Color de fondo
+                          ),
+                        );
+                      } else {
+                        _addProductWithDetails(
+                          productName,
+                          clasification,
+                          int.parse(cantidadController.text),
+                          double.parse(valorVentaController.text),
+                          productId,
+                          _selectedCliente!,
+                          double.parse(descuentoPagoInicialController.text),
+                        );
+                        Navigator.of(context).pop(true);
+                      }
                     }
                   },
                   child: const Text(
