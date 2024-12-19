@@ -20,6 +20,13 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
   int? proveedorSeleccionado = 0;
   bool loadingProductos = false;
   final List<Map<String, String>> _selectedProducts = [];
+  final _productosBackend = {
+    "monto": 0,
+    "idProveedor": 0,
+    "productos": [],
+    "totalCompra": 0,
+    "totalPagar": 0
+  };
 
   List<Map<String, dynamic>> productos = [];
   Map<String, dynamic> compra = {};
@@ -41,19 +48,29 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    // Acceder a ModalRoute de forma segura
     compra = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
-    print(compra);
 
     if (compra['productoCompras'] is List) {
       productos = (compra['productoCompras'] as List)
           .map((item) => item as Map<String, dynamic>)
           .toList();
+      print(productos);
+
+      // Llenar el array de productos en _productosBackend
+      _productosBackend["productos"] = productos.map((product) {
+        return {
+          "cantidad": product["cantidad"]!,
+          "costo": product["costo"]!,
+          "idProducto": product["producto"]["idProducto"]!,
+          "idUsuario": product["user"]["idUser"]!,
+        };
+      }).toList();
+
+      // Verificar el resultado
+      print(_productosBackend);
     } else {
       print('productoCompras no es una lista o es null');
     }
-
-    print(productos);
 
     if (compra != null) {
       // TRAER EL ID DEL PROVEEDOR
@@ -427,7 +444,7 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(dialogContext).pop(); // Cierra el diálogo
+                Navigator.of(dialogContext).pop();
               },
               child: const Text("Cancelar"),
             ),
