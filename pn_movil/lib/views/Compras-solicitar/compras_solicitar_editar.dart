@@ -20,7 +20,7 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
   int? proveedorSeleccionado = 0;
   bool loadingProductos = false;
   final List<Map<String, String>> _selectedProducts = [];
-  final _productosBackend = {
+  final Map<String, dynamic> _productosBackend = {
     "monto": 0,
     "idProveedor": 0,
     "productos": [],
@@ -54,7 +54,6 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
       productos = (compra['productoCompras'] as List)
           .map((item) => item as Map<String, dynamic>)
           .toList();
-      print(productos);
 
       // Llenar el array de productos en _productosBackend
       _productosBackend["productos"] = productos.map((product) {
@@ -65,9 +64,6 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
           "idUsuario": product["user"]["idUser"]!,
         };
       }).toList();
-
-      // Verificar el resultado
-      print(_productosBackend);
     } else {
       print('productoCompras no es una lista o es null');
     }
@@ -111,7 +107,6 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                         ? provider.products.map((product) {
                             bool isSelected =
                                 isProductSelected(product['idProducto']);
-                            print(isSelected);
                             return ProductCardSelect(
                               imageUrl: (product['imagenes'] is List &&
                                       product['imagenes'].isNotEmpty)
@@ -156,7 +151,9 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                               },
                               onRemoveProduct: (name, idProductoCompra) {
                                 eliminarProducto(
-                                    context, product['idProductoCompra']);
+                                    context,
+                                    product['idProductoCompra'],
+                                    product['producto']['idProducto']);
                               },
                               productId: product['producto']['idProducto'],
                               cantidad: product['cantidad'],
@@ -395,10 +392,19 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                       final productoIndex = productos.indexWhere((producto) =>
                           producto['producto']['idProducto'] == productId);
 
+                      final productBack = _productosBackend['productos']
+                          .indexWhere((producto) =>
+                              producto['idProducto'] == productId);
+
                       if (productoIndex != -1) {
                         setState(() {
                           productos[productoIndex]['cantidad'] = nuevaCantidad;
                           productos[productoIndex]['costo'] = nuevoPrecio;
+
+                          _productosBackend['productos'][productBack]
+                              ['cantidad'] = nuevaCantidad;
+                          _productosBackend['productos'][productBack]['costo'] =
+                              nuevoPrecio;
                         });
                       }
                     } else {
@@ -415,6 +421,7 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                       }
                     }
                     print(productos);
+                    print(_productosBackend['productos']);
                     Navigator.of(context).pop(true); // Cerramos el diálogo
                   },
                   child: Text(
@@ -433,8 +440,8 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
     );
   }
 
-  void eliminarProducto(BuildContext context, int idProductoCompra) {
-    print(idProductoCompra);
+  void eliminarProducto(
+      BuildContext context, int idProductoCompra, int idProducto) {
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
@@ -453,9 +460,15 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                 setState(() {
                   compra['productoCompras'].removeWhere((product) =>
                       product['idProductoCompra'] == idProductoCompra);
+
+                  List<Map<String, dynamic>> productos =
+                      _productosBackend['productos'];
+                  productos.removeWhere(
+                      (product) => product['idProducto'] == idProducto);
                 });
 
-                print(productos);
+                print(
+                    'Productos eliminados: ${_productosBackend['productos']}');
 
                 Navigator.of(dialogContext).pop(); // Cierra el diálogo
 
