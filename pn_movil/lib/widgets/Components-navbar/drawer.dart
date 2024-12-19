@@ -47,7 +47,7 @@ class CustomDrawer extends StatelessWidget {
             ExpansionTile(
               leading: const Icon(Icons.shopping_bag, color: Colors.white),
               title: const Text(
-                'Compras',
+                'Gestion de compras',
                 style: TextStyle(color: Colors.white),
               ),
               children: <Widget>[
@@ -55,7 +55,7 @@ class CustomDrawer extends StatelessWidget {
                   padding: const EdgeInsets.only(left: 16.0),
                   child: ListTile(
                     leading: const Icon(Icons.money_off, color: Colors.white),
-                    title: const Text('Solicitar pago',
+                    title: const Text('Solicitar pago de compras',
                         style: TextStyle(color: Colors.white)),
                     onTap: () {
                       Navigator.pushReplacementNamed(
@@ -67,7 +67,7 @@ class CustomDrawer extends StatelessWidget {
                   padding: const EdgeInsets.only(left: 16.0),
                   child: ListTile(
                     leading: const Icon(Icons.money, color: Colors.white),
-                    title: const Text('Realizar pago',
+                    title: const Text('Realizar pago de compras',
                         style: TextStyle(color: Colors.white)),
                     onTap: () {
                       Navigator.pushReplacementNamed(context, 'realizar-pago');
@@ -77,9 +77,30 @@ class CustomDrawer extends StatelessWidget {
               ],
             ),
             ExpansionTile(
+              leading: const Icon(Icons.business_sharp, color: Colors.white),
+              title: const Text(
+                'Gestion de productos',
+                style: TextStyle(color: Colors.white),
+              ),
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(left: 16.0),
+                  child: ListTile(
+                    leading:
+                        const Icon(Icons.business_sharp, color: Colors.white),
+                    title: const Text('Productos',
+                        style: TextStyle(color: Colors.white)),
+                    onTap: () {
+                      Navigator.pushReplacementNamed(context, 'productos');
+                    },
+                  ),
+                ),
+              ],
+            ),
+            ExpansionTile(
               leading: const Icon(Icons.inventory, color: Colors.white),
               title: const Text(
-                'Inventario',
+                'Gestion de inventarios',
                 style: TextStyle(color: Colors.white),
               ),
               children: <Widget>[
@@ -98,30 +119,9 @@ class CustomDrawer extends StatelessWidget {
               ],
             ),
             ExpansionTile(
-              leading: const Icon(Icons.inventory, color: Colors.white),
+              leading: const Icon(Icons.receipt_long, color: Colors.white),
               title: const Text(
-                'Facturacion',
-                style: TextStyle(color: Colors.white),
-              ),
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(left: 16.0),
-                  child: ListTile(
-                    leading: const Icon(Icons.inventory_2_rounded,
-                        color: Colors.white),
-                    title: const Text('Facturacion',
-                        style: TextStyle(color: Colors.white)),
-                    onTap: () {
-                      Navigator.pushReplacementNamed(context, 'facturacion');
-                    },
-                  ),
-                ),
-              ],
-            ),
-            ExpansionTile(
-              leading: const Icon(Icons.business_sharp, color: Colors.white),
-              title: const Text(
-                'Productos',
+                'Gestion de facturaciones',
                 style: TextStyle(color: Colors.white),
               ),
               children: <Widget>[
@@ -129,11 +129,24 @@ class CustomDrawer extends StatelessWidget {
                   padding: const EdgeInsets.only(left: 16.0),
                   child: ListTile(
                     leading:
-                        const Icon(Icons.business_sharp, color: Colors.white),
-                    title: const Text('Productos',
+                        const Icon(Icons.receipt_long, color: Colors.white),
+                    title: const Text('Facturaciones',
                         style: TextStyle(color: Colors.white)),
                     onTap: () {
-                      Navigator.pushReplacementNamed(context, 'productos');
+                      Navigator.pushReplacementNamed(context, 'facturacion');
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 16.0),
+                  child: ListTile(
+                    leading:
+                        const Icon(Icons.business_sharp, color: Colors.white),
+                    title: const Text('Productos sin facturación',
+                        style: TextStyle(color: Colors.white)),
+                    onTap: () {
+                      Navigator.pushReplacementNamed(
+                          context, 'productos-sin-facturacion');
                     },
                   ),
                 ),

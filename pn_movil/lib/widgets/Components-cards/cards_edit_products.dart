@@ -1,8 +1,11 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 class ProductCardEdit extends StatelessWidget {
   final String imageUrl;
   final String productName;
+  final int cantidad;
   final String clasification;
   final int cantidad;
   final double precio;
@@ -17,6 +20,7 @@ class ProductCardEdit extends StatelessWidget {
     super.key,
     required this.imageUrl,
     required this.productName,
+    required this.cantidad,
     required this.clasification,
     required this.onRemoveProduct,
     required this.productId,

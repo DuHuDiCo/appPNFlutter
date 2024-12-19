@@ -1,9 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:pn_movil/conexiones/ApiClient.dart';
+import 'package:pn_movil/providers/facturacion_provider.dart';
+import 'package:pn_movil/services/facturacion_service.dart';
+import 'package:pn_movil/widgets/Components-cards/cards_listar_products.dart';
 import 'package:pn_movil/widgets/Components-navbar/drawer.dart';
 import 'package:pn_movil/widgets/Components-navbar/navbar.dart';
+import 'package:provider/provider.dart';
 
-class Facturacion extends StatelessWidget {
+class Facturacion extends StatefulWidget {
   const Facturacion({super.key});
+
+  @override
+  _FacturacionState createState() => _FacturacionState();
+}
+
+class _FacturacionState extends State<Facturacion> {
+  late final FacturacionService facturacionService;
+
+  @override
+  void initState() {
+    super.initState();
+    facturacionService =
+        FacturacionService(ApiClient('https://apppn.duckdns.org'));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +41,7 @@ class Facturacion extends StatelessWidget {
             _buildSearchBar(context),
 
             // Contenido principal
-            // _buildMainContent(),
+            _buildMainContent(),
           ],
         ),
       ),
@@ -84,23 +104,102 @@ class Facturacion extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 10),
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              color: const Color.fromRGBO(112, 185, 244, 1),
-              borderRadius: BorderRadius.circular(30),
-            ),
-            child: IconButton(
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, 'crear-facturacion');
-              },
-              icon: const Icon(Icons.add),
-              color: Colors.white,
-            ),
-          ),
         ],
       ),
+    );
+  }
+
+  Widget _buildMainContent() {
+    Future.microtask(
+        () => context.read<FacturacionProvider>().loadFacturas(context));
+
+    return Consumer<FacturacionProvider>(
+      builder: (context, facturaProvider, child) {
+        if (facturaProvider.isLoading) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        if (facturaProvider.facturas.isEmpty) {
+          return const Center(
+            child: Text(
+              'No hay facturas disponibles.',
+              style: TextStyle(fontSize: 18, color: Colors.grey),
+            ),
+          );
+        }
+
+        return Expanded(
+          child: ListView.builder(
+            itemCount: facturaProvider.facturas.length,
+            itemBuilder: (context, index) {
+              final factura = facturaProvider.facturas[index];
+
+              return ListItem(
+                imageUrl: null,
+                content: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Factura #${factura['idFacturacion']}',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Fecha: ${DateFormat('dd/MM/yyyy').format(DateTime.parse(factura['fecha']))}',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[700],
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Total facturación: ${facturacionService.formatCurrencyToCOP(factura["totalFacturacion"])}',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[700],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    // Botón redondo
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Color.fromRGBO(112, 185, 244, 1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: IconButton(
+                        onPressed: () {
+                          Navigator.pushReplacementNamed(
+                            context,
+                            'productos-facturacion-detalle',
+                            arguments: factura,
+                          );
+                        },
+                        icon: const Icon(
+                          Icons.visibility,
+                          color: Colors.white,
+                        ),
+                        tooltip: 'Ver detalles',
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        );
+      },
     );
   }
 }

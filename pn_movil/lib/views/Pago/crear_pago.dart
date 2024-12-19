@@ -227,30 +227,64 @@ class _CrearPagoState extends State<CrearPago> {
                   keyboardType: TextInputType.number,
                 ),
                 const SizedBox(height: 16),
-                Center(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      double totalPago =
-                          double.tryParse(_totalPagoController.text) ?? 0;
-                      pagoService.guardarPago(
-                          context, idCompra, _imagenSeleccionada, totalPago);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 15, horizontal: 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 150,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context)
+                              .pushReplacementNamed('realizar-pago');
+                        },
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                        ),
+                        child: const Text(
+                          'Regresar',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
-                      backgroundColor: const Color.fromARGB(255, 90, 136, 204),
                     ),
-                    child: const Text(
-                      'Guardar Pago',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.white,
+                    const SizedBox(width: 20),
+                    SizedBox(
+                      width: 150,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          double totalPago =
+                              double.tryParse(_totalPagoController.text) ?? 0;
+                          pagoService.guardarPago(
+                            context,
+                            idCompra,
+                            _imagenSeleccionada,
+                            totalPago,
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          backgroundColor: const Color.fromARGB(
+                              255, 90, 136, 204), // Fondo azul
+                        ),
+                        child: const Text(
+                          'Guardar Pago',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
                 const SizedBox(height: 5),
               ],

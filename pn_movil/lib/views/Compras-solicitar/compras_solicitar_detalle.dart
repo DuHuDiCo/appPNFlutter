@@ -35,6 +35,8 @@ class ComprasSolicitarDetalle extends StatelessWidget {
                 _buildDetailsCard(compra),
                 const SizedBox(height: 40),
                 _buildAdicionesSection(compra),
+                const SizedBox(height: 40),
+                _buildFooter(context),
               ],
             ),
           ),
@@ -177,6 +179,36 @@ class ComprasSolicitarDetalle extends StatelessWidget {
               },
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+// Función para crear el footer del dialogo de agregar producto
+  Widget _buildFooter(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: 150,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pushReplacementNamed('compras-solicitar');
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+              ),
+              child: const Text(
+                'Regresar',
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 20),
         ],
       ),
     );

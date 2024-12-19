@@ -20,11 +20,8 @@ class InventarioProvider extends ChangeNotifier {
     try {
       _isLoading = true;
       notifyListeners();
-      final userId = 1;
-      print("Id del usuario: $userId");
       print("isNull: $isNull");
-      final response = await _apiClient
-          .get('/inventory/byUser?idUser=$userId&isNull=$isNull');
+      final response = await _apiClient.get('/inventory/byUser?isNull=$isNull');
 
       print("Response: ${response.statusCode}");
 

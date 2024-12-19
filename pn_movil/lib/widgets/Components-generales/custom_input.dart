@@ -5,7 +5,7 @@ class Custominput {
       {required String hintText,
       required String labelText,
       IconData? prefixIcon,
-      required IconButton suffixIcon}) {
+      IconButton? suffixIcon}) {
     return InputDecoration(
       enabledBorder: const UnderlineInputBorder(
           borderSide:
@@ -22,6 +22,7 @@ class Custominput {
               color: const Color.fromARGB(255, 40, 89, 135),
             )
           : null,
+      suffixIcon: suffixIcon,
     );
   }
 }

@@ -56,7 +56,7 @@ class Login extends StatelessWidget {
   }
 }
 
-//Formulario de inicio de sesión
+// Formulario de inicio de sesión
 class _LoginForm extends StatefulWidget {
   const _LoginForm();
 
@@ -76,6 +76,7 @@ class _LoginFormState extends State<_LoginForm> {
       autovalidateMode: AutovalidateMode.onUserInteraction,
       child: Column(
         children: [
+          // Campo de correo electrónico
           TextFormField(
             autocorrect: false,
             keyboardType: TextInputType.emailAddress,
@@ -83,16 +84,6 @@ class _LoginFormState extends State<_LoginForm> {
               hintText: 'Escribe tu correo',
               labelText: 'Correo electrónico',
               prefixIcon: Icons.email,
-              suffixIcon: IconButton(
-                icon: Icon(
-                  _obscureText ? Icons.visibility_off : Icons.visibility,
-                ),
-                onPressed: () {
-                  setState(() {
-                    _obscureText = !_obscureText;
-                  });
-                },
-              ),
             ),
             onChanged: (value) {
               loginProvider.email = value;
@@ -109,6 +100,7 @@ class _LoginFormState extends State<_LoginForm> {
             },
           ),
           const SizedBox(height: 30),
+          // Campo de contraseña
           TextFormField(
             autocorrect: false,
             obscureText: _obscureText,

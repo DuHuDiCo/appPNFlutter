@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pn_movil/providers/compra_provider.dart';
 import 'package:pn_movil/providers/products_provider.dart';
 import 'package:pn_movil/providers/proveedor_provider.dart';
@@ -94,7 +95,8 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
   void checkFormValidity() {
     setState(() {
       _isFormValid = (_formKey.currentState?.validate() ?? false) &&
-          _selectedProducts.isNotEmpty;
+          _selectedProducts.isNotEmpty &&
+          _proveedorSeleccionado != null;
     });
   }
 
@@ -336,7 +338,7 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
     );
   }
 
-  //Boton para guardar los datos del formulario
+// Función para crear el footer del dialogo de agregar producto
   Widget _buildFooter() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -344,7 +346,25 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(
-            width: 200,
+            width: 150,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pushReplacementNamed('compras-solicitar');
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+              ),
+              child: const Text(
+                'Regresar',
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 20),
+          SizedBox(
+            width: 150,
             child: ElevatedButton(
               onPressed: (_isFormValid && _selectedProducts.isNotEmpty)
                   ? saveFormData
@@ -353,7 +373,7 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
                 backgroundColor: Colors.blue,
               ),
               child: const Text(
-                'Registrar compra',
+                'Registrar',
                 style: TextStyle(
                   color: Color.fromARGB(255, 244, 245, 246),
                 ),
@@ -412,6 +432,9 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
                           prefixIcon: const Icon(Icons.shopping_cart),
                         ),
                         keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
                       ),
                       const SizedBox(height: 16),
                       TextField(
@@ -424,6 +447,9 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
                           prefixIcon: const Icon(Icons.attach_money),
                         ),
                         keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
                       ),
                     ],
                   ),

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:pn_movil/conexiones/apiClient.dart';
+import 'package:pn_movil/conexiones/ApiClient.dart';
 import 'package:pn_movil/providers/inventario_provider.dart';
 import 'package:pn_movil/services/inventario_service.dart';
-import 'package:pn_movil/views/Inventario/detalle_inventario.dart';
 import 'package:pn_movil/widgets/Components-cards/cards_listar_products.dart';
 import 'package:pn_movil/widgets/Components-navbar/drawer.dart';
 import 'package:pn_movil/widgets/Components-navbar/navbar.dart';
@@ -213,19 +212,59 @@ class _InventarioState extends State<Inventario> {
                       ],
                     ),
                   ),
-                  IconButton(
-                    onPressed: () {
-                      Navigator.pushReplacementNamed(
-                          context, 'detalle-inventario',
-                          arguments: inventario);
-                    },
-                    icon: const Icon(Icons.visibility),
-                    color: Colors.white,
-                    style: IconButton.styleFrom(
-                      backgroundColor: const Color.fromRGBO(112, 185, 244, 1),
-                      shape: const CircleBorder(),
-                      padding: const EdgeInsets.all(12),
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      PopupMenuButton<String>(
+                        icon: const Icon(
+                          Icons.more_vert,
+                          color: Color.fromRGBO(112, 185, 244, 1),
+                          size: 30,
+                        ),
+                        onSelected: (String value) {
+                          switch (value) {
+                            case 'detalle':
+                              Navigator.pushReplacementNamed(
+                                context,
+                                'detalle-inventario',
+                                arguments: inventario,
+                              );
+                              break;
+
+                            case 'facturacion':
+                              Navigator.pushReplacementNamed(
+                                context,
+                                'facturacion-crear',
+                                arguments: inventario,
+                              );
+                              break;
+                          }
+                        },
+                        itemBuilder: (BuildContext context) =>
+                            <PopupMenuEntry<String>>[
+                          PopupMenuItem<String>(
+                            value: 'detalle',
+                            child: Row(
+                              children: const [
+                                Icon(Icons.visibility, color: Colors.blue),
+                                SizedBox(width: 10),
+                                Text('Ver detalles'),
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem<String>(
+                            value: 'facturacion',
+                            child: Row(
+                              children: const [
+                                Icon(Icons.money, color: Colors.green),
+                                SizedBox(width: 10),
+                                Text('Realizar facturación'),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ],
               ),

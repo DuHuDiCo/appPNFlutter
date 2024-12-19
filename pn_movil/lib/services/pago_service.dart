@@ -70,7 +70,7 @@ class PagoService {
     }
   }
 
-  /// Método para eliminar el pago
+  // Método para eliminar el pago
   Future<void> eliminarPago(BuildContext context, int pagoId) async {
     try {
       await PagoProvider(apiClient).deletePago(context, pagoId);
