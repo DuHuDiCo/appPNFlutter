@@ -7,7 +7,6 @@ class ProductCardEdit extends StatelessWidget {
   final String productName;
   final int cantidad;
   final String clasification;
-  final int cantidad;
   final double precio;
   final int productId;
   final int productIdCompra;
@@ -25,7 +24,6 @@ class ProductCardEdit extends StatelessWidget {
     required this.onRemoveProduct,
     required this.productId,
     required this.onEditProduct,
-    required this.cantidad,
     required this.precio,
     required this.productIdCompra,
   });

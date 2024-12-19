@@ -61,8 +61,6 @@ class FacturacionProvider extends ChangeNotifier {
         );
 
         await loadFacturas(context);
-      } else {
-        throw Exception('Error al crear facturación');
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
