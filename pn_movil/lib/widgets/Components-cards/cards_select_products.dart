@@ -6,9 +6,10 @@ class ProductCardSelect extends StatelessWidget {
   final String clasification;
   final String productId;
   final void Function(
-      String productName, String clasification, String productId)? onAddProduct;
+      String productName, String clasification, String productId) onAddProduct;
   final void Function(String productName, String clasification) onRemoveProduct;
   final bool isSelected;
+  final bool isEdit;
 
   const ProductCardSelect({
     Key? key,
@@ -19,6 +20,7 @@ class ProductCardSelect extends StatelessWidget {
     required this.onRemoveProduct,
     required this.isSelected,
     required this.productId,
+    required this.isEdit,
   }) : super(key: key);
 
   @override
@@ -53,32 +55,35 @@ class ProductCardSelect extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 15),
-              ElevatedButton(
-                onPressed: isSelected
-                    ? () => onRemoveProduct(productName, clasification)
-                    : () =>
-                        onAddProduct!(productName, clasification, productId),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: isSelected ? Colors.red : Colors.blue,
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      isSelected ? Icons.delete : Icons.add,
-                      color: Colors.white,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      isSelected ? "Eliminar" : "Agregar",
-                      style: const TextStyle(
+              // Lógica condicional para mostrar el botón
+              if (!(isSelected &&
+                  isEdit)) // Mostrar botón solo cuando no sea seleccionado y editado
+                ElevatedButton(
+                  onPressed: isSelected
+                      ? () => onRemoveProduct(productName, clasification)
+                      : () =>
+                          onAddProduct(productName, clasification, productId),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: isSelected ? Colors.red : Colors.blue,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        isSelected ? Icons.delete : Icons.add,
                         color: Colors.white,
-                        fontSize: 16,
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 8),
+                      Text(
+                        isSelected ? "Eliminar" : "Agregar",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
             ],
           ),
         ),

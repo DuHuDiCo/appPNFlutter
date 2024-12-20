@@ -208,6 +208,7 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
                         },
                         isSelected: isSelected,
                         productId: product['idProducto'].toString(),
+                        isEdit: false,
                       );
                     }).toList(),
                   );

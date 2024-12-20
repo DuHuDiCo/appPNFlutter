@@ -107,6 +107,7 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                         ? provider.products.map((product) {
                             bool isSelected =
                                 isProductSelected(product['idProducto']);
+                            print(isSelected);
                             return ProductCardSelect(
                               imageUrl: (product['imagenes'] is List &&
                                       product['imagenes'].isNotEmpty)
@@ -116,21 +117,21 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                                   product['producto'] ?? 'Producto sin nombre',
                               clasification: product['clasificacionProducto']
                                   ['clasificacionProducto'],
-                              onAddProduct: isSelected
-                                  ? (productName, clasification, productId) {
-                                      _showEditProductDialog(
-                                        context,
-                                        productName,
-                                        clasification,
-                                        0,
-                                        0,
-                                        product['idProducto'],
-                                      );
-                                    }
-                                  : null,
+                              onAddProduct:
+                                  (productName, clasification, productId) {
+                                _showEditProductDialog(
+                                    context,
+                                    productName,
+                                    clasification,
+                                    0,
+                                    0,
+                                    product['idProducto'],
+                                    false);
+                              },
                               onRemoveProduct: (name, clasification) {},
                               isSelected: isSelected,
                               productId: product['idProducto'].toString(),
+                              isEdit: true,
                             );
                           }).toList()
                         : productos.map((product) {
@@ -147,7 +148,7 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                               onEditProduct:
                                   (productName, cantidad, precio, productId) {
                                 _showEditProductDialog(context, productName, '',
-                                    cantidad, precio, productId);
+                                    cantidad, precio, productId, true);
                               },
                               onRemoveProduct: (name, idProductoCompra) {
                                 eliminarProducto(
@@ -291,8 +292,14 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
   }
 
   //Dialogo para editar producto
-  Future<void> _showEditProductDialog(BuildContext context, String productName,
-      String clasification, int cantidad, double precio, int productId) async {
+  Future<void> _showEditProductDialog(
+      BuildContext context,
+      String productName,
+      String clasification,
+      int cantidad,
+      double precio,
+      int productId,
+      bool isEdit) async {
     final TextEditingController cantidadController = TextEditingController();
     final TextEditingController costoController = TextEditingController();
 
@@ -312,7 +319,7 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                 borderRadius: BorderRadius.circular(16),
               ),
               title: Text(
-                productId != 0 ? 'Editar Producto' : 'Agregar Producto',
+                isEdit ? 'Editar Producto' : 'Agregar Producto',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -381,7 +388,7 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                     ),
                   ),
                   onPressed: () {
-                    if (productId > 0) {
+                    if (isEdit) {
                       // Obtenemos los valores del formulario
                       final nuevaCantidad =
                           int.tryParse(cantidadController.text) ?? cantidad;
@@ -420,12 +427,11 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                         Navigator.of(context).pop(true);
                       }
                     }
-                    print(productos);
-                    print(_productosBackend['productos']);
-                    Navigator.of(context).pop(true); // Cerramos el diálogo
+                    print('ACTUALIZACION: $_productosBackend["productos"]');
+                    // Navigator.of(context).pop(true);
                   },
                   child: Text(
-                    productId != 0 ? 'Actualizar' : 'Agregar',
+                    isEdit ? 'Actualizar' : 'Agregar',
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -526,7 +532,7 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
     }
 
     setState(() {
-      _selectedProducts.add({
+      _productosBackend["productos"].add({
         'productName': name,
         'clasification': clasification,
         'cantidad': cantidad.toString(),
@@ -537,7 +543,8 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
       checkFormValidity();
     });
 
-    print("Productos seleccionados con detalles: $_selectedProducts");
+    print(
+        "Productos seleccionados con detalles: $_productosBackend['productos']");
   }
 
   //Funcion para verificar si el formulario es valido
@@ -550,9 +557,9 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
 
   //Funcion para verificar si el producto seleccionado ya existe
   bool isProductSelected(int idProducto) {
-    return _selectedProducts.any((product) {
+    return _productosBackend['productos'].any((product) {
       var id = product['idProducto'];
-      return id == idProducto.toString();
+      return id == idProducto;
     });
   }
 
