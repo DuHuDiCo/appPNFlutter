@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:pn_movil/providers/products_provider.dart';
 import 'package:pn_movil/providers/proveedor_provider.dart';
 import 'package:pn_movil/widgets/Components-cards/card_container.dart';
@@ -44,6 +47,8 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
     });
   }
 
+  var logger = Logger();
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -64,8 +69,6 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
           "idUsuario": product["user"]["idUser"]!,
         };
       }).toList();
-    } else {
-      print('productoCompras no es una lista o es null');
     }
 
     if (compra != null) {
@@ -107,7 +110,6 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                         ? provider.products.map((product) {
                             bool isSelected =
                                 isProductSelected(product['idProducto']);
-                            print(product);
                             return ProductCardSelect(
                               imageUrl: (product['imagenes'] is List &&
                                       product['imagenes'].isNotEmpty)
@@ -126,6 +128,8 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                                     0,
                                     0,
                                     product['idProducto'],
+                                    product['productosCompras'][0]['user']
+                                        ['idUser'],
                                     false);
                               },
                               onRemoveProduct: (name, clasification) {},
@@ -147,8 +151,15 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                                   ['clasificacionProducto'],
                               onEditProduct:
                                   (productName, cantidad, precio, productId) {
-                                _showEditProductDialog(context, productName, '',
-                                    cantidad, precio, productId, true);
+                                _showEditProductDialog(
+                                    context,
+                                    productName,
+                                    '',
+                                    cantidad,
+                                    precio,
+                                    productId,
+                                    product['user']['idUser'],
+                                    true);
                               },
                               onRemoveProduct: (name, idProductoCompra) {
                                 eliminarProducto(
@@ -299,6 +310,7 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
       int cantidad,
       double precio,
       int productId,
+      int userId,
       bool isEdit) async {
     final TextEditingController cantidadController = TextEditingController();
     final TextEditingController costoController = TextEditingController();
@@ -423,11 +435,13 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                           int.parse(cantidadController.text),
                           double.parse(costoController.text),
                           productId.toString(),
+                          userId,
                         );
                         Navigator.of(context).pop(true);
                       }
                     }
-                    print('ACTUALIZACION: $_productosBackend["productos"]');
+                    logger.i(JsonEncoder.withIndent('  ')
+                        .convert(productos[productos.length - 1]));
                     // Navigator.of(context).pop(true);
                   },
                   child: Text(
@@ -524,35 +538,36 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
 
   // Agregar producto y actualizar estado
   void _addProductWithDetails(String name, String clasification, int cantidad,
-      double costo, String productId) {
-    if (_selectedProducts.any((product) =>
-        product['productName'] == name &&
-        product['clasification'] == clasification)) {
-      return;
-    }
-
+      double costo, String productId, int userId) {
     setState(() {
-      _productosBackend["productos"].add({
-        'productName': name,
-        'clasification': clasification,
+      productos.add({
+        'idProductoCompra': '',
         'cantidad': cantidad.toString(),
         'costo': costo.toString(),
-        'productId': productId,
+        'flete': '0.0',
+        'producto': {
+          'idProducto': productId,
+          'producto': name,
+          'descripcion': '',
+          'imagenes': [],
+          'clasificacionProducto': {
+            'idClasificacionProducto': '',
+            'clasificacionProducto': clasification,
+            'isFleteObligatorio': false,
+          },
+          'productosCompras': []
+        }
       });
 
-      productos.add({
-        'productName': name,
-        'clasification': clasification,
-        'cantidad': cantidad.toString(),
-        'costo': costo.toString(),
+      _productosBackend['productos'].add({
+        'cantidad': cantidad,
+        'costo': costo,
         'productId': productId,
+        'usuarioId': userId,
       });
 
       checkFormValidity();
     });
-
-    print(
-        "Productos seleccionados con detalles: $_productosBackend['productos']");
   }
 
   //Funcion para verificar si el formulario es valido
