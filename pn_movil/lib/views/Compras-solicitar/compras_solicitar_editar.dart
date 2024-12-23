@@ -103,11 +103,16 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
               const SizedBox(height: 30),
               Consumer<ProductsProvider>(
                 builder: (context, provider, child) {
+                  final allProducts = List.from(provider.products)
+                    ..addAll(_productosBackend["productos"] ?? []);
                   return Wrap(
                     spacing: 10.0,
                     runSpacing: 10.0,
                     children: loadingProductos
-                        ? provider.products.map((product) {
+                        ? allProducts.map((product) {
+                            final isNewProduct =
+                                product['idProductoCompra'] == null;
+
                             bool isSelected =
                                 isProductSelected(product['idProducto']);
                             return ProductCardSelect(
@@ -117,8 +122,12 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                                   : 'assets/algo.jpg',
                               productName:
                                   product['producto'] ?? 'Producto sin nombre',
-                              clasification: product['clasificacionProducto']
-                                  ['clasificacionProducto'],
+                              clasification:
+                                  product['clasificacionProducto'] != null
+                                      ? product['clasificacionProducto']
+                                              ['clasificacionProducto'] ??
+                                          'Sin clasificación'
+                                      : 'Sin clasificación',
                               onAddProduct:
                                   (productName, clasification, productId) {
                                 _showEditProductDialog(
