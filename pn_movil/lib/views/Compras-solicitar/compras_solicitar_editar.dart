@@ -107,7 +107,7 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                         ? provider.products.map((product) {
                             bool isSelected =
                                 isProductSelected(product['idProducto']);
-                            print(isSelected);
+                            print(product);
                             return ProductCardSelect(
                               imageUrl: (product['imagenes'] is List &&
                                       product['imagenes'].isNotEmpty)
@@ -533,6 +533,14 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
 
     setState(() {
       _productosBackend["productos"].add({
+        'productName': name,
+        'clasification': clasification,
+        'cantidad': cantidad.toString(),
+        'costo': costo.toString(),
+        'productId': productId,
+      });
+
+      productos.add({
         'productName': name,
         'clasification': clasification,
         'cantidad': cantidad.toString(),
