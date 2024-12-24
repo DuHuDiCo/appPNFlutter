@@ -103,13 +103,11 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
               const SizedBox(height: 30),
               Consumer<ProductsProvider>(
                 builder: (context, provider, child) {
-                  final allProducts = List.from(provider.products)
-                    ..addAll(_productosBackend["productos"] ?? []);
                   return Wrap(
                     spacing: 10.0,
                     runSpacing: 10.0,
                     children: loadingProductos
-                        ? allProducts.map((product) {
+                        ? provider.products.map((product) {
                             final isNewProduct =
                                 product['idProductoCompra'] == null;
 
