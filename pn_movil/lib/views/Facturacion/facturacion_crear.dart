@@ -433,9 +433,8 @@ class _FacturacionCrearState extends State<FacturacionCrear> {
                           SnackBar(
                             content: Text(
                                 'La cantidad ingresada supera el límite permitido.'),
-                            duration:
-                                Duration(seconds: 3), // Duración del snackbar
-                            backgroundColor: Colors.red, // Color de fondo
+                            duration: Duration(seconds: 3),
+                            backgroundColor: Colors.red,
                           ),
                         );
                       } else {
