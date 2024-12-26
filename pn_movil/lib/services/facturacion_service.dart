@@ -39,9 +39,13 @@ class FacturacionService extends ChangeNotifier {
   }
 
   // Función para guardar la facturación
-  Future<void> guardarFacturacion(
-      BuildContext context, int idInventario) async {
+  Future<void> guardarFacturacion(BuildContext context, int idInventario,
+      int perodicidad, int cuotas, double valorCuota, String fechaCorte) async {
     final Map<String, dynamic> factura = {
+      'fechaCorte': fechaCorte,
+      'perodicidad': perodicidad,
+      'cuotas': cuotas,
+      'valorCuota': valorCuota,
       'idInventario': idInventario,
       'productos': _selectedProducts,
     };

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:pn_movil/conexiones/ApiClient.dart';
 import 'package:pn_movil/providers/clientes_provider.dart';
 import 'package:pn_movil/services/facturacion_service.dart';
+import 'package:pn_movil/widgets/Components-cards/card_container.dart';
 import 'package:pn_movil/widgets/Components-cards/cards_edit_products.dart';
 import 'package:pn_movil/widgets/Components-navbar/drawer.dart';
 import 'package:pn_movil/widgets/Components-navbar/navbar.dart';
@@ -19,17 +20,35 @@ class _FacturacionCrearState extends State<FacturacionCrear> {
   late final FacturacionService facturacionService;
   List<Map<String, dynamic>> productosSeleccionados = [];
   bool isRegistrarButtonEnabled = false;
+  final TextEditingController _periocidadController = TextEditingController();
+  final TextEditingController _cuotasController = TextEditingController();
+  final TextEditingController _valorCuotaController = TextEditingController();
+  final TextEditingController _fechaCorteController = TextEditingController();
+  DateTime? _selectedDate;
 
   @override
   void initState() {
     super.initState();
+    // Inicialización del servicio
     facturacionService =
         FacturacionService(ApiClient('https://apppn.duckdns.org'));
 
+    // Asegúrate de que el widget esté montado antes de acceder al Provider
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<ClientesProvider>(context, listen: false)
-          .loadClientes(context);
+      if (mounted) {
+        Provider.of<ClientesProvider>(context, listen: false)
+            .loadClientes(context);
+      }
     });
+  }
+
+  @override
+  void dispose() {
+    _periocidadController.dispose();
+    _cuotasController.dispose();
+    _valorCuotaController.dispose();
+    _fechaCorteController.dispose();
+    super.dispose();
   }
 
   void _addProductWithDetails(String name, String clasification, int cantidad,
@@ -64,64 +83,142 @@ class _FacturacionCrearState extends State<FacturacionCrear> {
     return Scaffold(
       appBar: Navbar(),
       drawer: CustomDrawer(),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            // Título principal
-            _buildTitle(inventario),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.blue.shade50, Colors.white],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              // Título principal
+              _buildHeader(),
 
-            // Contenido principal
-            _buildMainContent(inventario, factura),
+              // Contenido principal
+              _buildMainContent(inventario, factura),
 
-            // Botón para guardar la facturación
-            _buildFooter(facturacionService, inventario),
-          ],
+              // Botón para guardar la facturación
+              _buildFooter(facturacionService, inventario),
+            ],
+          ),
         ),
       ),
     );
   }
 
-// Método para construir el título
-  Widget _buildTitle(Map<String, dynamic>? inventario) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+  Widget _buildHeader() {
+    return SingleChildScrollView(
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 0),
+        child: CardContainer(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                Icons.receipt_long,
-                color: Colors.blue.shade800,
-                size: 28,
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.receipt_long,
+                    color: Colors.blue.shade800,
+                    size: 28,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Registrar factura',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue.shade800,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 8),
-              Text(
-                'Crear facturación',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blue.shade800,
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Primer TextFormField
+                  Expanded(
+                    child: TextFormField(
+                      controller: _fechaCorteController,
+                      readOnly: true,
+                      decoration: InputDecoration(
+                        labelText: 'Fecha de corte',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        suffixIcon: Icon(Icons.calendar_today),
+                      ),
+                      onTap: () async {
+                        final selectedDate = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(2000),
+                          lastDate: DateTime(2025),
+                        );
+
+                        if (selectedDate != null) {
+                          setState(() {
+                            _selectedDate = selectedDate;
+                            _fechaCorteController.text =
+                                "${_selectedDate!.day.toString().padLeft(2, '0')}/${_selectedDate!.month.toString().padLeft(2, '0')}/${_selectedDate!.year}";
+                          });
+                        }
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 20),
+                  // Segundo TextFormField
+                  Expanded(
+                    child: TextFormField(
+                      controller: _periocidadController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: 'Periocidad',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              TextFormField(
+                controller: _cuotasController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: 'Número de cuotas',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
               ),
+              const SizedBox(height: 20),
+              TextFormField(
+                controller: _valorCuotaController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: 'Valor de cada cuota',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 5),
             ],
           ),
         ),
-        Text(
-          'Estos son tus productos del inventario # ${inventario?['idInventory']}',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.normal,
-            color: Colors.black54,
-          ),
-          textAlign: TextAlign.center,
-        ),
-      ],
+      ),
     );
   }
 
-  //Meotodo para construir
+  //Meotodo para construir el contenido principal
   Widget _buildMainContent(
       Map<String, dynamic>? inventario, Map<String, dynamic>? factura) {
     if (inventario == null) {
@@ -143,7 +240,7 @@ class _FacturacionCrearState extends State<FacturacionCrear> {
               LayoutBuilder(
                 builder: (BuildContext context, BoxConstraints constraints) {
                   return SizedBox(
-                    height: 500,
+                    height: 300,
                     child: GridView.builder(
                       physics: const BouncingScrollPhysics(),
                       gridDelegate:
@@ -199,7 +296,6 @@ class _FacturacionCrearState extends State<FacturacionCrear> {
                   );
                 },
               ),
-              const SizedBox(height: 30),
             ],
           ),
         ),
@@ -510,11 +606,64 @@ class _FacturacionCrearState extends State<FacturacionCrear> {
                 width: 150,
                 child: ElevatedButton(
                   onPressed: facturacionService.hasSelectedProducts
-                      ? () => facturacionService.guardarFacturacion(
-                          context, idInventario)
+                      ? () {
+                          if (_selectedDate != null) {
+                            // Validar y convertir los valores de los controladores
+                            final String periocidadText =
+                                _periocidadController.text.trim();
+                            final String cuotasText =
+                                _cuotasController.text.trim();
+                            final String valorCuotaText =
+                                _valorCuotaController.text.trim();
+
+                            final int? periocidad =
+                                int.tryParse(periocidadText);
+                            final int? cuotas = int.tryParse(cuotasText);
+                            final double? valorCuota =
+                                double.tryParse(valorCuotaText);
+
+                            if (periocidad != null &&
+                                cuotas != null &&
+                                valorCuota != null) {
+                              facturacionService.guardarFacturacion(
+                                context,
+                                idInventario,
+                                periocidad,
+                                cuotas,
+                                valorCuota,
+                                _selectedDate!.toIso8601String(),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                      'Por favor, ingresa valores válidos.'),
+                                ),
+                              );
+                            }
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content:
+                                    Text('Por favor, selecciona una fecha.'),
+                              ),
+                            );
+                          }
+                        }
                       : null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: facturacionService.hasSelectedProducts
+                    backgroundColor: facturacionService.hasSelectedProducts &&
+                            _periocidadController.text.isNotEmpty &&
+                            _cuotasController.text.isNotEmpty &&
+                            _valorCuotaController.text.isNotEmpty &&
+                            _selectedDate != null &&
+                            int.tryParse(_periocidadController.text.trim()) !=
+                                null &&
+                            int.tryParse(_cuotasController.text.trim()) !=
+                                null &&
+                            double.tryParse(
+                                    _valorCuotaController.text.trim()) !=
+                                null
                         ? Colors.blue
                         : Colors.grey,
                   ),
