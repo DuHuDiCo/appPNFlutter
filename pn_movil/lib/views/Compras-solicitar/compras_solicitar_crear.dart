@@ -339,53 +339,6 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
     );
   }
 
-// Función para crear el footer del dialogo de agregar producto
-  Widget _buildFooter() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: 150,
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pushReplacementNamed('compras-solicitar');
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-              ),
-              child: const Text(
-                'Regresar',
-                style: TextStyle(
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 20),
-          SizedBox(
-            width: 150,
-            child: ElevatedButton(
-              onPressed: (_isFormValid && _selectedProducts.isNotEmpty)
-                  ? saveFormData
-                  : null,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-              ),
-              child: const Text(
-                'Registrar',
-                style: TextStyle(
-                  color: Color.fromARGB(255, 244, 245, 246),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
 //Dialogo para agregar producto
   Future<void> _showAddProductDialog(BuildContext context, String productName,
       String clasification, String productId) async {
@@ -502,6 +455,53 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
           },
         );
       },
+    );
+  }
+
+  // Función para crear el footer del dialogo de agregar producto
+  Widget _buildFooter() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: 150,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pushReplacementNamed('compras-solicitar');
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+              ),
+              child: const Text(
+                'Regresar',
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 20),
+          SizedBox(
+            width: 150,
+            child: ElevatedButton(
+              onPressed: (_isFormValid && _selectedProducts.isNotEmpty)
+                  ? saveFormData
+                  : null,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+              ),
+              child: const Text(
+                'Registrar',
+                style: TextStyle(
+                  color: Color.fromARGB(255, 244, 245, 246),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
