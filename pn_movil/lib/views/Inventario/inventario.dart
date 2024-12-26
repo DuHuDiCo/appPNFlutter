@@ -36,7 +36,14 @@ class _InventarioState extends State<Inventario> {
     return Scaffold(
       appBar: const Navbar(),
       drawer: const CustomDrawer(),
-      body: Padding(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.white, Colors.blue.shade50],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [

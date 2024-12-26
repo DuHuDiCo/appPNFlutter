@@ -29,19 +29,28 @@ class _PagoState extends State<Pago> {
     return Scaffold(
       appBar: const Navbar(),
       drawer: const CustomDrawer(),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            // Título principal
-            _buildTitle(),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.white, Colors.blue.shade50],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              // Título principal
+              _buildTitle(),
 
-            // Barra de búsqueda
-            _buildSearchBar(),
+              // Barra de búsqueda
+              _buildSearchBar(),
 
-            // Contenido principal
-            _buildMainContent(),
-          ],
+              // Contenido principal
+              _buildMainContent(),
+            ],
+          ),
         ),
       ),
     );

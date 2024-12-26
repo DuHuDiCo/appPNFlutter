@@ -72,4 +72,37 @@ class FacturacionProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  //Metodo para obtener la facturación por ID del cliente
+  Future<void> obtenerFacturasPorCliente(
+      BuildContext context, int idCliente) async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+
+      final response = await _apiClient.get('/api/v1/facturacion/$idCliente');
+
+      if (response.statusCode == 200) {
+        // Parsear el JSON recibido
+        _facturas = List<Map<String, dynamic>>.from(json.decode(response.body));
+        print('Facturaciones cargadas: $_facturas');
+      } else if (response.statusCode == 404) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content:
+                  Text('No se encontraron facturaciones para este cliente.')),
+        );
+      } else {
+        throw Exception('Error al cargar facturaciones');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+      if (kDebugMode) print('Error al obtener facturaciones: $e');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
 }

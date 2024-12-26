@@ -40,7 +40,14 @@ class _DetalleInventarioState extends State<DetalleInventario> {
     return Scaffold(
       appBar: Navbar(),
       drawer: CustomDrawer(),
-      body: Padding(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.white, Colors.blue.shade50],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
