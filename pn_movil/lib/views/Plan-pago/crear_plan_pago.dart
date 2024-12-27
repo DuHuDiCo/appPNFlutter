@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:pn_movil/conexiones/ApiClient.dart';
 import 'package:pn_movil/providers/clientes_provider.dart';
 import 'package:pn_movil/providers/facturacion_provider.dart';
@@ -53,6 +54,9 @@ class _CrearPlanPagoState extends State<CrearPlanPago> {
             children: [
               // Título principal
               _buildHeader(),
+              const SizedBox(height: 50),
+              // Contenido principal
+              _buildFacturacionTable(),
             ],
           ),
         ),
@@ -60,7 +64,7 @@ class _CrearPlanPagoState extends State<CrearPlanPago> {
     );
   }
 
-  // Método para construir el título
+// Método para construir el título con la tabla
   Widget _buildHeader() {
     return SingleChildScrollView(
       child: Container(
@@ -97,7 +101,7 @@ class _CrearPlanPagoState extends State<CrearPlanPago> {
                   }
 
                   if (clientesProvider.clientes.isEmpty) {
-                    return Text("No hay clientes disponibles");
+                    return const Text("No hay clientes disponibles");
                   }
 
                   final clientes = clientesProvider.clientes;
@@ -137,6 +141,7 @@ class _CrearPlanPagoState extends State<CrearPlanPago> {
                         ),
                       ),
                       const SizedBox(width: 10),
+                      // Botón de búsqueda
                       Container(
                         width: 50,
                         height: 40,
@@ -146,13 +151,21 @@ class _CrearPlanPagoState extends State<CrearPlanPago> {
                         ),
                         child: IconButton(
                           onPressed: () {
-                            print("Cliente seleccionado: $_selectedCliente");
-                            Future.microtask(
-                              () => context
-                                  .read<FacturacionProvider>()
-                                  .obtenerFacturasPorCliente(
-                                      context, _selectedCliente!),
-                            );
+                            if (_selectedCliente != null) {
+                              Future.microtask(() {
+                                context
+                                    .read<FacturacionProvider>()
+                                    .obtenerFacturasPorCliente(
+                                        context, _selectedCliente!);
+                              });
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content:
+                                      Text('Por favor selecciona un cliente.'),
+                                ),
+                              );
+                            }
                           },
                           icon: const Icon(
                             Icons.search,
@@ -165,10 +178,114 @@ class _CrearPlanPagoState extends State<CrearPlanPago> {
                   );
                 },
               ),
+              const SizedBox(height: 20),
             ],
           ),
         ),
       ),
+    );
+  }
+
+// Widget para construir la tabla de facturación
+  Widget _buildFacturacionTable() {
+    return Consumer<FacturacionProvider>(
+      builder: (context, facturacionProvider, _) {
+        if (facturacionProvider.isLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (facturacionProvider.facturas.isEmpty) {
+          return const Center(
+            child: Text('No se encontraron facturaciones.'),
+          );
+        }
+
+        return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: DataTable(
+            headingRowColor: WidgetStateProperty.all(Colors.blue.shade100),
+            columnSpacing: 20, // Mayor espacio entre columnas
+            dataTextStyle: TextStyle(
+              fontSize: 16,
+              color: Colors.black.withOpacity(0.7),
+              fontWeight: FontWeight.w500,
+            ),
+            // Encabezados con negrita y color
+            columns: [
+              DataColumn(
+                label: Text(
+                  'Factura',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: Colors.blue,
+                  ),
+                ),
+              ),
+              DataColumn(
+                label: Text(
+                  'Fecha Creacion',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: Colors.blue,
+                  ),
+                ),
+              ),
+              DataColumn(
+                label: Text(
+                  'Total',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: Colors.blue,
+                  ),
+                ),
+              ),
+            ],
+
+            rows: facturacionProvider.facturas.map((factura) {
+              final id = factura['idFacturacion'] ?? '-';
+              final fecha = DateFormat('dd/MM/yyyy')
+                  .format(DateTime.parse(factura['fecha']));
+              final total = facturacionService
+                  .formatCurrencyToCOP(factura['totalFacturacion']);
+
+              return DataRow(
+                color: WidgetStateProperty.resolveWith<Color?>(
+                    (Set<WidgetState> states) {
+                  if (states.contains(WidgetState.selected)) {
+                    return Colors.blue.shade50;
+                  }
+                  return (factura['idFacturacion']!.hashCode % 2 == 0)
+                      ? Colors.grey.shade50
+                      : Colors.white;
+                }),
+                cells: [
+                  DataCell(
+                    Center(
+                      child: Text('$id'),
+                    ),
+                  ),
+                  DataCell(
+                    Center(
+                      child: Text(fecha),
+                    ),
+                  ),
+                  DataCell(
+                    Center(
+                      child: Text(total),
+                    ),
+                  ),
+                ],
+              );
+            }).toList(),
+          ),
+        );
+      },
     );
   }
 }
