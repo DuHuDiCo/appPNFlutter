@@ -87,7 +87,7 @@ class ProductFacturacion extends StatelessWidget {
                       isSelected ? Icons.delete : Icons.add,
                       color: Colors.white,
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 1),
                     Text(
                       isSelected ? "Eliminar" : "Agregar",
                       style: const TextStyle(

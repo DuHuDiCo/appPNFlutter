@@ -183,6 +183,19 @@ class CustomDrawer extends StatelessWidget {
                     },
                   ),
                 ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 16.0),
+                  child: ListTile(
+                    leading: const Icon(Icons.signal_cellular_alt_sharp,
+                        color: Colors.white),
+                    title: const Text('Plan de pago',
+                        style: TextStyle(color: Colors.white)),
+                    onTap: () {
+                      Navigator.pushReplacementNamed(
+                          context, 'crear-plan-pago');
+                    },
+                  ),
+                ),
               ],
             ),
             const Divider(color: Colors.white),

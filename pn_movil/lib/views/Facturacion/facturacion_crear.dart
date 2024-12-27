@@ -28,7 +28,6 @@ class _FacturacionCrearState extends State<FacturacionCrear> {
     facturacionService =
         FacturacionService(ApiClient('https://apppn.duckdns.org'));
 
-    // Asegúrate de que el widget esté montado antes de acceder al Provider
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         Provider.of<ClientesProvider>(context, listen: false)
@@ -154,7 +153,7 @@ class _FacturacionCrearState extends State<FacturacionCrear> {
               LayoutBuilder(
                 builder: (BuildContext context, BoxConstraints constraints) {
                   return SizedBox(
-                    height: 530,
+                    height: 480,
                     child: GridView.builder(
                       physics: const BouncingScrollPhysics(),
                       gridDelegate:

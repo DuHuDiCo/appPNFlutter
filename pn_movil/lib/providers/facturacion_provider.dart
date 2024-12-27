@@ -74,14 +74,14 @@ class FacturacionProvider extends ChangeNotifier {
     }
   }
 
-  //Metodo para obtener la facturación por ID del cliente
+  //Metodo para obtener las facturaciones por ID del cliente
   Future<void> obtenerFacturasPorCliente(
       BuildContext context, int idCliente) async {
     try {
       _isLoading = true;
       notifyListeners();
 
-      final response = await _apiClient.get('/api/v1/facturacion/$idCliente');
+      final response = await _apiClient.get('/client/facturaciones/$idCliente');
 
       if (response.statusCode == 200) {
         _facturas = List<Map<String, dynamic>>.from(json.decode(response.body));
