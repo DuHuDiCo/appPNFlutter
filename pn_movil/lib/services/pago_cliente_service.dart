@@ -1,4 +1,4 @@
-import 'package:pn_movil/conexiones/apiClient.dart';
+import 'package:pn_movil/conexiones/ApiClient.dart';
 
 class PagoClienteService {
   final ApiClient _apiClient;

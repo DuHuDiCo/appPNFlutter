@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pn_movil/conexiones/ApiClient.dart';
 import 'package:pn_movil/views/Facturacion/facturacion.dart';
+import 'package:pn_movil/views/Plan-pago/crear_plan_pago.dart';
 
 class FacturacionProvider extends ChangeNotifier {
   final ApiClient _apiClient;
@@ -57,7 +58,7 @@ class FacturacionProvider extends ChangeNotifier {
         );
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => Facturacion()),
+          MaterialPageRoute(builder: (context) => CrearPlanPago()),
         );
 
         await loadFacturas(context);
@@ -83,7 +84,6 @@ class FacturacionProvider extends ChangeNotifier {
       final response = await _apiClient.get('/api/v1/facturacion/$idCliente');
 
       if (response.statusCode == 200) {
-        // Parsear el JSON recibido
         _facturas = List<Map<String, dynamic>>.from(json.decode(response.body));
         print('Facturaciones cargadas: $_facturas');
       } else if (response.statusCode == 404) {

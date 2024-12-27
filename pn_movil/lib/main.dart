@@ -12,6 +12,7 @@ import 'package:pn_movil/providers/pago_provider.dart';
 import 'package:pn_movil/providers/products_provider.dart';
 import 'package:pn_movil/providers/products_sin_facturacion_provider.dart';
 import 'package:pn_movil/providers/proveedor_provider.dart';
+import 'package:pn_movil/providers/tipo_venta_provider.dart';
 import 'package:pn_movil/providers/user_provider.dart';
 import 'package:pn_movil/services/AuthService.dart';
 import 'package:pn_movil/views/Compras-solicitar/compras_solicitar_crear.dart';
@@ -32,6 +33,7 @@ import 'package:pn_movil/views/Productos/crear_product.dart';
 import 'package:pn_movil/views/Login/login.dart';
 import 'package:pn_movil/views/Productos/products.dart';
 import 'package:pn_movil/views/Panel/vista_inicial.dart';
+import 'package:pn_movil/views/Tipo-venta/tipo_venta.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -83,6 +85,9 @@ class MyApp extends StatelessWidget {
           create: (context) =>
               ProductsSinFacturacionProvider(context.read<ApiClient>()),
         ),
+        ChangeNotifierProvider<TipoVentaProvider>(
+          create: (context) => TipoVentaProvider(context.read<ApiClient>()),
+        ),
         Provider<GoogleAuthController>(
           create: (_) => GoogleAuthController(),
         ),
@@ -116,6 +121,7 @@ class MyApp extends StatelessWidget {
           'productos-facturacion-detalle': (_) => const FacturacionDetalle(),
           'pagos-clientes': (_) => const PagosClientes(),
           'plan-pago': (_) => const PlanPago(),
+          'tipo-venta': (_) => const TipoVenta(),
         },
         theme: ThemeData.light().copyWith(
           scaffoldBackgroundColor: Colors.grey[300],

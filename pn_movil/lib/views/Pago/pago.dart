@@ -183,7 +183,6 @@ class _PagoState extends State<Pago> {
                           onSelected: (String value) {
                             switch (value) {
                               case 'comprobante':
-                              case 'comprobante':
                                 _mostrarComprobanteDialog(
                                     context, pago['archivos']['urlPath']);
                                 break;
