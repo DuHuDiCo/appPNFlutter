@@ -55,7 +55,8 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
 
     compra = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
 
-    if (compra['productoCompras'] is List) {
+    if (compra['productoCompras'] is List &&
+        (productos == null || productos.isEmpty)) {
       productos = (compra['productoCompras'] as List)
           .map((item) => item as Map<String, dynamic>)
           .toList();
@@ -72,7 +73,6 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
     }
 
     if (compra != null) {
-      // TRAER EL ID DEL PROVEEDOR
       setState(() {
         proveedorSeleccionado = compra['proveedor']['idProveedor'];
       });
@@ -106,80 +106,84 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                   return Wrap(
                     spacing: 10.0,
                     runSpacing: 10.0,
-                    children: loadingProductos
-                        ? provider.products.map((product) {
-                            final isNewProduct =
-                                product['idProductoCompra'] == null;
-
-                            bool isSelected =
-                                isProductSelected(product['idProducto']);
-                            return ProductCardSelect(
-                              imageUrl: (product['imagenes'] is List &&
-                                      product['imagenes'].isNotEmpty)
-                                  ? product['imagenes'][0]['urlPath']
-                                  : 'assets/algo.jpg',
-                              productName:
-                                  product['producto'] ?? 'Producto sin nombre',
-                              clasification:
-                                  product['clasificacionProducto'] != null
-                                      ? product['clasificacionProducto']
-                                              ['clasificacionProducto'] ??
-                                          'Sin clasificación'
-                                      : 'Sin clasificación',
-                              onAddProduct:
-                                  (productName, clasification, productId) {
-                                _showEditProductDialog(
-                                    context,
-                                    productName,
-                                    clasification,
-                                    0,
-                                    0,
-                                    product['idProducto'],
-                                    product['productosCompras'][0]['user']
-                                        ['idUser'],
-                                    false);
-                              },
-                              onRemoveProduct: (name, clasification) {},
-                              isSelected: isSelected,
-                              productId: product['idProducto'].toString(),
-                              isEdit: true,
+                    children: [
+                      ...productos.map((product) {
+                        return ProductCardEdit(
+                          imageUrl: (product['imagenes'] is List &&
+                                  product['imagenes'].isNotEmpty)
+                              ? product['imagenes'][0]['urlPath']
+                              : 'assets/algo.jpg',
+                          productName: product['producto']['producto'] ??
+                              'Producto sin nombre',
+                          clasification: product['producto']
+                                  ['clasificacionProducto']
+                              ['clasificacionProducto'],
+                          onEditProduct:
+                              (productName, cantidad, precio, productId) {
+                            _showEditProductDialog(
+                              context,
+                              productName,
+                              '',
+                              cantidad,
+                              precio,
+                              productId,
+                              product['user']['idUser'],
+                              true,
                             );
-                          }).toList()
-                        : productos.map((product) {
-                            return ProductCardEdit(
-                              imageUrl: (product['imagenes'] is List &&
-                                      product['imagenes'].isNotEmpty)
-                                  ? product['imagenes'][0]['urlPath']
-                                  : 'assets/algo.jpg',
-                              productName: product['producto']['producto'] ??
-                                  'Producto sin nombre',
-                              clasification: product['producto']
-                                      ['clasificacionProducto']
-                                  ['clasificacionProducto'],
-                              onEditProduct:
-                                  (productName, cantidad, precio, productId) {
-                                _showEditProductDialog(
-                                    context,
-                                    productName,
-                                    '',
-                                    cantidad,
-                                    precio,
-                                    productId,
-                                    product['user']['idUser'],
-                                    true);
-                              },
-                              onRemoveProduct: (name, idProductoCompra) {
-                                eliminarProducto(
-                                    context,
-                                    product['idProductoCompra'],
-                                    product['producto']['idProducto']);
-                              },
-                              productId: product['producto']['idProducto'],
-                              cantidad: product['cantidad'],
-                              precio: product['costo'],
-                              productIdCompra: product['idProductoCompra'],
+                          },
+                          onRemoveProduct: (name, idProductoCompra) {
+                            eliminarProducto(
+                              context,
+                              product['idProductoCompra'],
+                              product['producto']['idProducto'],
                             );
-                          }).toList(),
+                          },
+                          productId: product['producto']['idProducto'],
+                          cantidad: product['cantidad'],
+                          precio: product['costo'],
+                          productIdCompra: product['idProductoCompra'],
+                        );
+                      }),
+                      ...provider.products
+                          .where((product) =>
+                              !isProductSelected(product['idProducto']))
+                          .map((product) {
+                        return ProductCardSelect(
+                          imageUrl: (product['imagenes'] is List &&
+                                  product['imagenes'].isNotEmpty)
+                              ? product['imagenes'][0]['urlPath']
+                              : 'assets/algo.jpg',
+                          productName:
+                              product['producto'] ?? 'Producto sin nombre',
+                          clasification:
+                              product['clasificacionProducto'] != null
+                                  ? product['clasificacionProducto']
+                                          ['clasificacionProducto'] ??
+                                      'Sin clasificación'
+                                  : 'Sin clasificación',
+                          onAddProduct:
+                              (productName, clasification, productId) {
+                            _showEditProductDialog(
+                              context,
+                              productName,
+                              clasification,
+                              0,
+                              0,
+                              product['idProducto'],
+                              product['productosCompras'].length > 0
+                                  ? product['productosCompras'][0]['user']
+                                  : 0,
+                              false,
+                            );
+                          },
+                          onRemoveProduct: (name, clasification) {},
+                          isSelected:
+                              false, // No es necesario para este filtro, pero puedes mantenerlo por consistencia.
+                          productId: product['idProducto'].toString(),
+                          isEdit: true,
+                        );
+                      }).toList(),
+                    ],
                   );
                 },
               ),
@@ -441,14 +445,14 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                           clasification,
                           int.parse(cantidadController.text),
                           double.parse(costoController.text),
-                          productId.toString(),
+                          productId,
                           userId,
                         );
                         Navigator.of(context).pop(true);
                       }
                     }
-                    logger.i(JsonEncoder.withIndent('  ')
-                        .convert(productos[productos.length - 1]));
+                    logger.i(_productosBackend['productos']);
+
                     // Navigator.of(context).pop(true);
                   },
                   child: Text(
@@ -497,7 +501,7 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                 print(
                     'Productos eliminados: ${_productosBackend['productos']}');
 
-                Navigator.of(dialogContext).pop(); // Cierra el diálogo
+                Navigator.of(dialogContext).pop();
 
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
@@ -545,31 +549,32 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
 
   // Agregar producto y actualizar estado
   void _addProductWithDetails(String name, String clasification, int cantidad,
-      double costo, String productId, int userId) {
+      double costo, int productId, int userId) {
     setState(() {
-      productos.add({
-        'idProductoCompra': '',
-        'cantidad': cantidad.toString(),
-        'costo': costo.toString(),
-        'flete': '0.0',
-        'producto': {
-          'idProducto': productId,
-          'producto': name,
-          'descripcion': '',
-          'imagenes': [],
-          'clasificacionProducto': {
-            'idClasificacionProducto': '',
-            'clasificacionProducto': clasification,
-            'isFleteObligatorio': false,
-          },
-          'productosCompras': []
-        }
-      });
+      productos = List.from(productos)
+        ..add({
+          'idProductoCompra': 0,
+          'cantidad': cantidad,
+          'costo': costo,
+          'flete': '0.0',
+          'producto': {
+            'idProducto': productId,
+            'producto': name,
+            'descripcion': '',
+            'imagenes': [],
+            'clasificacionProducto': {
+              'idClasificacionProducto': '',
+              'clasificacionProducto': clasification,
+              'isFleteObligatorio': false,
+            },
+            'productosCompras': []
+          }
+        });
 
       _productosBackend['productos'].add({
         'cantidad': cantidad,
         'costo': costo,
-        'productId': productId,
+        'idProducto': productId,
         'usuarioId': userId,
       });
 

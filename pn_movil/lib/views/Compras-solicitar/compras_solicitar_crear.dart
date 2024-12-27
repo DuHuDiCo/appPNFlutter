@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:logger/logger.dart';
 import 'package:pn_movil/providers/compra_provider.dart';
 import 'package:pn_movil/providers/products_provider.dart';
 import 'package:pn_movil/providers/proveedor_provider.dart';
+import 'package:pn_movil/providers/user_provider.dart';
 import 'package:pn_movil/widgets/Components-cards/card_container.dart';
 import 'package:pn_movil/widgets/Components-cards/cards_select_products.dart';
 import 'package:pn_movil/widgets/Components-navbar/drawer.dart';
@@ -19,6 +23,7 @@ class SeleccionarProductos extends StatefulWidget {
 class _SeleccionarProductosState extends State<SeleccionarProductos> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _proveedorController = TextEditingController();
+  final TextEditingController _vendedorController = TextEditingController();
   final TextEditingController cantidadController = TextEditingController();
   final TextEditingController costoController = TextEditingController();
   final List<Map<String, String>> _selectedProducts = [];
@@ -35,6 +40,7 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
           .loadProveedores(context);
       Provider.of<ProductsProvider>(context, listen: false)
           .loadProducts(context);
+      Provider.of<UserProvider>(context, listen: false).loadVendedores(context);
     });
   }
 
@@ -49,7 +55,7 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
 
   // Agregar producto y actualizar estado
   void _addProductWithDetails(String name, String clasification, int cantidad,
-      double costo, String productId) {
+      double costo, String productId, String vendedorId) {
     if (_selectedProducts.any((product) =>
         product['productName'] == name &&
         product['clasification'] == clasification)) {
@@ -63,6 +69,7 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
         'cantidad': cantidad.toString(),
         'costo': costo.toString(),
         'productId': productId,
+        'idUsuario': vendedorId,
       });
 
       checkFormValidity();
@@ -114,7 +121,7 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
             "cantidad": int.parse(product['cantidad'] ?? '0'),
             "costo": double.parse(product['costo'] ?? '0'),
             "idProducto": product['productId'],
-            "idUsuario": 1,
+            "idUsuario": double.parse(product['idUsuario'] ?? '0'),
             "estimarFlete": bool.parse(product['estimarFlete'] ?? 'false'),
             "isDescuentoInicial":
                 bool.parse(product['isDescuentoInicial'] ?? 'false'),
@@ -123,6 +130,8 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
         "totalCompra": _calculoTotalCompra(),
         "totalPagar": _calculoTotalPagar(),
       };
+
+      Logger().i(JsonCodec().encode(nuevaCompra));
 
       Provider.of<CompraProvider>(context, listen: false)
           .createCompra(context, nuevaCompra);
@@ -405,6 +414,41 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
                           FilteringTextInputFormatter.digitsOnly,
                         ],
                       ),
+                      const SizedBox(height: 16),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 1),
+                        child: Consumer<UserProvider>(
+                          builder: (context, usuarioProvider, child) {
+                            if (usuarioProvider.isLoading) {
+                              return const CircularProgressIndicator();
+                            }
+                            final vendedores = usuarioProvider.vendedores;
+                            return DropdownButtonFormField<int>(
+                              isExpanded: true,
+                              decoration: InputDecoration(
+                                labelText: 'Vendedor',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              onChanged: (value) {
+                                setState(() {
+                                  _vendedorController.text =
+                                      value?.toString() ?? '';
+                                });
+                                checkFormValidity();
+                              },
+                              items: vendedores.map((vendedor) {
+                                return DropdownMenuItem<int>(
+                                  value: vendedor['idUser'],
+                                  child: Text(
+                                      "${vendedor['name']} ${vendedor['lastname']}"),
+                                );
+                              }).toList(),
+                            );
+                          },
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -431,13 +475,15 @@ class _SeleccionarProductosState extends State<SeleccionarProductos> {
                   ),
                   onPressed: () {
                     if (cantidadController.text.isNotEmpty &&
-                        costoController.text.isNotEmpty) {
+                        costoController.text.isNotEmpty &&
+                        _vendedorController.text.isNotEmpty) {
                       _addProductWithDetails(
                         productName,
                         clasification,
                         int.parse(cantidadController.text),
                         double.parse(costoController.text),
                         productId,
+                        _vendedorController.text,
                       );
                       Navigator.of(context).pop(true);
                     }
