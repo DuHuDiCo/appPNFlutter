@@ -204,13 +204,12 @@ class _CrearPlanPagoState extends State<CrearPlanPago> {
           scrollDirection: Axis.horizontal,
           child: DataTable(
             headingRowColor: WidgetStateProperty.all(Colors.blue.shade100),
-            columnSpacing: 20, // Mayor espacio entre columnas
+            columnSpacing: 20,
             dataTextStyle: TextStyle(
               fontSize: 16,
               color: Colors.black.withOpacity(0.7),
               fontWeight: FontWeight.w500,
             ),
-            // Encabezados con negrita y color
             columns: [
               DataColumn(
                 label: Text(
@@ -246,7 +245,6 @@ class _CrearPlanPagoState extends State<CrearPlanPago> {
                 ),
               ),
             ],
-
             rows: facturacionProvider.facturas.map((factura) {
               final id = factura['idFacturacion'] ?? '-';
               final fecha = DateFormat('dd/MM/yyyy')
