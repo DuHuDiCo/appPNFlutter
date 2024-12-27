@@ -2,8 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:pn_movil/providers/compra_provider.dart';
 import 'package:pn_movil/providers/products_provider.dart';
 import 'package:pn_movil/providers/proveedor_provider.dart';
+import 'package:pn_movil/providers/user_provider.dart';
 import 'package:pn_movil/widgets/Components-cards/card_container.dart';
 import 'package:pn_movil/widgets/Components-cards/cards_edit_products.dart';
 import 'package:pn_movil/widgets/Components-cards/cards_select_products.dart';
@@ -21,6 +23,7 @@ class ComprasSolicitarEditar extends StatefulWidget {
 class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   int? proveedorSeleccionado = 0;
+  bool _productosCargados = false;
   bool loadingProductos = false;
   final List<Map<String, String>> _selectedProducts = [];
   final Map<String, dynamic> _productosBackend = {
@@ -44,6 +47,7 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
           .loadProveedores(context);
       Provider.of<ProductsProvider>(context, listen: false)
           .loadProducts(context);
+      Provider.of<UserProvider>(context, listen: false).loadVendedores(context);
     });
   }
 
@@ -55,11 +59,11 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
 
     compra = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
 
-    if (compra['productoCompras'] is List &&
-        (productos == null || productos.isEmpty)) {
+    if (!_productosCargados && compra['productoCompras'] is List) {
       productos = (compra['productoCompras'] as List)
           .map((item) => item as Map<String, dynamic>)
           .toList();
+      logger.i(json.encode(productos));
 
       // Llenar el array de productos en _productosBackend
       _productosBackend["productos"] = productos.map((product) {
@@ -70,10 +74,9 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
           "idUsuario": product["user"]["idUser"]!,
         };
       }).toList();
-    }
 
-    if (compra != null) {
       setState(() {
+        _productosCargados = true;
         proveedorSeleccionado = compra['proveedor']['idProveedor'];
       });
     }
@@ -125,9 +128,10 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                               productName,
                               '',
                               cantidad,
-                              precio,
+                              product['costo'].toString(),
                               productId,
                               product['user']['idUser'],
+                              product['idProductoCompra'],
                               true,
                             );
                           },
@@ -139,8 +143,8 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                             );
                           },
                           productId: product['producto']['idProducto'],
-                          cantidad: product['cantidad'],
-                          precio: product['costo'],
+                          cantidad: product['cantidad'].toString(),
+                          precio: product['costo'].toString(),
                           productIdCompra: product['idProductoCompra'],
                         );
                       }),
@@ -148,6 +152,7 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                           .where((product) =>
                               !isProductSelected(product['idProducto']))
                           .map((product) {
+                        Logger().e(json.encode(product));
                         return ProductCardSelect(
                           imageUrl: (product['imagenes'] is List &&
                                   product['imagenes'].isNotEmpty)
@@ -167,12 +172,11 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                               context,
                               productName,
                               clasification,
-                              0,
-                              0,
+                              '',
+                              '',
                               product['idProducto'],
-                              product['productosCompras'].length > 0
-                                  ? product['productosCompras'][0]['user']
-                                  : 0,
+                              0,
+                              product['idProductoCompra'] ?? 0,
                               false,
                             );
                           },
@@ -239,7 +243,6 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                     final proveedores = proveedorProvider.proveedores;
                     return DropdownButtonFormField<int>(
                       isExpanded: true,
-                      // value: _proveedorSeleccionado,
                       decoration: InputDecoration(
                         labelText: 'Proveedor compra',
                         border: OutlineInputBorder(
@@ -318,18 +321,25 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
       BuildContext context,
       String productName,
       String clasification,
-      int cantidad,
-      double precio,
+      String cantidad,
+      String precio,
       int productId,
       int userId,
+      int? idProductoCompra,
       bool isEdit) async {
     final TextEditingController cantidadController = TextEditingController();
     final TextEditingController costoController = TextEditingController();
+    final TextEditingController vendedorController = TextEditingController();
 
     // Inicializamos los valores de los campos
-    if (cantidad != 0 && precio != 0) {
+    if (cantidad != 0 && precio != 0 && userId != 0) {
       cantidadController.text = cantidad.toString();
-      costoController.text = precio.toStringAsFixed(2);
+      costoController.text = precio.toString();
+      if (isEdit) {
+        vendedorController.text = userId.toString();
+      } else {
+        vendedorController.text = '';
+      }
     }
 
     await showDialog<bool>(
@@ -386,6 +396,44 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                         ),
                         keyboardType: TextInputType.number,
                       ),
+                      const SizedBox(height: 16),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 1),
+                        child: Consumer<UserProvider>(
+                          builder: (context, usuarioProvider, child) {
+                            if (usuarioProvider.isLoading) {
+                              return const CircularProgressIndicator();
+                            }
+                            final vendedores = usuarioProvider.vendedores;
+                            return DropdownButtonFormField<int>(
+                              value: vendedorController.text.isNotEmpty
+                                  ? int.tryParse(vendedorController.text) ?? 0
+                                  : null,
+                              isExpanded: true,
+                              decoration: InputDecoration(
+                                labelText: 'Vendedor',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              onChanged: (value) {
+                                setState(() {
+                                  vendedorController.text =
+                                      value?.toString() ?? '';
+                                });
+                                checkFormValidity();
+                              },
+                              items: vendedores.map((vendedor) {
+                                return DropdownMenuItem<int>(
+                                  value: vendedor['idUser'],
+                                  child: Text(
+                                      "${vendedor['name']} ${vendedor['lastname']}"),
+                                );
+                              }).toList(),
+                            );
+                          },
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -435,6 +483,8 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                               ['cantidad'] = nuevaCantidad;
                           _productosBackend['productos'][productBack]['costo'] =
                               nuevoPrecio;
+
+                          Navigator.of(context).pop(true);
                         });
                       }
                     } else {
@@ -443,15 +493,16 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                         _addProductWithDetails(
                           productName,
                           clasification,
-                          int.parse(cantidadController.text),
-                          double.parse(costoController.text),
+                          cantidadController.text,
+                          costoController.text,
                           productId,
                           userId,
+                          idProductoCompra!,
                         );
                         Navigator.of(context).pop(true);
                       }
                     }
-                    logger.i(_productosBackend['productos']);
+                    logger.i(json.encode(productos[productos.length - 1]));
 
                     // Navigator.of(context).pop(true);
                   },
@@ -489,14 +540,16 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
             TextButton(
               onPressed: () {
                 setState(() {
-                  compra['productoCompras'].removeWhere((product) =>
+                  productos.removeWhere((product) =>
                       product['idProductoCompra'] == idProductoCompra);
 
-                  List<Map<String, dynamic>> productos =
+                  List<Map<String, dynamic>> productosBack =
                       _productosBackend['productos'];
-                  productos.removeWhere(
+                  productosBack.removeWhere(
                       (product) => product['idProducto'] == idProducto);
                 });
+
+                Logger().e(compra['productoCompras']);
 
                 print(
                     'Productos eliminados: ${_productosBackend['productos']}');
@@ -530,7 +583,22 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
           SizedBox(
             width: 200,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                logger.i(json.encode(_productosBackend['productos']));
+
+                Map<String, dynamic> nuevaCompra = {
+                  "monto": _calculoMonto(),
+                  "idProveedor": proveedorSeleccionado,
+                  "productos": _productosBackend['productos'],
+                  "totalCompra": _calculoTotalCompra(),
+                  "totalPagar": _calculoTotalPagar(),
+                };
+
+                logger.i(json.encode(nuevaCompra));
+
+                Provider.of<CompraProvider>(context, listen: false)
+                    .editarCompra(context, nuevaCompra, compra['idCompra']);
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
               ),
@@ -548,15 +616,20 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
   }
 
   // Agregar producto y actualizar estado
-  void _addProductWithDetails(String name, String clasification, int cantidad,
-      double costo, int productId, int userId) {
+  void _addProductWithDetails(
+      String name,
+      String clasification,
+      String cantidad,
+      String costo,
+      int productId,
+      int userId,
+      int productIdCompra) {
     setState(() {
       productos = List.from(productos)
         ..add({
-          'idProductoCompra': 0,
+          'idProductoCompra': productIdCompra,
           'cantidad': cantidad,
           'costo': costo,
-          'flete': '0.0',
           'producto': {
             'idProducto': productId,
             'producto': name,
@@ -567,7 +640,9 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
               'clasificacionProducto': clasification,
               'isFleteObligatorio': false,
             },
-            'productosCompras': []
+            'user': {
+              'idUser': userId,
+            }
           }
         });
 
@@ -609,5 +684,22 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
     });
 
     print("Productos seleccionados actualizados: $_selectedProducts");
+  }
+
+  //Funcion para calcular el monto total
+  double _calculoMonto() {
+    return productos.fold(0.0, (previousValue, product) {
+      return previousValue + product['costo'] * product['cantidad'];
+    });
+  }
+
+  //Funcion para calcular el total de compra
+  double _calculoTotalCompra() {
+    return _calculoMonto();
+  }
+
+//Funcion para calcular el total de pago
+  double _calculoTotalPagar() {
+    return _calculoMonto();
   }
 }

@@ -80,13 +80,11 @@ class CompraProvider extends ChangeNotifier {
   }
 
   // Metodo para editar la compra
-  Future<void> editarCompra(
-      BuildContext context, Map<String, dynamic> editarCompra) async {
+  Future<void> editarCompra(BuildContext context,
+      Map<String, dynamic> editarCompra, int idCompra) async {
     try {
       _isLoading = true;
       notifyListeners();
-
-      final idCompra = editarCompra['idCompra'];
 
       if (idCompra == null) {
         throw Exception('El ID de la compra no está disponible.');

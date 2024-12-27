@@ -5,13 +5,13 @@ import 'package:flutter/material.dart';
 class ProductCardEdit extends StatelessWidget {
   final String imageUrl;
   final String productName;
-  final int cantidad;
+  final String cantidad;
   final String clasification;
-  final double precio;
+  final String precio;
   final int productId;
   final int productIdCompra;
   final void Function(
-          String productName, int cantidad, double precio, int productId)
+          String productName, String cantidad, String precio, int productId)
       onEditProduct;
   final void Function(String productName, int productIdCompra) onRemoveProduct;
 
