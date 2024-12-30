@@ -176,6 +176,14 @@ class _FacturacionState extends State<Facturacion> {
                               color: Colors.grey[700],
                             ),
                           ),
+                          const SizedBox(height: 4),
+                          // Text(
+                          //   '${factura["tipoVenta"][0]["tipoVenta"]}',
+                          //   style: TextStyle(
+                          //     fontSize: 14,
+                          //     color: Colors.grey[700],
+                          //   ),
+                          // ),
                         ],
                       ),
                     ),

@@ -18,7 +18,23 @@ class CrearPlanPago extends StatefulWidget {
 
 class _CrearPlanPagoState extends State<CrearPlanPago> {
   late final FacturacionService facturacionService;
+  final TextEditingController _fechaCorteController = TextEditingController();
+  final TextEditingController _periocidadController = TextEditingController();
+  final TextEditingController _cuotasController = TextEditingController();
+  final TextEditingController _valorCuotaController = TextEditingController();
+  DateTime? _selectedDate;
+
   int? _selectedCliente;
+
+  @override
+  void dispose() {
+    _periocidadController.dispose();
+    _cuotasController.dispose();
+    _valorCuotaController.dispose();
+    _fechaCorteController.dispose();
+    super.dispose();
+  }
+
 //
   @override
   void initState() {
@@ -279,9 +295,136 @@ class _CrearPlanPagoState extends State<CrearPlanPago> {
                     ),
                   ),
                 ],
+                onSelectChanged: (selected) {
+                  if (selected == true) {
+                    _showModal(context, factura);
+                  }
+                },
               );
             }).toList(),
           ),
+        );
+      },
+    );
+  }
+
+  // Método para mostrar el diálogo para crear un plan de pago
+  void _showModal(BuildContext context, Map<String, dynamic> factura) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Text(
+              'Crear plan de pago de facturación #${factura['idFacturacion']}'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  controller: _fechaCorteController,
+                  readOnly: true,
+                  decoration: InputDecoration(
+                    labelText: 'Fecha de corte',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    suffixIcon: Icon(Icons.calendar_today),
+                  ),
+                  onTap: () async {
+                    final selectedDate = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime(2025),
+                    );
+
+                    if (selectedDate != null) {
+                      setState(() {
+                        _selectedDate = selectedDate;
+                        _fechaCorteController.text =
+                            "${_selectedDate!.day.toString().padLeft(2, '0')}/${_selectedDate!.month.toString().padLeft(2, '0')}/${_selectedDate!.year}";
+                      });
+                    }
+                  },
+                ),
+                const SizedBox(height: 20),
+                TextFormField(
+                  controller: _periocidadController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: 'Periocidad',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                TextFormField(
+                  controller: _cuotasController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: 'Número de cuotas',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                TextFormField(
+                  controller: _valorCuotaController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: 'Valor de cada cuota',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: const Text(
+                'Cancelar',
+                style: TextStyle(
+                  color: Color.fromARGB(255, 236, 129, 121),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue.shade800,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              onPressed: () {
+                final planPago = {
+                  'fechaCorte': _fechaCorteController.text,
+                  'perodicidad': _periocidadController.text,
+                  'cuotas': _cuotasController.text,
+                  'valorCuota': _valorCuotaController.text,
+                };
+                facturacionService.crearPlanPago(context, planPago,
+                    _selectedCliente!, factura['idFacturacion']);
+              },
+              child: const Text(
+                'Crear',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
         );
       },
     );

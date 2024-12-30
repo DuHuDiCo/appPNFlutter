@@ -58,10 +58,12 @@ class FacturacionProvider extends ChangeNotifier {
         );
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => CrearPlanPago()),
+          MaterialPageRoute(builder: (context) => Facturacion()),
         );
 
         await loadFacturas(context);
+      } else {
+        throw Exception('Error al crear facturación');
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -100,6 +102,35 @@ class FacturacionProvider extends ChangeNotifier {
         SnackBar(content: Text('Error: ${e.toString()}')),
       );
       if (kDebugMode) print('Error al obtener facturaciones: $e');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // Metodo para crear un plan de pago
+  Future<void> crearPlanPago(BuildContext context,
+      Map<String, dynamic> planPago, int idCliente, int idFacturacion) async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+
+      final response = await _apiClient.post(
+          '/api/v1/client/PlanPago?idClient=$idCliente&idFacturacion=$idFacturacion',
+          planPago);
+
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Plan de pago creado exitosamente')),
+        );
+
+        await loadFacturas(context);
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+      if (kDebugMode) print(e);
     } finally {
       _isLoading = false;
       notifyListeners();

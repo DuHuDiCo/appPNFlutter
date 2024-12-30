@@ -46,12 +46,32 @@ class FacturacionService extends ChangeNotifier {
       'productos': _selectedProducts,
     };
 
-    print(factura);
-
     try {
       await FacturacionProvider(apiClient).crearFactura(context, factura);
       print('Factura creada exitosamente');
       print(factura);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+      if (kDebugMode) print(e);
+    }
+  }
+
+  //Funcion para crear un plan de pago
+  Future<void> crearPlanPago(BuildContext context,
+      Map<String, dynamic> planPago, int idCliente, int idFacturacion) async {
+    final Map<String, dynamic> planPagoMap = {
+      'fechaCorte': planPago['fechaCorte'],
+      'perodicidad': planPago['perodicidad'],
+      'cuotas': planPago['cuotas'],
+      'valorCuota': planPago['valorCuota'],
+    };
+
+    try {
+      await FacturacionProvider(apiClient)
+          .crearPlanPago(context, planPagoMap, idCliente, idFacturacion);
+      print(planPagoMap);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.toString())),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pn_movil/conexiones/ApiClient.dart';
 import 'package:pn_movil/providers/clientes_provider.dart';
+import 'package:pn_movil/providers/tipo_venta_provider.dart';
 import 'package:pn_movil/services/facturacion_service.dart';
 import 'package:pn_movil/widgets/Components-generales/product_facturacion.dart';
 import 'package:pn_movil/widgets/Components-cards/card_container.dart';
@@ -34,10 +35,24 @@ class _FacturacionCrearState extends State<FacturacionCrear> {
             .loadClientes(context);
       }
     });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        Provider.of<TipoVentaProvider>(context, listen: false)
+            .loadTipoVenta(context);
+      }
+    });
   }
 
-  void _addProductWithDetails(String name, String clasification, int cantidad,
-      double valorVenta, String productId, int clientId, double descuento) {
+  void _addProductWithDetails(
+      String name,
+      String clasification,
+      int cantidad,
+      double valorVenta,
+      String productId,
+      int clientId,
+      double descuento,
+      String tipoVenta) {
     if (productosSeleccionados.any((product) =>
         product['productName'] == name &&
         product['clasification'] == clasification)) {
@@ -50,6 +65,7 @@ class _FacturacionCrearState extends State<FacturacionCrear> {
         'idCliente': clientId.toString(),
         'valorVenta': valorVenta.toString(),
         'descuentoPagoInicial': descuento.toString(),
+        'tipoVenta': tipoVenta,
         'idProductoCompra': productId,
       });
     });
@@ -232,6 +248,7 @@ class _FacturacionCrearState extends State<FacturacionCrear> {
         TextEditingController();
 
     int? _selectedCliente;
+    String? _selectedTipoVenta;
     String? clienteError;
     String? errorCantidad;
     String? errorValorVenta;
@@ -329,6 +346,52 @@ class _FacturacionCrearState extends State<FacturacionCrear> {
                                     child: Text(cliente['name'] +
                                         ' ' +
                                         cliente['lastname']),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      Consumer<TipoVentaProvider>(
+                        builder: (context, tipoVentaProvider, child) {
+                          if (tipoVentaProvider.isLoading) {
+                            return CircularProgressIndicator();
+                          }
+
+                          if (tipoVentaProvider.tipoVenta.isEmpty) {
+                            return Text("No hay tipos de venta disponibles");
+                          }
+
+                          final tipoVenta = tipoVentaProvider.tipoVenta;
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: InputDecorator(
+                              decoration: InputDecoration(
+                                labelText: 'Selecciona un tipo de venta',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                filled: true,
+                                fillColor: Colors.grey[100]?.withOpacity(0.8),
+                                prefixIcon: const Icon(Icons.category),
+                                errorText: clienteError,
+                              ),
+                              child: DropdownButton<String>(
+                                isExpanded: true,
+                                value: _selectedTipoVenta,
+                                hint: Text('Tipos de venta'),
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    _selectedTipoVenta = newValue;
+                                  });
+                                },
+                                items: tipoVenta
+                                    .map<DropdownMenuItem<String>>((item) {
+                                  return DropdownMenuItem<String>(
+                                    value: item['tipoVenta'] as String,
+                                    child: Text(item['tipoVenta'] as String),
                                   );
                                 }).toList(),
                               ),
@@ -457,6 +520,7 @@ class _FacturacionCrearState extends State<FacturacionCrear> {
                           productId,
                           _selectedCliente!,
                           double.parse(descuentoPagoInicialController.text),
+                          _selectedTipoVenta!,
                         );
                         Navigator.of(context).pop(true);
                       }

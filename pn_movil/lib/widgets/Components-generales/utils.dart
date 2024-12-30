@@ -122,7 +122,7 @@
 
   //Plan de pago
 
-    // final TextEditingController _periocidadController = TextEditingController();
+  //   final TextEditingController _periocidadController = TextEditingController();
   // final TextEditingController _cuotasController = TextEditingController();
   // final TextEditingController _valorCuotaController = TextEditingController();
   // final TextEditingController _fechaCorteController = TextEditingController();
@@ -138,74 +138,74 @@
   // }
 
 
-              //          Row(
-              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //   children: [
-              //     // Primer TextFormField
-              //     Expanded(
-              //       child: TextFormField(
-              //         controller: _fechaCorteController,
-              //         readOnly: true,
-              //         decoration: InputDecoration(
-              //           labelText: 'Fecha de corte',
-              //           border: OutlineInputBorder(
-              //             borderRadius: BorderRadius.circular(8),
-              //           ),
-              //           suffixIcon: Icon(Icons.calendar_today),
-              //         ),
-              //         onTap: () async {
-              //           final selectedDate = await showDatePicker(
-              //             context: context,
-              //             initialDate: DateTime.now(),
-              //             firstDate: DateTime(2000),
-              //             lastDate: DateTime(2025),
-              //           );
+  //                      Row(
+  //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //               children: [
+  //                 // Primer TextFormField
+  //                 Expanded(
+                  //   child: TextFormField(
+                  //     controller: _fechaCorteController,
+                  //     readOnly: true,
+                  //     decoration: InputDecoration(
+                  //       labelText: 'Fecha de corte',
+                  //       border: OutlineInputBorder(
+                  //         borderRadius: BorderRadius.circular(8),
+                  //       ),
+                  //       suffixIcon: Icon(Icons.calendar_today),
+                  //     ),
+                  //     onTap: () async {
+                  //       final selectedDate = await showDatePicker(
+                  //         context: context,
+                  //         initialDate: DateTime.now(),
+                  //         firstDate: DateTime(2000),
+                  //         lastDate: DateTime(2025),
+                  //       );
 
-              //           if (selectedDate != null) {
-              //             setState(() {
-              //               _selectedDate = selectedDate;
-              //               _fechaCorteController.text =
-              //                   "${_selectedDate!.day.toString().padLeft(2, '0')}/${_selectedDate!.month.toString().padLeft(2, '0')}/${_selectedDate!.year}";
-              //             });
-              //           }
-              //         },
-              //       ),
-              //     ),
-              //     const SizedBox(width: 20),
-              //     // Segundo TextFormField
-              //     Expanded(
-              //       child: TextFormField(
-              //         controller: _periocidadController,
-              //         keyboardType: TextInputType.number,
-              //         decoration: InputDecoration(
-              //           labelText: 'Periocidad',
-              //           border: OutlineInputBorder(
-              //             borderRadius: BorderRadius.circular(8),
-              //           ),
-              //         ),
-              //       ),
-              //     ),
-              //   ],
-              // ),
-              // const SizedBox(height: 20),
-              // TextFormField(
-              //   controller: _cuotasController,
-              //   keyboardType: TextInputType.number,
-              //   decoration: InputDecoration(
-              //     labelText: 'Número de cuotas',
-              //     border: OutlineInputBorder(
-              //       borderRadius: BorderRadius.circular(8),
-              //     ),
-              //   ),
-              // ),
-              // const SizedBox(height: 20),
-              // TextFormField(
-              //   controller: _valorCuotaController,
-              //   keyboardType: TextInputType.number,
-              //   decoration: InputDecoration(
-              //     labelText: 'Valor de cada cuota',
-              //     border: OutlineInputBorder(
-              //       borderRadius: BorderRadius.circular(8),
-              //     ),
-              //   ),
-              // ),
+                  //       if (selectedDate != null) {
+                  //         setState(() {
+                  //           _selectedDate = selectedDate;
+                  //           _fechaCorteController.text =
+                  //               "${_selectedDate!.day.toString().padLeft(2, '0')}/${_selectedDate!.month.toString().padLeft(2, '0')}/${_selectedDate!.year}";
+                  //         });
+                  //       }
+                  //     },
+                  //   ),
+                  // ),
+  //                 const SizedBox(width: 20),
+  //                 // Segundo TextFormField
+  //                 Expanded(
+  //                   child: TextFormField(
+  //                     controller: _periocidadController,
+                      // keyboardType: TextInputType.number,
+  //                     decoration: InputDecoration(
+  //                       labelText: 'Periocidad',
+  //                       border: OutlineInputBorder(
+  //                         borderRadius: BorderRadius.circular(8),
+  //                       ),
+  //                     ),
+  //                   ),
+  //                 ),
+  //               ],
+  //             ),
+  //             const SizedBox(height: 20),
+  //             TextFormField(
+  //               controller: _cuotasController,
+  //               keyboardType: TextInputType.number,
+  //               decoration: InputDecoration(
+  //                 labelText: 'Número de cuotas',
+  //                 border: OutlineInputBorder(
+  //                   borderRadius: BorderRadius.circular(8),
+  //                 ),
+  //               ),
+  //             ),
+  //             const SizedBox(height: 20),
+  //             TextFormField(
+  //               controller: _valorCuotaController,
+  //               keyboardType: TextInputType.number,
+  //               decoration: InputDecoration(
+  //                 labelText: 'Valor de cada cuota',
+  //                 border: OutlineInputBorder(
+  //                   borderRadius: BorderRadius.circular(8),
+  //                 ),
+  //               ),
+  //             ),
