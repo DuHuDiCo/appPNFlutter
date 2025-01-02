@@ -20,6 +20,7 @@ class CrearPagosClientes extends StatefulWidget {
 
 class _CrearPagosClientesState extends State<CrearPagosClientes> {
   late final PagoClienteService pagoClienteService;
+  late Map<String, dynamic> factura;
   //Campos para crear el pago de cliente
   late final FacturacionService facturacionService;
   final TextEditingController _valorController = TextEditingController();
@@ -61,11 +62,16 @@ class _CrearPagosClientesState extends State<CrearPagosClientes> {
         Provider.of<ClientesProvider>(context, listen: false)
             .loadClientes(context);
       }
+
+      Provider.of<FacturacionProvider>(context, listen: false)
+          .loadFacturas(context);
     });
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+  ) {
     return Scaffold(
       appBar: Navbar(),
       drawer: CustomDrawer(),
@@ -133,11 +139,11 @@ class _CrearPagosClientesState extends State<CrearPagosClientes> {
                 Expanded(
                   child: _formularioAplicarPago(context),
                 ),
-              // if (_mostrarTablaFacturacion && loadingAplicarPago)
-              //   Expanded(
-              //     child: _buildFacturacionTable(),
-              //   ),
-              _buildFooter(),
+              if (_mostrarTablaFacturacion && loadingAplicarPago)
+                Expanded(
+                  child: _buildFacturacionTable(),
+                ),
+              _buildFooter(factura),
             ],
           ),
         ),
@@ -517,7 +523,7 @@ class _CrearPagosClientesState extends State<CrearPagosClientes> {
                 ],
                 onSelectChanged: (selected) {
                   if (selected == true) {
-                    // _showModal(context, factura);
+                    _showModal(context, factura);
                   }
                 },
               );
@@ -528,8 +534,86 @@ class _CrearPagosClientesState extends State<CrearPagosClientes> {
     );
   }
 
+  // Método para mostrar el diálogo para crear un plan de pago
+  void _showModal(BuildContext context, Map<String, dynamic> factura) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Text(
+            'Crear aplicacion de pago de facturación #${factura['idFacturacion']}',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildTextFormField(
+                  controller: _fechaCreacionController,
+                  labelText: 'Fecha de creación',
+                  suffixIcon: Icons.calendar_today,
+                  readOnly: true,
+                  onTap: _selectDate,
+                ),
+                const SizedBox(height: 16),
+                _buildTextFormField(
+                  controller: _valorPagoAplicarController,
+                  labelText: 'Valor de pago',
+                  keyboardType: TextInputType.number,
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: Text(
+                'Cancelar',
+                style: TextStyle(
+                  color: Colors.redAccent,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue.shade800,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              ),
+              onPressed: () {
+                final aplicarPagoDTO = {
+                  'valorPago': _valorPagoAplicarController.text,
+                  'idCliente': _selectedCliente,
+                  'idFacturacion': factura['idFacturacion'],
+                  'fechaCreacion': _fechaCreacionController.text,
+                };
+                facturacionService.crearPlanPago(context, aplicarPagoDTO,
+                    _selectedCliente!, factura['idFacturacion']);
+              },
+              child: Text(
+                'Crear aplicacion',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   //BOTON PARA GUARDAR EL PAGO
-  Widget _buildFooter() {
+  Widget _buildFooter(Map<String, dynamic> factura) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
@@ -564,13 +648,20 @@ class _CrearPagosClientesState extends State<CrearPagosClientes> {
               onPressed: () {
                 double totalPago = double.tryParse(_valorController.text) ?? 0;
 
-                print('Valor pago: $totalPago');
-                print('Número recibido: ${_numeroRecibidoController.text}');
-                print('Tipo de pago: ${_tipoPagoController.text}');
-                // pagoClienteService.guardarPago(
-                //   context,
-                //   _imagenSeleccionada,
-                // );
+                final aplicarPagoDTO = {
+                  'valorPago': _valorPagoAplicarController.text,
+                  'idCliente': _selectedCliente,
+                  'idFacturacion': factura['idFacturacion'],
+                  'fechaCreacion': _fechaCreacionController.text,
+                };
+                pagoClienteService.guardarPagoCliente(
+                  context,
+                  _imagenSeleccionada,
+                  totalPago,
+                  _numeroRecibidoController.text,
+                  _tipoPagoController.text,
+                  aplicarPago: aplicarPagoDTO ?? null,
+                );
               },
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 15),
@@ -591,5 +682,52 @@ class _CrearPagosClientesState extends State<CrearPagosClientes> {
         ],
       ),
     );
+  }
+
+  //Metodo para construir el estilo del input
+  Widget _buildTextFormField({
+    required TextEditingController controller,
+    required String labelText,
+    IconData? suffixIcon,
+    bool readOnly = false,
+    TextInputType keyboardType = TextInputType.text,
+    Function()? onTap,
+  }) {
+    return TextFormField(
+      controller: controller,
+      readOnly: readOnly,
+      keyboardType: keyboardType,
+      decoration: InputDecoration(
+        labelText: labelText,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        suffixIcon: suffixIcon != null
+            ? Icon(suffixIcon, color: Colors.blue.shade600)
+            : null,
+      ),
+      onTap: onTap,
+    );
+  }
+
+//Metodo para mostrar el selector de fecha
+  void _selectDate() async {
+    final selectedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2025),
+    );
+
+    if (selectedDate != null) {
+      setState(() {
+        _selectedDate = selectedDate;
+        _fechaCreacionController.text =
+            "${_selectedDate!.day.toString().padLeft(2, '0')}/${_selectedDate!.month.toString().padLeft(2, '0')}/${_selectedDate!.year}";
+      });
+    }
   }
 }

@@ -125,8 +125,7 @@ class PagoClienteProvider extends ChangeNotifier {
   }
 
   //Metodo para obtener un pago cliente por ID
-  Future<void> obtenerPagoPorId(
-      BuildContext context, String idPagoCliente) async {
+  Future<void> obtenerPagoPorId(BuildContext context, int idPagoCliente) async {
     try {
       _isLoading = true;
       notifyListeners();

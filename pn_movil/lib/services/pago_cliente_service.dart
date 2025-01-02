@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:pn_movil/conexiones/ApiClient.dart';
 import 'package:pn_movil/providers/pago_cliente_provider.dart';
 
@@ -43,6 +44,42 @@ class PagoClienteService {
       return;
     }
 
+    if (valor == 0 || valor.isNaN) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('El total del pago no puede estar vacío.'),
+        ),
+      );
+      return;
+    }
+
+    if (valor < 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('El total del pago no puede ser negativo.'),
+        ),
+      );
+      return;
+    }
+
+    if (numeroRecibo.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('El total del pago no puede estar vacío.'),
+        ),
+      );
+      return;
+    }
+
+    if (tipoPago.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('El total del pago no puede estar vacío.'),
+        ),
+      );
+      return;
+    }
+
     // Construir aplicarPagoDTO solo si aplicarPago no es nulo y contiene datos
     List<Map<String, dynamic>>? aplicarPagoDTO;
     if (aplicarPago != null && aplicarPago.isNotEmpty) {
@@ -64,41 +101,26 @@ class PagoClienteService {
       );
     }
   }
+
+  String formatCurrencyToCOP(dynamic value) {
+    final formatCurrency = NumberFormat.currency(
+      locale: 'es_CO',
+      symbol: '',
+    );
+    return '\$${formatCurrency.format(value).split(',')[0]}';
+  }
+
+  //Metodo para eliminar un tipo de venta
+  Future<void> eliminarpagoCliente(
+      BuildContext context, int pagoClienteId) async {
+    try {
+      await PagoClienteProvider(apiClient)
+          .deletePagoCliente(context, pagoClienteId);
+      Navigator.of(context).pop();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al eliminar el pago del cliente: $e')),
+      );
+    }
+  }
 }
-
-
-    // if (valor == 0 || valor.isNaN) {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     const SnackBar(
-    //       content: Text('El total del pago no puede estar vacío.'),
-    //     ),
-    //   );
-    //   return;
-    // }
-
-    // if (valor < 0) {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     const SnackBar(
-    //       content: Text('El total del pago no puede ser negativo.'),
-    //     ),
-    //   );
-    //   return;
-    // }
-
-    // if (numeroRecibo.isEmpty) {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     const SnackBar(
-    //       content: Text('El total del pago no puede estar vacío.'),
-    //     ),
-    //   );
-    //   return;
-    // }
-
-    // if (tipoPago.isEmpty) {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     const SnackBar(
-    //       content: Text('El total del pago no puede estar vacío.'),
-    //     ),
-    //   );
-    //   return;
-    // }
