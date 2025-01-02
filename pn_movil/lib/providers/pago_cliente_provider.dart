@@ -186,4 +186,30 @@ class PagoClienteProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  //Metodo para pbtener todos los pagos de clientes sin aplicar
+  Future<void> obtenerPagosSinAplicar(BuildContext context) async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+
+      final response = await _apiClient.get('/pagosClientes/sinAplicar');
+
+      if (response.statusCode == 200) {
+        _pagosClientes =
+            List<Map<String, dynamic>>.from(json.decode(response.body));
+        print("Pagos clientes sin aplicar obtenidos: $_pagosClientes");
+      } else {
+        throw Exception('Error al obtener pagos clientes sin aplicar');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+      if (kDebugMode) print(e);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
 }

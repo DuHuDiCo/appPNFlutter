@@ -23,6 +23,7 @@ import 'package:pn_movil/views/Facturacion/facturacion.dart';
 import 'package:pn_movil/views/Facturacion/facturacion_crear.dart';
 import 'package:pn_movil/views/Facturacion/facturacion_detalle.dart';
 import 'package:pn_movil/views/Pagos-Clientes/crear_pagos_clientes.dart';
+import 'package:pn_movil/views/Pagos-Clientes/pagos_clientes_sinaplicar.dart';
 import 'package:pn_movil/views/Plan-pago/crear_plan_pago.dart';
 import 'package:pn_movil/views/Plan-pago/plan_pago.dart';
 import 'package:pn_movil/views/Facturacion/product_sin_facturacion.dart';
@@ -107,24 +108,33 @@ class MyApp extends StatelessWidget {
         routes: {
           'login': (_) => const Login(),
           'home': (_) => const VistaInicial(),
+          //Rutas de productos
           'productos': (_) => const Products(),
           'crearProduct': (_) => const CrearProduct(),
+          //Rutas de compras
           'compras-solicitar': (_) => const Compras(),
           'compras-solicitar-crear': (_) => SeleccionarProductos(),
           'compras-solicitar-editar': (_) => ComprasSolicitarEditar(),
           'compras-solicitar-detalle': (_) => const ComprasSolicitarDetalle(),
+          //Rutas de pagos de compras
           'realizar-pago': (_) => const Pago(),
           'crear-pago': (_) => const CrearPago(),
+          //Rutas de inventario
           'inventario': (_) => const Inventario(),
           'detalle-inventario': (_) => const DetalleInventario(),
+          //Rutas de facturación
           'facturacion': (_) => const Facturacion(),
           'facturacion-crear': (_) => const FacturacionCrear(),
           'productos-sin-facturacion': (_) => const ProductSinFacturacion(),
           'productos-facturacion-detalle': (_) => const FacturacionDetalle(),
+          //Rutas de pagos de clientes
           'pagos-clientes': (_) => const PagosClientes(),
           'crear-pagos-clientes': (_) => const CrearPagosClientes(),
+          'pagos-clientes-sin-aplicar': (_) => const PagosClientesSinaplicar(),
+          //Rutas de plan de pago
           'plan-pago': (_) => const PlanPago(),
           'crear-plan-pago': (_) => const CrearPlanPago(),
+          //Rutas de tipo de venta
           'tipo-venta': (_) => const TipoVenta(),
         },
         theme: ThemeData.light().copyWith(
