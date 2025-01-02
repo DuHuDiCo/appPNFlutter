@@ -47,11 +47,17 @@ class PagoClienteProvider extends ChangeNotifier {
     }
   }
 
-  // Metodo para guardar un pago cliente
-  Future<void> crearPago(BuildContext context, Map<String, dynamic> pagoCliente,
+// Método para guardar un pago cliente
+  Future<void> crearPagoCliente(
+      BuildContext context,
+      double valor,
+      String numeroRecibo,
+      String tipoPago,
+      List<Map<String, dynamic>>? aplicarPagoDTO,
       File? imagen) async {
     final dio = Dio();
 
+    // Obtener el token de autenticación
     final token = await _apiClient.getAuthToken();
     dio.options.headers = {
       'Authorization': 'Bearer $token',
@@ -63,16 +69,25 @@ class PagoClienteProvider extends ChangeNotifier {
       notifyListeners();
       final formData = FormData();
 
-      // Agregar los campos del pago al FormData
-      pagoCliente.forEach((key, value) {
-        formData.fields.add(MapEntry(key, value.toString()));
-      });
+      // Agregar campos obligatorios al FormData
+      formData.fields.addAll([
+        MapEntry('valor', valor.toString()),
+        MapEntry('numeroRecibo', numeroRecibo),
+        MapEntry('tipoPago', tipoPago),
+      ]);
+
+      // Serializar aplicarPagoDTO si no es nulo
+      if (aplicarPagoDTO != null) {
+        formData.fields.add(
+          MapEntry('aplicarPagoDTO', jsonEncode(aplicarPagoDTO)),
+        );
+      }
 
       // Agregar la imagen al FormData, si existe
       if (imagen != null) {
         final fileName = imagen.path.split('/').last;
         formData.files.add(MapEntry(
-          'archivo',
+          'comprobante',
           await MultipartFile.fromFile(
             imagen.path,
             filename: fileName,
@@ -80,6 +95,7 @@ class PagoClienteProvider extends ChangeNotifier {
         ));
       }
 
+      // Enviar la solicitud POST al backend
       final response = await dio.post(
         'https://apppn.duckdns.org/api/v1/pagosClientes/',
         data: formData,

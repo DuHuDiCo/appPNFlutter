@@ -15,7 +15,14 @@ class _PagosClientesState extends State<PagosClientes> {
     return Scaffold(
       appBar: const Navbar(),
       drawer: const CustomDrawer(),
-      body: Padding(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.white, Colors.blue.shade50],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
@@ -49,7 +56,7 @@ class _PagosClientesState extends State<PagosClientes> {
     );
   }
 
-  //Metodo que construye la barra de búsqueda
+  // Método para construir el título de la barra de búsqueda
   Widget _buildSearchBar() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -86,6 +93,22 @@ class _PagosClientesState extends State<PagosClientes> {
                   ),
                 ),
               ),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              color: const Color.fromRGBO(112, 185, 244, 1),
+              borderRadius: BorderRadius.circular(30),
+            ),
+            child: IconButton(
+              onPressed: () {
+                Navigator.pushNamed(context, 'crear-pagos-clientes');
+              },
+              icon: const Icon(Icons.add),
+              color: Colors.white,
             ),
           ),
         ],

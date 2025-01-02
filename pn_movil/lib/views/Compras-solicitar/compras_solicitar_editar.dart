@@ -108,9 +108,6 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                     runSpacing: 10.0,
                     children: loadingProductos
                         ? provider.products.map((product) {
-                            final isNewProduct =
-                                product['idProductoCompra'] == null;
-
                             bool isSelected =
                                 isProductSelected(product['idProducto']);
                             return ProductCardSelect(

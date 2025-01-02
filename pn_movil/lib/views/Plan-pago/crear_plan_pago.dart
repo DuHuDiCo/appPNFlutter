@@ -23,6 +23,7 @@ class _CrearPlanPagoState extends State<CrearPlanPago> {
   final TextEditingController _cuotasController = TextEditingController();
   final TextEditingController _valorCuotaController = TextEditingController();
   DateTime? _selectedDate;
+  bool _mostrarTablaFacturacion = false;
 
   int? _selectedCliente;
 
@@ -72,7 +73,7 @@ class _CrearPlanPagoState extends State<CrearPlanPago> {
               _buildHeader(),
               const SizedBox(height: 50),
               // Contenido principal
-              _buildFacturacionTable(),
+              if (_mostrarTablaFacturacion) _buildFacturacionTable(),
             ],
           ),
         ),
@@ -174,6 +175,10 @@ class _CrearPlanPagoState extends State<CrearPlanPago> {
                                     .obtenerFacturasPorCliente(
                                         context, _selectedCliente!);
                               });
+                              // Mostrar la tabla
+                              setState(() {
+                                _mostrarTablaFacturacion = true;
+                              });
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
@@ -202,7 +207,7 @@ class _CrearPlanPagoState extends State<CrearPlanPago> {
     );
   }
 
-// Widget para construir la tabla de facturación
+  // Widget para construir la tabla de facturación
   Widget _buildFacturacionTable() {
     return Consumer<FacturacionProvider>(
       builder: (context, facturacionProvider, _) {
@@ -315,73 +320,40 @@ class _CrearPlanPagoState extends State<CrearPlanPago> {
       builder: (context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(20),
           ),
           title: Text(
-              'Crear plan de pago de facturación #${factura['idFacturacion']}'),
+            'Crear plan de pago de facturación #${factura['idFacturacion']}',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          ),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                TextFormField(
+                _buildTextFormField(
                   controller: _fechaCorteController,
+                  labelText: 'Fecha de corte',
+                  suffixIcon: Icons.calendar_today,
                   readOnly: true,
-                  decoration: InputDecoration(
-                    labelText: 'Fecha de corte',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    suffixIcon: Icon(Icons.calendar_today),
-                  ),
-                  onTap: () async {
-                    final selectedDate = await showDatePicker(
-                      context: context,
-                      initialDate: DateTime.now(),
-                      firstDate: DateTime(2000),
-                      lastDate: DateTime(2025),
-                    );
-
-                    if (selectedDate != null) {
-                      setState(() {
-                        _selectedDate = selectedDate;
-                        _fechaCorteController.text =
-                            "${_selectedDate!.day.toString().padLeft(2, '0')}/${_selectedDate!.month.toString().padLeft(2, '0')}/${_selectedDate!.year}";
-                      });
-                    }
-                  },
+                  onTap: _selectDate,
                 ),
-                const SizedBox(height: 20),
-                TextFormField(
+                const SizedBox(height: 16),
+                _buildTextFormField(
                   controller: _periocidadController,
+                  labelText: 'Periocidad',
                   keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText: 'Periocidad',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
                 ),
-                const SizedBox(height: 20),
-                TextFormField(
+                const SizedBox(height: 16),
+                _buildTextFormField(
                   controller: _cuotasController,
+                  labelText: 'Número de cuotas',
                   keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText: 'Número de cuotas',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
                 ),
-                const SizedBox(height: 20),
-                TextFormField(
+                const SizedBox(height: 16),
+                _buildTextFormField(
                   controller: _valorCuotaController,
+                  labelText: 'Valor de cada cuota',
                   keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText: 'Valor de cada cuota',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
                 ),
               ],
             ),
@@ -391,10 +363,10 @@ class _CrearPlanPagoState extends State<CrearPlanPago> {
               onPressed: () {
                 Navigator.of(context).pop(false);
               },
-              child: const Text(
+              child: Text(
                 'Cancelar',
                 style: TextStyle(
-                  color: Color.fromARGB(255, 236, 129, 121),
+                  color: Colors.redAccent,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -403,8 +375,9 @@ class _CrearPlanPagoState extends State<CrearPlanPago> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue.shade800,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(12),
                 ),
+                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               ),
               onPressed: () {
                 final planPago = {
@@ -416,7 +389,7 @@ class _CrearPlanPagoState extends State<CrearPlanPago> {
                 facturacionService.crearPlanPago(context, planPago,
                     _selectedCliente!, factura['idFacturacion']);
               },
-              child: const Text(
+              child: Text(
                 'Crear',
                 style: TextStyle(
                   color: Colors.white,
@@ -428,5 +401,52 @@ class _CrearPlanPagoState extends State<CrearPlanPago> {
         );
       },
     );
+  }
+
+//Metodo para construir el estilo del input
+  Widget _buildTextFormField({
+    required TextEditingController controller,
+    required String labelText,
+    IconData? suffixIcon,
+    bool readOnly = false,
+    TextInputType keyboardType = TextInputType.text,
+    Function()? onTap,
+  }) {
+    return TextFormField(
+      controller: controller,
+      readOnly: readOnly,
+      keyboardType: keyboardType,
+      decoration: InputDecoration(
+        labelText: labelText,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        suffixIcon: suffixIcon != null
+            ? Icon(suffixIcon, color: Colors.blue.shade600)
+            : null,
+      ),
+      onTap: onTap,
+    );
+  }
+
+//Metodo para mostrar el selector de fecha
+  void _selectDate() async {
+    final selectedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2025),
+    );
+
+    if (selectedDate != null) {
+      setState(() {
+        _selectedDate = selectedDate;
+        _fechaCorteController.text =
+            "${_selectedDate!.day.toString().padLeft(2, '0')}/${_selectedDate!.month.toString().padLeft(2, '0')}/${_selectedDate!.year}";
+      });
+    }
   }
 }

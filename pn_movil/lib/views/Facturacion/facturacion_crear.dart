@@ -179,9 +179,16 @@ class _FacturacionCrearState extends State<FacturacionCrear> {
                         mainAxisSpacing: 10.0,
                         childAspectRatio: 0.6,
                       ),
-                      itemCount: productos.length,
+                      itemCount: productos
+                          .where(
+                              (product) => product['cantidadInventario'] != 0)
+                          .length,
                       itemBuilder: (BuildContext context, int index) {
-                        final product = productos[index];
+                        final filteredProductos = productos
+                            .where(
+                                (product) => product['cantidadInventario'] != 0)
+                            .toList();
+                        final product = filteredProductos[index];
                         final productData = product['productoCompra'] ?? {};
                         final cantidadFinal =
                             product['cantidadInventario'] ?? 0;

@@ -80,7 +80,7 @@ class _TipoVentaState extends State<TipoVenta> {
           Expanded(
             child: TextField(
               decoration: InputDecoration(
-                hintText: 'Buscar facturaciones...',
+                hintText: 'Buscar tipos de venta...',
                 prefixIcon: const Icon(Icons.search, color: Colors.grey),
                 filled: true,
                 fillColor: Colors.white,
@@ -294,14 +294,10 @@ class _TipoVentaState extends State<TipoVenta> {
                   controller: _tipoVentaController,
                   decoration: InputDecoration(
                     labelText: 'Nombre del tipo de venta',
-                    labelStyle: const TextStyle(
-                        color: Color.fromARGB(255, 21, 101, 192)),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(
-                          color: Color.fromARGB(255, 21, 101, 192)),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     contentPadding: const EdgeInsets.symmetric(
