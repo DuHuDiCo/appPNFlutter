@@ -57,7 +57,7 @@ class _FacturacionDetalleState extends State<FacturacionDetalle> {
       padding: const EdgeInsets.symmetric(vertical: 30),
       child: Center(
         child: Text(
-          'Detalle del inventario',
+          'Detalle de la facturacion',
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
@@ -73,7 +73,7 @@ class _FacturacionDetalleState extends State<FacturacionDetalle> {
   Widget _buildDetailsCard(Map<String, dynamic>? factura) {
     if (factura == null) {
       return const Center(
-        child: Text('No se pudo cargar la información del inventario.'),
+        child: Text('No se pudo cargar la información de la facturacion.'),
       );
     }
 

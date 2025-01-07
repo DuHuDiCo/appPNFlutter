@@ -169,7 +169,7 @@ class _FacturacionCrearState extends State<FacturacionCrear> {
               LayoutBuilder(
                 builder: (BuildContext context, BoxConstraints constraints) {
                   return SizedBox(
-                    height: 480,
+                    height: 460,
                     child: GridView.builder(
                       physics: const BouncingScrollPhysics(),
                       gridDelegate:
@@ -554,7 +554,7 @@ class _FacturacionCrearState extends State<FacturacionCrear> {
       FacturacionService facturacionService, Map<String, dynamic>? inventario) {
     if (inventario == null) {
       return const Center(
-        child: Text('No se pudo cargar la información de la compra.'),
+        child: Text('No se pudo cargar la información de la facturacion.'),
       );
     }
 

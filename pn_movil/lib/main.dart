@@ -8,6 +8,7 @@ import 'package:pn_movil/providers/compra_provider.dart';
 import 'package:pn_movil/providers/facturacion_provider.dart';
 import 'package:pn_movil/providers/google_provider.dart';
 import 'package:pn_movil/providers/inventario_provider.dart';
+import 'package:pn_movil/providers/pago_cliente_provider.dart';
 import 'package:pn_movil/providers/pago_provider.dart';
 import 'package:pn_movil/providers/products_provider.dart';
 import 'package:pn_movil/providers/products_sin_facturacion_provider.dart';
@@ -90,6 +91,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<TipoVentaProvider>(
           create: (context) => TipoVentaProvider(context.read<ApiClient>()),
+        ),
+        ChangeNotifierProvider<PagoClienteProvider>(
+          create: (context) => PagoClienteProvider(context.read<ApiClient>()),
         ),
         Provider<GoogleAuthController>(
           create: (_) => GoogleAuthController(),

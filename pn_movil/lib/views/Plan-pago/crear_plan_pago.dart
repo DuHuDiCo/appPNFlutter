@@ -438,7 +438,7 @@ class _CrearPlanPagoState extends State<CrearPlanPago> {
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2000),
-      lastDate: DateTime(2025),
+      lastDate: DateTime(2026),
     );
 
     if (selectedDate != null) {

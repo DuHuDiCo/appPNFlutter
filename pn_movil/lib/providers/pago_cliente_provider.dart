@@ -6,19 +6,22 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pn_movil/conexiones/ApiClient.dart';
 import 'package:pn_movil/views/Pagos-Clientes/pagos_clientes.dart';
+import 'package:pn_movil/views/Pagos-Clientes/pagos_clientes_sinaplicar.dart';
 
 class PagoClienteProvider extends ChangeNotifier {
   final ApiClient _apiClient;
   PagoClienteProvider(this._apiClient);
 
   List<Map<String, dynamic>> _pagosClientes = [];
+  List<Map<String, dynamic>> _filteredPagosClientes = [];
 
   bool _isLoading = false;
 
-  List<Map<String, dynamic>> get pagosClientes => _pagosClientes;
+  List<Map<String, dynamic>> get pagosClientes =>
+      _filteredPagosClientes.isEmpty ? _pagosClientes : _filteredPagosClientes;
   bool get isLoading => _isLoading;
 
-  //Metodo para cargar las pagos clientes
+  //Metodo para cargar los pagos clientes
   Future<void> loadPagosClientes(BuildContext context) async {
     try {
       _isLoading = true;
@@ -28,7 +31,8 @@ class PagoClienteProvider extends ChangeNotifier {
       if (response.statusCode == 200) {
         _pagosClientes =
             List<Map<String, dynamic>>.from(json.decode(response.body));
-        print("Pagos clientes cargados: $_pagosClientes"); // Debuggin
+        _filteredPagosClientes =
+            []; // Limpia los filtros al cargar todos los pagos
       } else {
         throw Exception('Error al cargar pagos clientes');
       }
@@ -36,18 +40,65 @@ class PagoClienteProvider extends ChangeNotifier {
       final errorMessage = e.toString().contains('No se ha iniciado sesión')
           ? e.toString()
           : 'Error al cargar pagos clientes';
-      print(_pagosClientes);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(errorMessage)),
       );
-      if (kDebugMode) print(errorMessage);
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
 
-// Método para guardar un pago cliente
+  //Metodo para obtener un pago cliente por ID
+  Future<void> obtenerPagoPorId(BuildContext context, int idCliente) async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+
+      final response = await _apiClient.get('/pagosClientes/$idCliente');
+
+      if (response.statusCode == 200) {
+        final pagos =
+            List<Map<String, dynamic>>.from(json.decode(response.body));
+        if (pagos.isNotEmpty) {
+          _filteredPagosClientes = pagos;
+        } else {
+          _filteredPagosClientes = [];
+          throw Exception('No hay pagos para este cliente');
+        }
+      } else if (response.statusCode == 404) {
+        throw Exception('Pago cliente no encontrado');
+      } else {
+        throw Exception('Error al obtener el pago cliente');
+      }
+    } catch (e) {
+      _filteredPagosClientes =
+          []; // Limpia los resultados filtrados si hay un error
+      final errorMessage = e.toString().contains('No se ha iniciado sesión')
+          ? e.toString()
+          : 'Error al obtener el pago cliente';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(errorMessage)),
+      );
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // Método para resetear los filtros de pagos
+  void resetPagosFiltrados() {
+    _filteredPagosClientes = [];
+    notifyListeners();
+  }
+
+  //Metodo para convertir una imagen a Base64
+  Future<String> convertImageToBase64(File imageFile) async {
+    final bytes = await imageFile.readAsBytes();
+    return base64Encode(bytes);
+  }
+
+  // Método para crear un pago cliente sin aplicar pago y aplicar el pago de una vez
   Future<void> crearPagoCliente(
       BuildContext context,
       double valor,
@@ -57,48 +108,39 @@ class PagoClienteProvider extends ChangeNotifier {
       File? imagen) async {
     final dio = Dio();
 
-    // Obtener el token de autenticación
     final token = await _apiClient.getAuthToken();
     dio.options.headers = {
       'Authorization': 'Bearer $token',
-      'Content-Type': 'multipart/form-data',
+      'Content-Type': 'application/json',
     };
 
     try {
       _isLoading = true;
       notifyListeners();
-      final formData = FormData();
 
-      // Agregar campos obligatorios al FormData
-      formData.fields.addAll([
-        MapEntry('valor', valor.toString()),
-        MapEntry('numeroRecibo', numeroRecibo),
-        MapEntry('tipoPago', tipoPago),
-      ]);
+      // Crear el cuerpo de la solicitud
+      Map<String, dynamic> data = {
+        'valor': valor.toString(),
+        'numeroRecibo': numeroRecibo,
+        'tipoPago': tipoPago,
+      };
 
       // Serializar aplicarPagoDTO si no es nulo
       if (aplicarPagoDTO != null) {
-        formData.fields.add(
-          MapEntry('aplicarPagoDTO', jsonEncode(aplicarPagoDTO)),
-        );
+        data['aplicarPagoDTO'] = aplicarPagoDTO;
       }
 
-      // Agregar la imagen al FormData, si existe
+      // Convertir la imagen a base64 y agregarla si existe
       if (imagen != null) {
-        final fileName = imagen.path.split('/').last;
-        formData.files.add(MapEntry(
-          'comprobante',
-          await MultipartFile.fromFile(
-            imagen.path,
-            filename: fileName,
-          ),
-        ));
+        final base64Image = await convertImageToBase64(imagen);
+        data['comprobante'] = base64Image;
       }
 
-      // Enviar la solicitud POST al backend
+      print('Datos a enviar: $data');
+
       final response = await dio.post(
         'https://apppn.duckdns.org/api/v1/pagosClientes/',
-        data: formData,
+        data: jsonEncode(data),
       );
 
       if (response.statusCode == 201 || response.statusCode == 200) {
@@ -117,39 +159,73 @@ class PagoClienteProvider extends ChangeNotifier {
         throw Exception('Error al crear el pago cliente: ${response.data}');
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text('Error al crear el pago cliente: ${e.toString()}')),
-      );
+      print('Error');
+      if (e is DioException && e.response != null) {
+        if (e.response!.statusCode == 400) {
+          print('Error 400: ${e.response!.data}');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('${e.response!.data}')),
+          );
+        }
+      }
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
   }
 
-  //Metodo para obtener un pago cliente por ID
-  Future<void> obtenerPagoPorId(BuildContext context, int idPagoCliente) async {
+  Future<void> aplicarPagoAutomatico(BuildContext context,
+      List<Map<String, dynamic>>? aplicarPagoDTO, int idPagoCliente) async {
+    final dio = Dio();
+
+    final token = await _apiClient.getAuthToken();
+    dio.options.headers = {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    };
+
     try {
       _isLoading = true;
       notifyListeners();
 
-      // Realizar la solicitud GET para obtener el pago cliente por ID
-      final response = await _apiClient.get('/pagosClientes/$idPagoCliente');
+      Map<String, dynamic> data = {};
 
-      if (response.statusCode == 200) {
-        final pagoCliente = json.decode(response.body) as Map<String, dynamic>;
+      if (aplicarPagoDTO != null) {
+        data['aplicarPagoDTO'] = aplicarPagoDTO;
+      }
+      print('Datos a enviar: $data');
 
-        print("Pago cliente obtenido: $pagoCliente"); // Debugging
-      } else if (response.statusCode == 404) {
-        throw Exception('Pago cliente no encontrado');
+      final response = await dio.post(
+        'https://apppn.duckdns.org/api/v1/pagosClientes/aplicarPagoAutomatico?idPagoCliente=$idPagoCliente',
+        data: jsonEncode(data),
+      );
+
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        final pagoClienteCreado = response.data as Map<String, dynamic>;
+        _pagosClientes.add(pagoClienteCreado);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Pago cliente creado exitosamente')),
+        );
+
+        // Navega a la siguiente pantalla
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => PagosClientes()),
+        );
       } else {
-        throw Exception('Error al obtener el pago cliente');
+        throw Exception('Error al crear el pago del cliente: ${response.data}');
       }
     } catch (e) {
-      final errorMessage = e.toString().contains('No se ha iniciado sesión')
-          ? e.toString()
-          : 'Error al obtener el pago cliente';
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(errorMessage)),
-      );
-      if (kDebugMode) print(errorMessage);
+      print('Error');
+      if (e is DioException && e.response != null) {
+        if (e.response!.statusCode == 400) {
+          print('Error 400: ${e.response!.data}');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('${e.response!.data}')),
+          );
+        }
+      }
     } finally {
       _isLoading = false;
       notifyListeners();

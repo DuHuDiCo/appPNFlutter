@@ -58,7 +58,7 @@ class FacturacionProvider extends ChangeNotifier {
         );
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => Facturacion()),
+          MaterialPageRoute(builder: (context) => CrearPlanPago()),
         );
 
         await loadFacturas(context);
@@ -124,6 +124,11 @@ class FacturacionProvider extends ChangeNotifier {
           SnackBar(content: Text('Plan de pago creado exitosamente')),
         );
 
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => Facturacion()),
+        );
+
         await loadFacturas(context);
       }
     } catch (e) {
@@ -138,7 +143,7 @@ class FacturacionProvider extends ChangeNotifier {
   }
 
   //METODO PARA OBTENER TODAS LAS FACTURACIONES DE UN CLIENTE
-  Future<void> obtenerFacturasPorClienteId(
+  Future<void> resumenDePagosPorClienteId(
       BuildContext context, int idCliente) async {
     try {
       _isLoading = true;
@@ -148,7 +153,7 @@ class FacturacionProvider extends ChangeNotifier {
           .get('/facturacion/obtenerFacturacionByClient?idClient=$idCliente');
 
       if (response.statusCode == 200) {
-        _facturas = List<Map<String, dynamic>>.from(json.decode(response.body));
+        _facturas = [Map<String, dynamic>.from(json.decode(response.body))];
         print('Facturaciones cargadas: $_facturas');
       } else if (response.statusCode == 404) {
         ScaffoldMessenger.of(context).showSnackBar(

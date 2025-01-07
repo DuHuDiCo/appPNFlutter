@@ -34,7 +34,12 @@ class PagoClienteService {
       String numeroRecibo,
       String tipoPago,
       {Map<String, dynamic>? aplicarPago}) async {
-    // Validar si se seleccionó una imagen
+    // Construir aplicarPagoDTO solo si aplicarPago no es nulo y contiene datos
+    List<Map<String, dynamic>>? aplicarPagoDTO;
+    if (aplicarPago != null && aplicarPago.isNotEmpty) {
+      aplicarPagoDTO = [aplicarPago];
+    }
+
     if (imagenSeleccionada == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -65,7 +70,7 @@ class PagoClienteService {
     if (numeroRecibo.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('El total del pago no puede estar vacío.'),
+          content: Text('El numero de recibo no puede estar vacío.'),
         ),
       );
       return;
@@ -74,16 +79,10 @@ class PagoClienteService {
     if (tipoPago.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('El total del pago no puede estar vacío.'),
+          content: Text('El tipo de pago no puede estar vacío.'),
         ),
       );
       return;
-    }
-
-    // Construir aplicarPagoDTO solo si aplicarPago no es nulo y contiene datos
-    List<Map<String, dynamic>>? aplicarPagoDTO;
-    if (aplicarPago != null && aplicarPago.isNotEmpty) {
-      aplicarPagoDTO = [aplicarPago];
     }
 
     try {
@@ -97,11 +96,34 @@ class PagoClienteService {
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al crear el pago del cliente: $e')),
+        SnackBar(content: Text('Error al crear el pago del cliente 3: $e')),
       );
     }
   }
 
+  // Método para guardar el pago de cliente
+  Future<void> aplicarPagoAutomatico(BuildContext context, int idPagoCliente,
+      {Map<String, dynamic>? aplicarPago}) async {
+    // Construir aplicarPagoDTO solo si aplicarPago no es nulo y contiene datos
+    List<Map<String, dynamic>>? aplicarPagoDTO;
+    if (aplicarPago != null && aplicarPago.isNotEmpty) {
+      aplicarPagoDTO = [aplicarPago];
+    }
+
+    try {
+      await PagoClienteProvider(apiClient).aplicarPagoAutomatico(
+        context,
+        aplicarPagoDTO,
+        idPagoCliente,
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al crear el pago del cliente 3: $e')),
+      );
+    }
+  }
+
+  //Metodo para aplicar el pago
   String formatCurrencyToCOP(dynamic value) {
     final formatCurrency = NumberFormat.currency(
       locale: 'es_CO',

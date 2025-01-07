@@ -64,117 +64,32 @@ class _PagosClientesState extends State<PagosClientes> {
     );
   }
 
-  // Método para construir el título
+// Método para construir el título
   Widget _buildTitle() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0),
-      child: Text(
-        'Explora nuestros pagos de clientes',
-        style: TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-          color: Colors.blue.shade800,
-        ),
-        textAlign: TextAlign.center,
-      ),
-    );
-  }
-
-  // Método para construir el título de la barra de búsqueda
-  Widget _buildSearchBar() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Consumer<ClientesProvider>(
-            builder: (context, clientesProvider, child) {
-              if (clientesProvider.isLoading) {
-                return CircularProgressIndicator();
-              }
-
-              if (clientesProvider.clientes.isEmpty) {
-                return const Text("No hay clientes disponibles");
-              }
-
-              final clientes = clientesProvider.clientes;
-
-              return Row(
-                children: [
-                  Expanded(
-                    child: DropdownButtonHideUnderline(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey),
-                          borderRadius: BorderRadius.circular(12),
-                          color: Colors.grey[100]?.withOpacity(0.8),
-                        ),
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        child: DropdownButton<int>(
-                          isExpanded: true,
-                          value: _selectedCliente,
-                          hint: const Text('Selecciona un cliente'),
-                          onChanged: (newValue) {
-                            setState(() {
-                              _selectedCliente = newValue;
-                            });
-                          },
-                          items: clientes.map((cliente) {
-                            return DropdownMenuItem<int>(
-                              value: cliente['idClient'],
-                              child: Text(
-                                '${cliente['name']} ${cliente['lastname']}',
-                              ),
-                            );
-                          }).toList(),
-                          dropdownColor: Colors.white,
-                          menuMaxHeight: 200,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  // Botón de búsqueda
-                  Container(
-                    width: 50,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: const Color.fromRGBO(112, 185, 244, 1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: IconButton(
-                      onPressed: () {
-                        if (_selectedCliente != null) {
-                          Future.microtask(() {
-                            context
-                                .read<PagoClienteProvider>()
-                                .obtenerPagoPorId(context, _selectedCliente!);
-                          });
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Por favor selecciona un cliente.'),
-                            ),
-                          );
-                        }
-                      },
-                      icon: const Icon(
-                        Icons.search,
-                        color: Colors.white,
-                        size: 24,
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            },
+          Expanded(
+            child: Text(
+              'Explora nuestros pagos de clientes aplicados',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.blue.shade800,
+              ),
+              textAlign: TextAlign.center,
+            ),
           ),
-          const SizedBox(width: 10),
+          // Botón de crear
           Container(
-            width: 60,
-            height: 60,
+            width: 50,
+            height: 50,
             decoration: BoxDecoration(
               color: const Color.fromRGBO(112, 185, 244, 1),
-              borderRadius: BorderRadius.circular(30),
+              borderRadius: BorderRadius.circular(25),
             ),
             child: IconButton(
               onPressed: () {
@@ -182,9 +97,122 @@ class _PagosClientesState extends State<PagosClientes> {
               },
               icon: const Icon(Icons.add),
               color: Colors.white,
+              iconSize: 28,
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  //Función para buscar clientes
+  Widget _buildSearchBar() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: SizedBox(
+        width: double.infinity,
+        child: Consumer<ClientesProvider>(
+          builder: (context, clientesProvider, child) {
+            if (clientesProvider.isLoading) {
+              return Center(child: CircularProgressIndicator());
+            }
+
+            if (clientesProvider.clientes.isEmpty) {
+              return const Text("No hay clientes disponibles");
+            }
+
+            final clientes = clientesProvider.clientes;
+
+            return Row(
+              children: [
+                Expanded(
+                  child: DropdownButtonHideUnderline(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(12),
+                        color: Colors.grey[100]?.withOpacity(0.8),
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: DropdownButton<int>(
+                        isExpanded: true,
+                        value: _selectedCliente,
+                        hint: const Text('Selecciona un cliente'),
+                        onChanged: (newValue) {
+                          setState(() {
+                            _selectedCliente = newValue;
+                          });
+                        },
+                        items: clientes.map((cliente) {
+                          return DropdownMenuItem<int>(
+                            value: cliente['idClient'],
+                            child: Text(
+                              '${cliente['name']} ${cliente['lastname']}',
+                            ),
+                          );
+                        }).toList(),
+                        dropdownColor: Colors.white,
+                        menuMaxHeight: 200,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                // Botón de búsqueda
+                Container(
+                  width: 50,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: const Color.fromRGBO(112, 185, 244, 1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: IconButton(
+                    onPressed: () {
+                      if (_selectedCliente != null) {
+                        Future.microtask(() {
+                          context
+                              .read<PagoClienteProvider>()
+                              .obtenerPagoPorId(context, _selectedCliente!);
+                        });
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Por favor selecciona un cliente.'),
+                          ),
+                        );
+                      }
+                    },
+                    icon: const Icon(
+                      Icons.search,
+                      color: Colors.white,
+                      size: 24,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+// Botón para resetear la búsqueda
+                Container(
+                  width: 50,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.grey,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: IconButton(
+                    onPressed: () {
+                      context.read<PagoClienteProvider>().resetPagosFiltrados();
+                    },
+                    icon: const Icon(
+                      Icons.refresh,
+                      color: Colors.white,
+                      size: 24,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -193,7 +221,6 @@ class _PagosClientesState extends State<PagosClientes> {
   Widget _buildMainContent() {
     Future.microtask(
         () => context.read<PagoClienteProvider>().loadPagosClientes(context));
-
     return Consumer<PagoClienteProvider>(
       builder: (context, pagoClienteProvider, child) {
         if (pagoClienteProvider.isLoading) {
@@ -205,7 +232,7 @@ class _PagosClientesState extends State<PagosClientes> {
         if (pagoClienteProvider.pagosClientes.isEmpty) {
           return const Center(
             child: Text(
-              'No hay pagos de clientes disponibles.',
+              'No se encontraron pagos para este cliente.',
               style: TextStyle(fontSize: 18, color: Colors.grey),
             ),
           );
@@ -216,6 +243,7 @@ class _PagosClientesState extends State<PagosClientes> {
             itemCount: pagoClienteProvider.pagosClientes.length,
             itemBuilder: (context, index) {
               final pagoCliente = pagoClienteProvider.pagosClientes[index];
+
               return ListItem(
                 imageUrl: null,
                 content: Row(
@@ -238,10 +266,11 @@ class _PagosClientesState extends State<PagosClientes> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Total pago: ${pagoClienteService.formatCurrencyToCOP(pagoCliente["totalPago"])}',
+                            'Total pago: ${pagoClienteService.formatCurrencyToCOP(pagoCliente["valor"])}',
                             style: TextStyle(
                                 fontSize: 14, color: Colors.grey[700]),
                           ),
+                          const SizedBox(height: 4),
                         ],
                       ),
                     ),
@@ -280,20 +309,20 @@ class _PagosClientesState extends State<PagosClientes> {
                                 ],
                               ),
                             ),
+                            PopupMenuItem<String>(
+                              value: 'Eliminar',
+                              child: Row(
+                                children: const [
+                                  Icon(Icons.delete, color: Colors.red),
+                                  SizedBox(width: 10),
+                                  Text('Eliminar'),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
-                        PopupMenuItem<String>(
-                          value: 'Eliminar',
-                          child: Row(
-                            children: const [
-                              Icon(Icons.delete, color: Colors.red),
-                              SizedBox(width: 10),
-                              Text('Eliminar'),
-                            ],
-                          ),
-                        ),
                       ],
-                    ),
+                    )
                   ],
                 ),
               );
@@ -313,7 +342,7 @@ class _PagosClientesState extends State<PagosClientes> {
         return AlertDialog(
           title: const Text('Eliminar pago del cliente'),
           content: Text(
-              '¿Estás seguro de que deseas eliminar el pago del cliente #$idPagoCliente?'),
+              '¿Estás seguro de que deseas eliminar el pago #$idPagoCliente del cliente?'),
           actions: [
             TextButton(
               onPressed: () {

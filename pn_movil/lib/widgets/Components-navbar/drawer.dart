@@ -77,10 +77,23 @@ class CustomDrawer extends StatelessWidget {
                   child: ListTile(
                     leading:
                         const Icon(Icons.business_sharp, color: Colors.white),
-                    title: const Text('Pagos de clientes',
+                    title: const Text('Pagos de clientes aplicados',
                         style: TextStyle(color: Colors.white)),
                     onTap: () {
                       Navigator.pushReplacementNamed(context, 'pagos-clientes');
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 16.0),
+                  child: ListTile(
+                    leading:
+                        const Icon(Icons.fmd_bad_outlined, color: Colors.white),
+                    title: const Text('Pagos de clientes sin aplicar',
+                        style: TextStyle(color: Colors.white)),
+                    onTap: () {
+                      Navigator.pushReplacementNamed(
+                          context, 'pagos-clientes-sin-aplicar');
                     },
                   ),
                 ),
