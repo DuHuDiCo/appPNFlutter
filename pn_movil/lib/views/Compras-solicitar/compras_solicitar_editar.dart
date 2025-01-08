@@ -63,7 +63,6 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
       productos = (compra['productoCompras'] as List)
           .map((item) => item as Map<String, dynamic>)
           .toList();
-      logger.i(json.encode(productos));
 
       // Llenar el array de productos en _productosBackend
       _productosBackend["productos"] = productos.map((product) {
@@ -75,6 +74,7 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
         };
       }).toList();
 
+      logger.i(json.encode(_productosBackend));
       setState(() {
         _productosCargados = true;
         proveedorSeleccionado = compra['proveedor']['idProveedor'];
@@ -111,6 +111,9 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                     runSpacing: 10.0,
                     children: [
                       ...productos.map((product) {
+                        logger.i(
+                            "Información del producto:\n${const JsonEncoder.withIndent('  ').convert(product['producto'])}");
+
                         return ProductCardEdit(
                           imageUrl: (product['imagenes'] is List &&
                                   product['imagenes'].isNotEmpty)
@@ -130,7 +133,9 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                               cantidad,
                               product['costo'].toString(),
                               productId,
-                              product['user']['idUser'],
+                              product['producto']['productosCompras'][0]['user']
+                                      ['idUser'] ??
+                                  0,
                               product['idProductoCompra'],
                               true,
                             );
@@ -152,7 +157,7 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                           .where((product) =>
                               !isProductSelected(product['idProducto']))
                           .map((product) {
-                        Logger().e(json.encode(product));
+                        logger.i(json.encode(product));
                         return ProductCardSelect(
                           imageUrl: (product['imagenes'] is List &&
                                   product['imagenes'].isNotEmpty)
@@ -179,6 +184,7 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                               product['idProductoCompra'] ?? 0,
                               false,
                             );
+                            logger.i('ENTROOOOOOO 0');
                           },
                           onRemoveProduct: (name, clasification) {},
                           isSelected:
@@ -459,6 +465,8 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                     ),
                   ),
                   onPressed: () {
+                    logger.i(userId);
+
                     if (isEdit) {
                       // Obtenemos los valores del formulario
                       final nuevaCantidad =
@@ -489,12 +497,14 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                       }
                     } else {
                       if (cantidadController.text.isNotEmpty &&
-                          costoController.text.isNotEmpty) {
+                          costoController.text.isNotEmpty &&
+                          vendedorController.text.isNotEmpty) {
+                        userId = int.tryParse(vendedorController.text)!;
                         _addProductWithDetails(
                           productName,
                           clasification,
-                          cantidadController.text,
-                          costoController.text,
+                          int.tryParse(cantidadController.text) ?? 0,
+                          double.tryParse(costoController.text) ?? 0,
                           productId,
                           userId,
                           idProductoCompra!,
@@ -502,7 +512,6 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
                         Navigator.of(context).pop(true);
                       }
                     }
-                    logger.i(json.encode(productos[productos.length - 1]));
 
                     // Navigator.of(context).pop(true);
                   },
@@ -583,24 +592,31 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
           SizedBox(
             width: 200,
             child: ElevatedButton(
-              onPressed: () {
-                logger.i(json.encode(_productosBackend['productos']));
+              onPressed: (_productosBackend['productos'] != null &&
+                      _productosBackend['productos'].isNotEmpty)
+                  ? () {
+                      logger.i(json.encode(_productosBackend['productos']));
 
-                Map<String, dynamic> nuevaCompra = {
-                  "monto": _calculoMonto(),
-                  "idProveedor": proveedorSeleccionado,
-                  "productos": _productosBackend['productos'],
-                  "totalCompra": _calculoTotalCompra(),
-                  "totalPagar": _calculoTotalPagar(),
-                };
+                      Map<String, dynamic> nuevaCompra = {
+                        "monto": _calculoMonto(),
+                        "idProveedor": proveedorSeleccionado,
+                        "productos": _productosBackend['productos'],
+                        "totalCompra": _calculoTotalCompra(),
+                        "totalPagar": _calculoTotalPagar(),
+                      };
 
-                logger.i(json.encode(nuevaCompra));
+                      logger.i(json.encode(nuevaCompra));
 
-                Provider.of<CompraProvider>(context, listen: false)
-                    .editarCompra(context, nuevaCompra, compra['idCompra']);
-              },
+                      Provider.of<CompraProvider>(context, listen: false)
+                          .editarCompra(
+                              context, nuevaCompra, compra['idCompra']);
+                    }
+                  : null, // Deshabilita el botón si no hay productos
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
+                backgroundColor: (_productosBackend['productos'] != null &&
+                        _productosBackend['productos'].isNotEmpty)
+                    ? Colors.blue // Color cuando está habilitado
+                    : Colors.grey, // Color cuando está deshabilitado
               ),
               child: const Text(
                 'Editar compra',
@@ -616,41 +632,34 @@ class _ComprasSolicitarEditarState extends State<ComprasSolicitarEditar> {
   }
 
   // Agregar producto y actualizar estado
-  void _addProductWithDetails(
-      String name,
-      String clasification,
-      String cantidad,
-      String costo,
-      int productId,
-      int userId,
-      int productIdCompra) {
+  void _addProductWithDetails(String name, String clasification, int cantidad,
+      double costo, int productId, int userId, int productIdCompra) {
     setState(() {
-      productos = List.from(productos)
-        ..add({
-          'idProductoCompra': productIdCompra,
-          'cantidad': cantidad,
-          'costo': costo,
-          'producto': {
-            'idProducto': productId,
-            'producto': name,
-            'descripcion': '',
-            'imagenes': [],
-            'clasificacionProducto': {
-              'idClasificacionProducto': '',
-              'clasificacionProducto': clasification,
-              'isFleteObligatorio': false,
-            },
-            'user': {
-              'idUser': userId,
-            }
+      productos.add({
+        'idProductoCompra': productIdCompra,
+        'cantidad': cantidad,
+        'costo': costo,
+        'producto': {
+          'idProducto': productId,
+          'producto': name,
+          'descripcion': '',
+          'imagenes': [],
+          'clasificacionProducto': {
+            'idClasificacionProducto': '',
+            'clasificacionProducto': clasification,
+            'isFleteObligatorio': false,
+          },
+          'user': {
+            'idUser': userId,
           }
-        });
+        }
+      });
 
       _productosBackend['productos'].add({
         'cantidad': cantidad,
         'costo': costo,
         'idProducto': productId,
-        'usuarioId': userId,
+        'idUsuario': userId,
       });
 
       checkFormValidity();
