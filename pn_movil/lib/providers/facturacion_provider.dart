@@ -11,11 +11,27 @@ class FacturacionProvider extends ChangeNotifier {
   FacturacionProvider(this._apiClient);
 
   List<Map<String, dynamic>> _facturas = [];
+  Map<String, dynamic> _filteredFacturacionesClientes = {}; // No es una lista
 
   bool _isLoading = false;
 
   List<Map<String, dynamic>> get facturas => _facturas;
   bool get isLoading => _isLoading;
+
+  Map<String, dynamic> get filteredFacturacionesClientes =>
+      _filteredFacturacionesClientes; // Cambio a lista
+
+  // Método para actualizar las facturaciones filtradas
+  void setFilteredFacturacionesClientes(Map<String, dynamic> facturaciones) {
+    _filteredFacturacionesClientes = facturaciones;
+    notifyListeners();
+  }
+
+  // Método para resetear los filtros de pagos
+  void resetFiltrados() {
+    _filteredFacturacionesClientes = {};
+    notifyListeners();
+  }
 
 //Metodo para cargar las facturaciones
   Future<void> loadFacturas(BuildContext context) async {
@@ -142,7 +158,7 @@ class FacturacionProvider extends ChangeNotifier {
     }
   }
 
-  //METODO PARA OBTENER TODAS LAS FACTURACIONES DE UN CLIENTE
+  // Método para obtener el resumen de pagos por cliente
   Future<void> resumenDePagosPorClienteId(
       BuildContext context, int idCliente) async {
     try {
@@ -153,14 +169,22 @@ class FacturacionProvider extends ChangeNotifier {
           .get('/facturacion/obtenerFacturacionByClient?idClient=$idCliente');
 
       if (response.statusCode == 200) {
-        _facturas = [Map<String, dynamic>.from(json.decode(response.body))];
-        print('Facturaciones cargadas: $_facturas');
+        final facturasData =
+            Map<String, dynamic>.from(json.decode(response.body));
+
+        if (facturasData['cuentaDTOs'] != null &&
+            facturasData['cuentaDTOs'].isNotEmpty) {
+          // Asigna el mapa completo (que contiene cuentaDTOs)
+          setFilteredFacturacionesClientes(facturasData);
+          print('Facturaciones filtradas: $_filteredFacturacionesClientes');
+        } else {
+          _filteredFacturacionesClientes = {};
+          throw Exception('No hay facturaciones para este cliente');
+        }
       } else if (response.statusCode == 404) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content:
-                  Text('No se encontraron facturaciones para este cliente.')),
-        );
+        throw Exception('Facturacion cliente no encontrado');
+      } else {
+        throw Exception('Error al obtener la facturacion cliente');
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

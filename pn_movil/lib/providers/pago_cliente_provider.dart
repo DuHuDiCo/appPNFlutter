@@ -68,18 +68,9 @@ class PagoClienteProvider extends ChangeNotifier {
         }
       } else if (response.statusCode == 404) {
         throw Exception('Pago cliente no encontrado');
-      } else {
-        throw Exception('Error al obtener el pago cliente');
       }
     } catch (e) {
-      _filteredPagosClientes =
-          []; // Limpia los resultados filtrados si hay un error
-      final errorMessage = e.toString().contains('No se ha iniciado sesión')
-          ? e.toString()
-          : 'Error al obtener el pago cliente';
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(errorMessage)),
-      );
+      _filteredPagosClientes = [];
     } finally {
       _isLoading = false;
       notifyListeners();
