@@ -192,10 +192,24 @@ class _PagosClientesSinaplicarState extends State<PagosClientesSinaplicar> {
                                 _aplicarPago(
                                     context, pagoCliente['idPagoCliente']);
                                 break;
+                              case 'abono':
+                                Navigator.pushNamed(context, 'abono-normal',
+                                    arguments: pagoCliente);
+                                break;
                             }
                           },
                           itemBuilder: (BuildContext context) =>
                               <PopupMenuEntry<String>>[
+                            PopupMenuItem<String>(
+                              value: 'Eliminar',
+                              child: Row(
+                                children: const [
+                                  Icon(Icons.delete, color: Colors.red),
+                                  SizedBox(width: 10),
+                                  Text('Eliminar pago'),
+                                ],
+                              ),
+                            ),
                             PopupMenuItem<String>(
                               value: 'comprobante',
                               child: Row(
@@ -207,12 +221,12 @@ class _PagosClientesSinaplicarState extends State<PagosClientesSinaplicar> {
                               ),
                             ),
                             PopupMenuItem<String>(
-                              value: 'Eliminar',
+                              value: 'abono',
                               child: Row(
                                 children: const [
-                                  Icon(Icons.delete, color: Colors.red),
+                                  Icon(Icons.payment, color: Colors.blue),
                                   SizedBox(width: 10),
-                                  Text('Eliminar'),
+                                  Text('Aplicar pago manual'),
                                 ],
                               ),
                             ),
@@ -220,9 +234,10 @@ class _PagosClientesSinaplicarState extends State<PagosClientesSinaplicar> {
                               value: 'aplicar',
                               child: Row(
                                 children: const [
-                                  Icon(Icons.payment, color: Colors.blue),
+                                  Icon(Icons.payment,
+                                      color: Color.fromARGB(255, 87, 189, 104)),
                                   SizedBox(width: 10),
-                                  Text('Aplicar pago'),
+                                  Text('Aplicar pago automático'),
                                 ],
                               ),
                             ),
@@ -421,6 +436,34 @@ class _PagosClientesSinaplicarState extends State<PagosClientesSinaplicar> {
                       ),
                       const SizedBox(height: 16),
 
+                      TextFormField(
+                        controller: _fechaCreacionController,
+                        onTap: _selectDate,
+                        readOnly: true,
+                        decoration: InputDecoration(
+                          labelText: 'Fecha de pago',
+                          prefixIcon: const Icon(Icons.calendar_today),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 10,
+                            horizontal: 12,
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Por favor, ingrese una fecha';
+                          }
+                          return null;
+                        },
+                      ),
+
+                      const SizedBox(height: 16),
+
                       // Campo de texto para tipo de venta
                       TextFormField(
                         controller: _valorPagoAplicarController,
@@ -446,30 +489,6 @@ class _PagosClientesSinaplicarState extends State<PagosClientesSinaplicar> {
                         },
                       ),
                       const SizedBox(height: 16),
-                      TextFormField(
-                        controller: _fechaCreacionController,
-                        onTap: _selectDate,
-                        decoration: InputDecoration(
-                          labelText: 'Fecha de pago',
-                          icon: const Icon(Icons.calendar_today),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 12,
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Por favor, ingrese un valor';
-                          }
-                          return null;
-                        },
-                      ),
                     ],
                   ),
                 ),
@@ -490,31 +509,21 @@ class _PagosClientesSinaplicarState extends State<PagosClientesSinaplicar> {
             ElevatedButton(
               onPressed: () async {
                 if (_formKey.currentState!.validate()) {
-                  final aplicarPagoDTO = (_valorPagoAplicarController
-                              .text.isNotEmpty ||
-                          _selectedCliente != null ||
-                          _fechaCreacionController.text.isNotEmpty)
-                      ? {
-                          'valor': _valorPagoAplicarController.text.isNotEmpty
-                              ? _valorPagoAplicarController.text
-                              : null,
-                          'idCliente': _selectedCliente ?? null,
-                          'fechaPago': _fechaCreacionController.text.isNotEmpty
-                              ? _fechaCreacionController.text
-                              : null,
-                        }
-                      : null;
+                  final aplicarPagoDTO = {
+                    if (_valorPagoAplicarController.text.isNotEmpty)
+                      'valor': _valorPagoAplicarController.text,
+                    if (_selectedCliente != null) 'idCliente': _selectedCliente,
+                    if (_fechaCreacionController.text.isNotEmpty)
+                      'fechaPago': _fechaCreacionController.text,
+                  };
+
+                  print('Datos preparados para enviar: $aplicarPagoDTO');
 
                   await pagoClienteService.aplicarPagoAutomatico(
-                      dialogContext, idPagoCliente,
+                      context, idPagoCliente,
                       aplicarPago: aplicarPagoDTO);
-
-                  print('Datos a enviar: $aplicarPagoDTO');
-                  print('ID del pago: $idPagoCliente');
-
-                  if (Navigator.canPop(dialogContext)) {
-                    Navigator.pop(dialogContext);
-                  }
+                } else {
+                  print('Formulario inválido');
                 }
               },
               style: ElevatedButton.styleFrom(

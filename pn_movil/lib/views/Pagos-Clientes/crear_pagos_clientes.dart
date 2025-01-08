@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:pn_movil/conexiones/ApiClient.dart';
 import 'package:pn_movil/providers/clientes_provider.dart';
 import 'package:pn_movil/providers/facturacion_provider.dart';
@@ -29,7 +28,6 @@ class _CrearPagosClientesState extends State<CrearPagosClientes> {
   File? _imagenSeleccionada;
 
   // Variables para mostrar la tabla de facturación
-  bool _mostrarTablaFacturacion = false;
   bool loadingAplicarPago = false;
   bool isLoading = false;
 

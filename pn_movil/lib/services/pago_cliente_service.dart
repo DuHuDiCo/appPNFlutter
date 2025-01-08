@@ -101,10 +101,9 @@ class PagoClienteService {
     }
   }
 
-  // Método para guardar el pago de cliente
+  //Metodo para aplicar el pago automático
   Future<void> aplicarPagoAutomatico(BuildContext context, int idPagoCliente,
       {Map<String, dynamic>? aplicarPago}) async {
-    // Construir aplicarPagoDTO solo si aplicarPago no es nulo y contiene datos
     List<Map<String, dynamic>>? aplicarPagoDTO;
     if (aplicarPago != null && aplicarPago.isNotEmpty) {
       aplicarPagoDTO = [aplicarPago];
@@ -113,8 +112,8 @@ class PagoClienteService {
     try {
       await PagoClienteProvider(apiClient).aplicarPagoAutomatico(
         context,
-        aplicarPagoDTO,
         idPagoCliente,
+        aplicarPagoDTO: aplicarPagoDTO,
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -123,7 +122,7 @@ class PagoClienteService {
     }
   }
 
-  //Metodo para aplicar el pago
+  //Metodo para formatear el valor de un pago a COP
   String formatCurrencyToCOP(dynamic value) {
     final formatCurrency = NumberFormat.currency(
       locale: 'es_CO',
@@ -132,7 +131,7 @@ class PagoClienteService {
     return '\$${formatCurrency.format(value).split(',')[0]}';
   }
 
-  //Metodo para eliminar un tipo de venta
+  //Metodo para eliminar un pago del cliente
   Future<void> eliminarpagoCliente(
       BuildContext context, int pagoClienteId) async {
     try {

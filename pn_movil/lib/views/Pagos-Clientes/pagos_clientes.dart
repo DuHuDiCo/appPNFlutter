@@ -105,7 +105,6 @@ class _PagosClientesState extends State<PagosClientes> {
     );
   }
 
-  //Función para buscar clientes
   Widget _buildSearchBar() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -113,10 +112,12 @@ class _PagosClientesState extends State<PagosClientes> {
         width: double.infinity,
         child: Consumer<ClientesProvider>(
           builder: (context, clientesProvider, child) {
+            // Verifica si se está cargando
             if (clientesProvider.isLoading) {
               return Center(child: CircularProgressIndicator());
             }
 
+            // Verifica si no hay clientes
             if (clientesProvider.clientes.isEmpty) {
               return const Text("No hay clientes disponibles");
             }
@@ -139,9 +140,7 @@ class _PagosClientesState extends State<PagosClientes> {
                         value: _selectedCliente,
                         hint: const Text('Selecciona un cliente'),
                         onChanged: (newValue) {
-                          setState(() {
-                            _selectedCliente = newValue;
-                          });
+                          _selectedCliente = newValue;
                         },
                         items: clientes.map((cliente) {
                           return DropdownMenuItem<int>(
@@ -190,7 +189,6 @@ class _PagosClientesState extends State<PagosClientes> {
                   ),
                 ),
                 const SizedBox(width: 10),
-// Botón para resetear la búsqueda
                 Container(
                   width: 50,
                   height: 40,
@@ -201,6 +199,9 @@ class _PagosClientesState extends State<PagosClientes> {
                   child: IconButton(
                     onPressed: () {
                       context.read<PagoClienteProvider>().resetPagosFiltrados();
+                      setState(() {
+                        _selectedCliente = null;
+                      });
                     },
                     icon: const Icon(
                       Icons.refresh,

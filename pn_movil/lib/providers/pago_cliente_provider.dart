@@ -174,11 +174,11 @@ class PagoClienteProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> aplicarPagoAutomatico(BuildContext context,
-      List<Map<String, dynamic>>? aplicarPagoDTO, int idPagoCliente) async {
+  Future<void> aplicarPagoAutomatico(BuildContext context, int idPagoCliente,
+      {List<Map<String, dynamic>>? aplicarPagoDTO}) async {
     final dio = Dio();
-
     final token = await _apiClient.getAuthToken();
+
     dio.options.headers = {
       'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',
@@ -188,12 +188,9 @@ class PagoClienteProvider extends ChangeNotifier {
       _isLoading = true;
       notifyListeners();
 
-      Map<String, dynamic> data = {};
-
-      if (aplicarPagoDTO != null) {
-        data['aplicarPagoDTO'] = aplicarPagoDTO;
-      }
-      print('Datos a enviar: $data');
+      final data = {
+        if (aplicarPagoDTO != null) 'aplicarPagoDTO': aplicarPagoDTO,
+      };
 
       final response = await dio.post(
         'https://apppn.duckdns.org/api/v1/pagosClientes/aplicarPagoAutomatico?idPagoCliente=$idPagoCliente',
@@ -204,28 +201,12 @@ class PagoClienteProvider extends ChangeNotifier {
         final pagoClienteCreado = response.data as Map<String, dynamic>;
         _pagosClientes.add(pagoClienteCreado);
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Pago cliente creado exitosamente')),
-        );
-
-        // Navega a la siguiente pantalla
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => PagosClientes()),
-        );
+        print('Pago cliente creado exitosamente');
       } else {
-        throw Exception('Error al crear el pago del cliente: ${response.data}');
+        print('Error en la respuesta: ${response.data}');
       }
     } catch (e) {
-      print('Error');
-      if (e is DioException && e.response != null) {
-        if (e.response!.statusCode == 400) {
-          print('Error 400: ${e.response!.data}');
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${e.response!.data}')),
-          );
-        }
-      }
+      print('Error: $e');
     } finally {
       _isLoading = false;
       notifyListeners();

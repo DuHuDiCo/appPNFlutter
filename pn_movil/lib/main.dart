@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pn_movil/conexiones/ApiClient.dart';
 import 'package:pn_movil/conexiones/autentificacion.dart';
 import 'package:pn_movil/models/Compras.dart';
+import 'package:pn_movil/providers/abono_provider.dart';
 import 'package:pn_movil/providers/clasificacion_provider.dart';
 import 'package:pn_movil/providers/clientes_provider.dart';
 import 'package:pn_movil/providers/compra_provider.dart';
@@ -16,6 +17,7 @@ import 'package:pn_movil/providers/proveedor_provider.dart';
 import 'package:pn_movil/providers/tipo_venta_provider.dart';
 import 'package:pn_movil/providers/user_provider.dart';
 import 'package:pn_movil/services/AuthService.dart';
+import 'package:pn_movil/views/Abono-normal/abono_normal.dart';
 import 'package:pn_movil/views/Compras-solicitar/compras_solicitar_crear.dart';
 import 'package:pn_movil/views/Compras-solicitar/compras_solicitar.dart';
 import 'package:pn_movil/views/Compras-solicitar/compras_solicitar_editar.dart';
@@ -95,6 +97,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<PagoClienteProvider>(
           create: (context) => PagoClienteProvider(context.read<ApiClient>()),
         ),
+        ChangeNotifierProvider<AbonoProvider>(
+          create: (context) => AbonoProvider(context.read<ApiClient>()),
+        ),
         Provider<GoogleAuthController>(
           create: (_) => GoogleAuthController(),
         ),
@@ -140,6 +145,8 @@ class MyApp extends StatelessWidget {
           'crear-plan-pago': (_) => const CrearPlanPago(),
           //Rutas de tipo de venta
           'tipo-venta': (_) => const TipoVenta(),
+          //Rutas de abono
+          'abono-normal': (_) => const AbonoNormal(),
         },
         theme: ThemeData.light().copyWith(
           scaffoldBackgroundColor: Colors.grey[300],
