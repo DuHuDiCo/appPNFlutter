@@ -290,7 +290,7 @@ class _ResumenCuentaState extends State<ResumenCuenta> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Valor: ${abonoService.formatCurrencyToCOP(valor)}',
+                            'Valor pendiente: ${abonoService.formatCurrencyToCOP(valor)}',
                             style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -314,13 +314,19 @@ class _ResumenCuentaState extends State<ResumenCuenta> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Fecha: ${DateFormat('dd/MM/yyyy').format(DateTime.parse(fecha))}',
+                        'Fecha a pagar: ${DateFormat('dd/MM/yyyy').format(DateTime.parse(fecha))}',
                         style: const TextStyle(
                             fontSize: 16, color: Colors.black54),
                       ),
                       const SizedBox(height: 16),
                       Text(
                         'Facturación #${factura['facturacion'][0]['idFacturacion']}',
+                        style: const TextStyle(
+                            fontSize: 16, color: Colors.black54),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Fecha factura: ${DateFormat('dd/MM/yyyy').format(DateTime.parse(factura['facturacion'][0]['fecha']))}',
                         style: const TextStyle(
                             fontSize: 16, color: Colors.black54),
                       ),
