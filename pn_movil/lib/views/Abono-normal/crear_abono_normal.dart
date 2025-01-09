@@ -156,7 +156,7 @@ class _AbonoNormalState extends State<AbonoNormal> {
                             value: _selectedCliente,
                             hint: const Text('Selecciona un cliente'),
                             onChanged: (newValue) {
-                              // Solo actualiza el valor seleccionado
+                              // Solo actualiza el valor seleccionado, sin ejecutar la búsqueda
                               setState(() {
                                 _selectedCliente = newValue;
                               });
@@ -208,6 +208,7 @@ class _AbonoNormalState extends State<AbonoNormal> {
                       ),
                     ),
                     const SizedBox(width: 10),
+                    // Botón de reset
                     Container(
                       width: 50,
                       height: 40,
