@@ -17,7 +17,7 @@ import 'package:pn_movil/providers/proveedor_provider.dart';
 import 'package:pn_movil/providers/tipo_venta_provider.dart';
 import 'package:pn_movil/providers/user_provider.dart';
 import 'package:pn_movil/services/AuthService.dart';
-import 'package:pn_movil/views/Abono-normal/abono_normal.dart';
+import 'package:pn_movil/views/Abono-normal/crear_abono_normal.dart';
 import 'package:pn_movil/views/Compras-solicitar/compras_solicitar_crear.dart';
 import 'package:pn_movil/views/Compras-solicitar/compras_solicitar.dart';
 import 'package:pn_movil/views/Compras-solicitar/compras_solicitar_editar.dart';

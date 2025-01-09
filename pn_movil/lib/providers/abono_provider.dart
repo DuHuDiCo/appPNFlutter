@@ -24,7 +24,7 @@ class AbonoProvider extends ChangeNotifier {
       notifyListeners();
 
       final response = await _apiClient.post(
-        '/abono/crear',
+        '/api/v1/abono/crear',
         nuevoAbono,
       );
 
@@ -36,7 +36,8 @@ class AbonoProvider extends ChangeNotifier {
         _abonos.add(abonoCreado);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: Text('Aplicacion de abono normal creada exitosamente')),
+              content:
+                  Text('Aplicacion de abono normal creada exitosamente AAA')),
         );
         Navigator.push(
           context,

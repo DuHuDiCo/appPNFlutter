@@ -187,9 +187,6 @@ class FacturacionProvider extends ChangeNotifier {
         throw Exception('Error al obtener la facturacion cliente');
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
-      );
       if (kDebugMode) print('Error al obtener facturaciones: $e');
     } finally {
       _isLoading = false;
