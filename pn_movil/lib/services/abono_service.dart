@@ -90,9 +90,11 @@ class AbonoService extends ChangeNotifier {
   }
 
   //Funcion para crear una aplicacion de abono normal
-  Future<void> guardarAbono(BuildContext context, int idCliente) async {
+  Future<void> guardarAbono(
+      BuildContext context, int idCliente, int idPagoCliente) async {
     final Map<String, dynamic> factura = {
       'idCliente': idCliente,
+      'idPagoCliente': idPagoCliente,
       'cuotas': _selectedCuotas,
     };
 

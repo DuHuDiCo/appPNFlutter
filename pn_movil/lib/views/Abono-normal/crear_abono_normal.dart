@@ -440,7 +440,14 @@ class _AbonoNormalState extends State<AbonoNormal> {
   }
 
   //Metodo para construir el botón de guardar
-  Widget _buildFooter(AbonoService abonoService) {
+  Widget _buildFooter(
+    AbonoService abonoService,
+  ) {
+    final pagoCliente =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
+
+    final idPagoCliente = pagoCliente?['idPagoCliente'];
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -474,7 +481,8 @@ class _AbonoNormalState extends State<AbonoNormal> {
                 width: 150,
                 child: ElevatedButton(
                   onPressed: () {
-                    abonoService.guardarAbono(context, _selectedCliente!);
+                    abonoService.guardarAbono(
+                        context, _selectedCliente!, idPagoCliente);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
