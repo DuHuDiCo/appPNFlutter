@@ -18,6 +18,7 @@ import 'package:pn_movil/providers/tipo_venta_provider.dart';
 import 'package:pn_movil/providers/user_provider.dart';
 import 'package:pn_movil/services/AuthService.dart';
 import 'package:pn_movil/views/Abono-normal/crear_abono_normal.dart';
+import 'package:pn_movil/views/Abono-normal/resumen_cuenta.dart';
 import 'package:pn_movil/views/Compras-solicitar/compras_solicitar_crear.dart';
 import 'package:pn_movil/views/Compras-solicitar/compras_solicitar.dart';
 import 'package:pn_movil/views/Compras-solicitar/compras_solicitar_editar.dart';
@@ -147,6 +148,7 @@ class MyApp extends StatelessWidget {
           'tipo-venta': (_) => const TipoVenta(),
           //Rutas de abono
           'abono-normal': (_) => const AbonoNormal(),
+          'resumen-cuenta': (_) => const ResumenCuenta(),
         },
         theme: ThemeData.light().copyWith(
           scaffoldBackgroundColor: Colors.grey[300],
