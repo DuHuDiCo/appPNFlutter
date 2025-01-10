@@ -136,4 +136,56 @@ class CompraProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  // Método para agregar un flete a la compra
+  Future<void> agregarFlete(
+      BuildContext context, Map<String, dynamic> flete, int idCompra) async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+
+      final response = await _apiClient.put(
+        '/api/v1/compra/flete/?idCompra=$idCompra',
+        flete,
+      );
+
+      print('Respuesta del backend: ${response.body}');
+      print(editarCompra);
+
+      if (response.statusCode == 200) {
+        final compraEditada =
+            json.decode(response.body) as Map<String, dynamic>;
+
+        final index = _compras.indexWhere(
+            (compra) => compra['idCompra'] == compraEditada['idCompra']);
+        if (index != -1) {
+          _compras[index] = compraEditada;
+        }
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Compra editada exitosamente')),
+        );
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => Compras()),
+        );
+      } else {
+        throw Exception('Error al editar la compra: ${response.body}');
+      }
+    } catch (e) {
+      final errorMessage = e.toString().contains('No se ha iniciado sesión')
+          ? e.toString()
+          : 'Error inesperado: ${e.toString()}';
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(errorMessage)),
+      );
+
+      if (kDebugMode) print(errorMessage);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
 }

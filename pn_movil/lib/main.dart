@@ -19,6 +19,7 @@ import 'package:pn_movil/providers/user_provider.dart';
 import 'package:pn_movil/services/AuthService.dart';
 import 'package:pn_movil/views/Abono-normal/crear_abono_normal.dart';
 import 'package:pn_movil/views/Abono-normal/resumen_cuenta.dart';
+import 'package:pn_movil/views/Compras-solicitar/compras_agregar_flete.dart';
 import 'package:pn_movil/views/Compras-solicitar/compras_solicitar_crear.dart';
 import 'package:pn_movil/views/Compras-solicitar/compras_solicitar.dart';
 import 'package:pn_movil/views/Compras-solicitar/compras_solicitar_editar.dart';
@@ -126,6 +127,7 @@ class MyApp extends StatelessWidget {
           'compras-solicitar-crear': (_) => SeleccionarProductos(),
           'compras-solicitar-editar': (_) => ComprasSolicitarEditar(),
           'compras-solicitar-detalle': (_) => const ComprasSolicitarDetalle(),
+          'compras-solicitar-agregar-flete': (_) => const ComprasAgregarFlete(),
           //Rutas de pagos de compras
           'realizar-pago': (_) => const Pago(),
           'crear-pago': (_) => const CrearPago(),

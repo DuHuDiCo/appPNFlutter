@@ -208,7 +208,7 @@ class _ResumenCuentaState extends State<ResumenCuenta> {
     );
   }
 
-  // Método para construir el contenido principal
+  // Método principal para construir el contenido
   Widget _buildMainContent() {
     return Consumer<FacturacionProvider>(
       builder: (context, facturacionProvider, child) {
@@ -239,23 +239,18 @@ class _ResumenCuentaState extends State<ResumenCuenta> {
           );
         }
 
-        final facturas =
-            (facturacionesClientes['cuentaDTOs'] ?? []).where((factura) {
-          if (factura['facturacion'] is List &&
-              factura['facturacion'].isNotEmpty) {
-            final cuotas = factura['facturacion'][0]['cuotas'] ?? [];
-            if (cuotas is List) {
-              return cuotas
-                  .any((cuota) => cuota['saldo'] != null && cuota['saldo'] > 0);
-            }
-          }
-          return false;
-        }).toList();
+        final facturas = (facturacionesClientes['cuentaDTOs'] ?? [])
+            .where((factura) =>
+                factura['facturacion'] != null &&
+                (factura['facturacion'] as List).any((facturacion) =>
+                    (facturacion['cuotas'] as List)
+                        .any((cuota) => cuota['saldo'] > 0)))
+            .toList();
 
         if (facturas.isEmpty) {
           return const Center(
             child: Text(
-              'No tiene facturas con cuotas pendientes por pagar.',
+              'No tiene facturas pendientes.',
               style: TextStyle(fontSize: 18, color: Colors.grey),
             ),
           );
@@ -266,96 +261,149 @@ class _ResumenCuentaState extends State<ResumenCuenta> {
             itemCount: facturas.length,
             itemBuilder: (context, index) {
               final factura = facturas[index];
-              final valor = factura['valor'];
-              final fecha = factura['fecha'];
-              final cuotas = factura['facturacion'][0]['cuotas'] ?? [];
-
-              bool isExpanded = factura['isExpanded'] ?? false;
-
-              return Card(
-                margin:
-                    const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                elevation: 6,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                color: Colors.white,
-                shadowColor: Colors.grey.withOpacity(0.5),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Valor pendiente: ${abonoService.formatCurrencyToCOP(valor)}',
-                            style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87),
-                          ),
-                          IconButton(
-                            onPressed: () {
-                              setState(() {
-                                factura['isExpanded'] = !isExpanded;
-                              });
-                            },
-                            icon: Icon(
-                              isExpanded
-                                  ? Icons.arrow_drop_up
-                                  : Icons.arrow_drop_down,
-                              color: Colors.blueAccent,
-                              size: 30,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Fecha a pagar: ${DateFormat('dd/MM/yyyy').format(DateTime.parse(fecha))}',
-                        style: const TextStyle(
-                            fontSize: 16, color: Colors.black54),
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Facturación #${factura['facturacion'][0]['idFacturacion']}',
-                        style: const TextStyle(
-                            fontSize: 16, color: Colors.black54),
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        'Fecha factura: ${DateFormat('dd/MM/yyyy').format(DateTime.parse(factura['facturacion'][0]['fecha']))}',
-                        style: const TextStyle(
-                            fontSize: 16, color: Colors.black54),
-                      ),
-                      const SizedBox(height: 12),
-                      if (isExpanded) const SizedBox(height: 12),
-                      if (isExpanded)
-                        ...cuotas
-                            .where((cuota) =>
-                                cuota['saldo'] != null &&
-                                cuota['saldo'] is num &&
-                                cuota['saldo'] > 0)
-                            .map((cuota) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 6),
-                            child: Text(
-                              'Cuota ${cuota['idCuota']} - Saldo: ${abonoService.formatCurrencyToCOP(cuota['saldo'])} - Fecha: ${DateFormat('dd/MM/yyyy').format(DateTime.parse(cuota['fechaPago']))}',
-                              style: const TextStyle(
-                                  fontSize: 16, color: Colors.black87),
-                            ),
-                          );
-                        }).toList(),
-                    ],
-                  ),
-                ),
-              );
+              return _buildFacturaCard(factura);
             },
           ),
         );
       },
     );
   }
+
+// Widget para una factura (nivel principal)
+  Widget _buildFacturaCard(Map<String, dynamic> factura) {
+    final valor = factura['valor'];
+    final fecha = factura['fecha'];
+    final facturaciones = factura['facturacion'] ?? [];
+    final isFacturaExpanded = factura['isExpanded'] ?? false;
+
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      elevation: 6,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Valor pendiente: ${abonoService.formatCurrencyToCOP(valor)}',
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      factura['isExpanded'] = !isFacturaExpanded;
+                    });
+                  },
+                  icon: Icon(
+                    isFacturaExpanded
+                        ? Icons.arrow_drop_up
+                        : Icons.arrow_drop_down,
+                    color: Colors.blueAccent,
+                    size: 30,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Fecha a pagar: ${DateFormat('dd/MM/yyyy').format(DateTime.parse(fecha))}',
+              style: const TextStyle(fontSize: 16, color: Colors.black54),
+            ),
+            const SizedBox(height: 16),
+            if (isFacturaExpanded)
+              Column(
+                children: facturaciones.map<Widget>((facturacion) {
+                  return _buildFacturacionCard(facturacion);
+                }).toList(),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+// Widget para las facturaciones
+  Widget _buildFacturacionCard(Map<String, dynamic> facturacion) {
+    final idFacturacion = facturacion['idFacturacion'];
+    final fechaFacturacion = facturacion['fecha'];
+    final cuotas = facturacion['cuotas'] ?? [];
+    final isFacturacionExpanded = facturacion['isExpanded'] ?? false;
+
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Facturación #$idFacturacion',
+                  style: const TextStyle(fontSize: 16, color: Colors.black87),
+                ),
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      facturacion['isExpanded'] = !isFacturacionExpanded;
+                    });
+                  },
+                  icon: Icon(
+                    isFacturacionExpanded
+                        ? Icons.arrow_drop_up
+                        : Icons.arrow_drop_down,
+                    color: Colors.blueAccent,
+                    size: 24,
+                  ),
+                ),
+              ],
+            ),
+            Text(
+              'Fecha factura: ${DateFormat('dd/MM/yyyy').format(DateTime.parse(fechaFacturacion))}',
+              style: const TextStyle(fontSize: 14, color: Colors.black54),
+            ),
+            if (isFacturacionExpanded)
+              Column(
+                children: cuotas.map<Widget>((cuota) {
+                  return _buildCuotaTile(cuota, facturacion);
+                }).toList(),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+// Widget para las cuotas de una facturacion
+  Widget _buildCuotaTile(
+      Map<String, dynamic> cuota, Map<String, dynamic> facturacion) {
+    final idCuota = cuota['idCuota'];
+    final saldo = cuota['saldo'];
+    final fechaPago = cuota['fechaPago'];
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: ListTile(
+        contentPadding: EdgeInsets.zero,
+        title: Text(
+          'Cuota $idCuota - Saldo: ${abonoService.formatCurrencyToCOP(saldo)} - Fecha: ${DateFormat('dd/MM/yyyy').format(DateTime.parse(fechaPago))}',
+          style: const TextStyle(fontSize: 16, color: Colors.black87),
+        ),
+      ),
+    );
+  } //Metodo
 }

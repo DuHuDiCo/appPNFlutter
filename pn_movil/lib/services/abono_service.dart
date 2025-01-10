@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pn_movil/conexiones/ApiClient.dart';
-import 'package:pn_movil/providers/abono_provider.dart';
 
 class AbonoService extends ChangeNotifier {
   final ApiClient apiClient;
@@ -30,12 +29,18 @@ class AbonoService extends ChangeNotifier {
     print("Cuotas seleccionadas actualizadas: $_selectedCuotas");
   }
 
+  //Funcion para vaciar las cuotas seleccionadas
+  void clearSelectedCuotas() {
+    _selectedCuotas.clear();
+    notifyListeners();
+  }
+
   // Función para calcular la suma total de las cuotas seleccionadas
   double calcularTotalCuotas() {
     double total = 0.0;
 
     for (var cuota in _selectedCuotas) {
-      final valorStr = cuota['valor'];
+      final valorStr = cuota['saldo'];
       if (valorStr != null) {
         total += double.parse(valorStr);
       }
@@ -45,62 +50,82 @@ class AbonoService extends ChangeNotifier {
     return total;
   }
 
+// Método para distribuir el pago entre las cuotas seleccionadas
   void distribuirPago(double totalPago) {
     double saldoRestante = totalPago;
     print("Saldo inicial a distribuir: $saldoRestante");
 
+    // Primero, recalcular el valor de las cuotas, si es necesario
     for (int i = 0; i < _selectedCuotas.length; i++) {
       final cuota = _selectedCuotas[i];
       final saldoCuota = double.parse(cuota['saldo'] ?? '0');
+      cuota['valor'] = saldoCuota
+          .toStringAsFixed(0); // Recalcular el valor antes de distribuir
+    }
+
+    for (int i = 0; i < _selectedCuotas.length; i++) {
+      final cuota = _selectedCuotas[i];
+      final saldoCuota = double.parse(cuota['saldo'] ?? '0');
+      double valorModificado = 0;
 
       print("Cuota ${cuota['idCuota']} con saldo: $saldoCuota");
-
-      double valorModificado = 0;
 
       if (saldoRestante > 0) {
         if (saldoCuota > 0) {
           if (saldoRestante >= saldoCuota) {
-            valorModificado = saldoCuota;
+            valorModificado = saldoCuota; // Asignamos todo el saldo de la cuota
             saldoRestante -= valorModificado;
           } else {
-            valorModificado = saldoRestante;
+            valorModificado = saldoRestante; // Asignamos el saldo restante
             saldoRestante = 0;
           }
-
+          cuota['valor'] = valorModificado.toStringAsFixed(0);
           print(
               "Distribuyendo ${valorModificado} a la cuota ${cuota['idCuota']}");
         }
       }
 
-      cuota['valor'] = valorModificado.toStringAsFixed(0);
-      cuota.remove('saldo');
       print("Valor asignado a la cuota ${cuota['idCuota']}: ${cuota['valor']}");
       print("Saldo restante: $saldoRestante");
 
-      if (saldoRestante <= 0) break;
+      if (saldoRestante <= 0) {
+        print("Saldo restante ya es 0, terminando distribución.");
+        break;
+      }
     }
-
     notifyListeners();
   }
 
-  //Funcion para vaciar las cuotas seleccionadas
-  void clearSelectedCuotas() {
-    _selectedCuotas.clear();
-    notifyListeners();
-  }
-
-  //Funcion para crear una aplicacion de abono normal
+// Funcion para crear una aplicacion de abono normal
   Future<void> guardarAbono(
       BuildContext context, int idCliente, int idPagoCliente) async {
+    List<Map<String, String>> cuotasSinSaldo = _selectedCuotas.map((cuota) {
+      var cuotaSinSaldo = Map<String, String>.from(cuota);
+      cuotaSinSaldo.remove('saldo');
+      return cuotaSinSaldo;
+    }).toList();
+
+    for (var cuota in cuotasSinSaldo) {
+      if (cuota['valor'] == '0') {
+        final cuotaOriginal = _selectedCuotas.firstWhere(
+          (originalCuota) => originalCuota['idCuota'] == cuota['idCuota'],
+          orElse: () => {},
+        );
+        if (cuotaOriginal != null && cuotaOriginal.isNotEmpty) {
+          double saldoOriginal = double.parse(cuotaOriginal['saldo'] ?? '0');
+          cuota['valor'] = saldoOriginal.toStringAsFixed(0);
+        }
+      }
+    }
+
     final Map<String, dynamic> factura = {
       'idCliente': idCliente,
       'idPagoCliente': idPagoCliente,
-      'cuotas': _selectedCuotas,
+      'cuotas': cuotasSinSaldo,
     };
 
     try {
       // await AbonoProvider(apiClient).createAbono(context, factura);
-      print('Aplicacion de abono normal creada con exito');
       print(factura);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

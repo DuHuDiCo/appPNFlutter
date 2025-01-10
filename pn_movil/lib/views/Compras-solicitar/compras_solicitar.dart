@@ -189,6 +189,13 @@ class _ComprasState extends State<Compras> {
                                           arguments: compra,
                                         );
                                         break;
+                                      case 'flete':
+                                        Navigator.pushReplacementNamed(
+                                          context,
+                                          'compras-solicitar-agregar-flete',
+                                          arguments: compra,
+                                        );
+                                        break;
                                     }
                                   },
                                   itemBuilder: (BuildContext context) {
@@ -210,7 +217,8 @@ class _ComprasState extends State<Compras> {
                                         child: Row(
                                           children: const [
                                             Icon(Icons.edit,
-                                                color: Colors.green),
+                                                color: Color.fromARGB(
+                                                    255, 123, 184, 106)),
                                             SizedBox(width: 10),
                                             Text('Editar'),
                                           ],
@@ -229,6 +237,23 @@ class _ComprasState extends State<Compras> {
                                                       255, 230, 185, 37)),
                                               SizedBox(width: 10),
                                               Text('Pagar'),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    }
+
+                                    if (compra['pago'] != null) {
+                                      menuItems.add(
+                                        PopupMenuItem<String>(
+                                          value: 'flete',
+                                          child: Row(
+                                            children: const [
+                                              Icon(Icons.add_road_rounded,
+                                                  color: Color.fromARGB(
+                                                      255, 37, 134, 230)),
+                                              SizedBox(width: 10),
+                                              Text('Agregar flete'),
                                             ],
                                           ),
                                         ),

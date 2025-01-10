@@ -79,6 +79,8 @@ class ApiClient {
       {bool includeAuth = true}) async {
     final headers = await _getHeaders(includeAuth: includeAuth);
     final url = Uri.parse('$baseUrl$endpoint');
+    print(url);
+    print(body);
     return http.put(url, headers: headers, body: json.encode(body));
   }
 
