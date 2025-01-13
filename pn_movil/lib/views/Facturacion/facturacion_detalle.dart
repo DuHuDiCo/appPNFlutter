@@ -135,7 +135,7 @@ class _FacturacionDetalleState extends State<FacturacionDetalle> {
         children: [
           const Center(
             child: Text(
-              'Productos del inventario',
+              'Productos de la factura',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,

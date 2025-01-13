@@ -40,7 +40,6 @@ class ComprasService extends ChangeNotifier {
 
     try {
       await CompraProvider(apiClient).agregarFlete(context, fleteMap, idCompra);
-      print('Factura creada exitosamente');
       print(fleteMap);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

@@ -17,7 +17,6 @@ class AbonoNormal extends StatefulWidget {
 
 class _AbonoNormalState extends State<AbonoNormal> {
   late final AbonoService abonoService;
-  List<Map<String, dynamic>> cuotasSeleccionadas = [];
   final TextEditingController _precioFinalController = TextEditingController();
   int? _selectedCliente;
 
@@ -49,6 +48,7 @@ class _AbonoNormalState extends State<AbonoNormal> {
     _precioFinalController.text = total.toStringAsFixed(0);
   }
 
+  // Método para agregar una cuota seleccionada
   void _addCuotaSeleccionada(int cuotaId, int facturacionId, double saldo) {
     setState(() {
       abonoService.addCuotas({
@@ -58,6 +58,11 @@ class _AbonoNormalState extends State<AbonoNormal> {
         'saldo': saldo.toString(),
       });
     });
+  }
+
+  // Función para verificar si hay al menos una cuota seleccionada
+  bool _isCuotaSeleccionada() {
+    return abonoService.hasSelectedCuotas;
   }
 
   @override
@@ -245,13 +250,10 @@ class _AbonoNormalState extends State<AbonoNormal> {
                         const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   ),
                   onChanged: (value) {
-                    // Convertir el valor ingresado en el campo a un número decimal
                     final nuevoValor = double.tryParse(value) ?? 0.0;
 
-                    // Llamar a la función para distribuir el pago con el nuevo valor
                     abonoService.distribuirPago(nuevoValor);
 
-                    // Actualizar el controlador sin interferir con la entrada del usuario
                     setState(() {
                       _precioFinalController.text =
                           nuevoValor > 0 ? nuevoValor.toStringAsFixed(0) : '';
@@ -526,10 +528,39 @@ class _AbonoNormalState extends State<AbonoNormal> {
               SizedBox(
                 width: 150,
                 child: ElevatedButton(
-                  onPressed: () {
-                    abonoService.guardarAbono(
-                        context, _selectedCliente!, idPagoCliente);
-                  },
+                  onPressed: (_isCuotaSeleccionada() &&
+                          _precioFinalController.text.isNotEmpty)
+                      ? () {
+                          final valorPago = pagoCliente?['valor'] ?? 0.0;
+                          final valorIngresado =
+                              double.tryParse(_precioFinalController.text) ??
+                                  0.0;
+
+                          if (valorIngresado > valorPago) {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Error al registrar abono'),
+                                  content: const Text(
+                                      'El valor no puede ser mayor al pago disponible para aplicar.'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const Text('Cerrar'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          } else {
+                            abonoService.guardarAbono(
+                                context, _selectedCliente!, idPagoCliente);
+                          }
+                        }
+                      : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
                   ),
@@ -540,7 +571,7 @@ class _AbonoNormalState extends State<AbonoNormal> {
                     ),
                   ),
                 ),
-              ),
+              )
             ],
           ),
         ],

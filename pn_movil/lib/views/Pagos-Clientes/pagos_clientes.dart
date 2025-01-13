@@ -105,6 +105,7 @@ class _PagosClientesState extends State<PagosClientes> {
     );
   }
 
+  //Metodo para construir la barra de busqueda
   Widget _buildSearchBar() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -140,7 +141,10 @@ class _PagosClientesState extends State<PagosClientes> {
                         value: _selectedCliente,
                         hint: const Text('Selecciona un cliente'),
                         onChanged: (newValue) {
-                          _selectedCliente = newValue;
+                          // Aseguramos que el cliente seleccionado se actualice
+                          setState(() {
+                            _selectedCliente = newValue;
+                          });
                         },
                         items: clientes.map((cliente) {
                           return DropdownMenuItem<int>(
@@ -198,6 +202,7 @@ class _PagosClientesState extends State<PagosClientes> {
                   ),
                   child: IconButton(
                     onPressed: () {
+                      // Restablece el cliente seleccionado y el proveedor
                       context.read<PagoClienteProvider>().resetPagosFiltrados();
                       setState(() {
                         _selectedCliente = null;

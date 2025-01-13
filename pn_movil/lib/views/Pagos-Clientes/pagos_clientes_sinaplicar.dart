@@ -190,7 +190,9 @@ class _PagosClientesSinaplicarState extends State<PagosClientesSinaplicar> {
                                 break;
                               case 'aplicar':
                                 _aplicarPago(
-                                    context, pagoCliente['idPagoCliente']);
+                                    context,
+                                    pagoCliente['idPagoCliente'],
+                                    pagoCliente['valor']);
                                 break;
                               case 'abono':
                                 Navigator.pushNamed(context, 'abono-normal',
@@ -353,192 +355,201 @@ class _PagosClientesSinaplicarState extends State<PagosClientesSinaplicar> {
     );
   }
 
-  //Metodo para aplicar el pago
-  void _aplicarPago(BuildContext context, int idPagoCliente) {
+//Metodo para aplicar el pago automatico
+  void _aplicarPago(BuildContext context, int idPagoCliente, double valorPago) {
     final _formKey = GlobalKey<FormState>();
+    bool _isFormValid = false;
 
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          title: const Center(
-            child: Text(
-              'Aplicar pago automático',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Color.fromARGB(255, 21, 101, 192),
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
               ),
-            ),
-          ),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(height: 16),
-                Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      // Dropdown de clientes
-                      Consumer<ClientesProvider>(
-                        builder: (context, clientesProvider, child) {
-                          if (clientesProvider.isLoading) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-
-                          if (clientesProvider.clientes.isEmpty) {
-                            return const Center(
-                              child: Text("No hay clientes disponibles"),
-                            );
-                          }
-
-                          final clientes = clientesProvider.clientes;
-
-                          return DropdownButtonHideUnderline(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey),
-                                borderRadius: BorderRadius.circular(12),
-                                color: Colors.grey[100]?.withOpacity(0.8),
-                              ),
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 12),
-                              child: DropdownButton<int>(
-                                isExpanded: true,
-                                value: _selectedCliente,
-                                hint: const Text('Selecciona un cliente'),
-                                onChanged: (newValue) {
-                                  setState(() {
-                                    _selectedCliente = newValue;
-                                  });
-                                },
-                                items: clientes.map((cliente) {
-                                  return DropdownMenuItem<int>(
-                                    value: cliente['idClient'],
-                                    child: Text(
-                                      '${cliente['name']} ${cliente['lastname']}',
-                                    ),
-                                  );
-                                }).toList(),
-                                dropdownColor: Colors.white,
-                                menuMaxHeight: 200,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 16),
-
-                      TextFormField(
-                        controller: _fechaCreacionController,
-                        onTap: _selectDate,
-                        readOnly: true,
-                        decoration: InputDecoration(
-                          labelText: 'Fecha de pago',
-                          prefixIcon: const Icon(Icons.calendar_today),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 12,
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Por favor, ingrese una fecha';
-                          }
-                          return null;
-                        },
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      // Campo de texto para tipo de venta
-                      TextFormField(
-                        controller: _valorPagoAplicarController,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          labelText: 'Valor de pago',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 12,
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Por favor, ingrese un valor';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                    ],
+              title: const Center(
+                child: Text(
+                  'Aplicar pago automático',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(255, 21, 101, 192),
                   ),
                 ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-              },
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.grey,
-                textStyle: const TextStyle(fontSize: 16),
               ),
-              child: const Text('Cancelar'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                if (_formKey.currentState!.validate()) {
-                  final aplicarPagoDTO = {
-                    if (_valorPagoAplicarController.text.isNotEmpty)
-                      'valor': _valorPagoAplicarController.text,
-                    if (_selectedCliente != null) 'idCliente': _selectedCliente,
-                    if (_fechaCreacionController.text.isNotEmpty)
-                      'fechaPago': _fechaCreacionController.text,
-                  };
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(height: 16),
+                    Form(
+                      key: _formKey,
+                      onChanged: () {
+                        setState(() {
+                          _isFormValid = _formKey.currentState!.validate();
+                        });
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // Dropdown de clientes
+                          Consumer<ClientesProvider>(
+                            builder: (context, clientesProvider, child) {
+                              if (clientesProvider.isLoading) {
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              }
 
-                  print('Datos preparados para enviar: $aplicarPagoDTO');
+                              if (clientesProvider.clientes.isEmpty) {
+                                return const Center(
+                                  child: Text("No hay clientes disponibles"),
+                                );
+                              }
 
-                  await pagoClienteService.aplicarPagoAutomatico(
-                      context, idPagoCliente,
-                      aplicarPago: aplicarPagoDTO);
-                } else {
-                  print('Formulario inválido');
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue.shade800,
-                foregroundColor: Colors.white,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+                              final clientes = clientesProvider.clientes;
+
+                              return DropdownButtonHideUnderline(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.grey),
+                                    borderRadius: BorderRadius.circular(12),
+                                    color: Colors.grey[100]?.withOpacity(0.8),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12),
+                                  child: DropdownButton<int>(
+                                    isExpanded: true,
+                                    value: _selectedCliente,
+                                    hint: const Text('Selecciona un cliente'),
+                                    onChanged: (newValue) {
+                                      setState(() {
+                                        _selectedCliente = newValue;
+                                      });
+                                    },
+                                    items: clientes.map((cliente) {
+                                      return DropdownMenuItem<int>(
+                                        value: cliente['idClient'],
+                                        child: Text(
+                                          '${cliente['name']} ${cliente['lastname']}',
+                                        ),
+                                      );
+                                    }).toList(),
+                                    dropdownColor: Colors.white,
+                                    menuMaxHeight: 200,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          TextFormField(
+                            controller: _fechaCreacionController,
+                            onTap: _selectDate,
+                            readOnly: true,
+                            decoration: InputDecoration(
+                              labelText: 'Fecha de pago',
+                              prefixIcon: const Icon(Icons.calendar_today),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                vertical: 10,
+                                horizontal: 12,
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return 'Por favor, ingrese una fecha';
+                              }
+                              return null;
+                            },
+                          ),
+
+                          const SizedBox(height: 16),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                textStyle: const TextStyle(fontSize: 16),
               ),
-              child: const Text('Guardar'),
-            ),
-          ],
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(dialogContext).pop();
+                  },
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.grey,
+                    textStyle: const TextStyle(fontSize: 16),
+                  ),
+                  child: const Text('Cancelar'),
+                ),
+                ElevatedButton(
+                  onPressed: _isFormValid
+                      ? () async {
+                          if (_formKey.currentState!.validate()) {
+                            final aplicarPagoDTO = {
+                              if (valorPago != null) 'valor': valorPago,
+                              if (_selectedCliente != null)
+                                'idCliente': _selectedCliente,
+                              if (_fechaCreacionController.text.isNotEmpty)
+                                'fechaPago': _fechaCreacionController.text,
+                            };
+
+                            print(
+                                'Datos preparados para enviar: $aplicarPagoDTO');
+
+                            await pagoClienteService.aplicarPagoAutomatico(
+                                context, idPagoCliente,
+                                aplicarPago: aplicarPagoDTO);
+
+                            Navigator.of(dialogContext).pop();
+
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('¡Éxito!'),
+                                  content: const Text(
+                                      'La aplicación automática fue creada con éxito.'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const Text('Cerrar'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          } else {
+                            print('Formulario inválido');
+                          }
+                        }
+                      : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue.shade800,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    textStyle: const TextStyle(fontSize: 16),
+                  ),
+                  child: const Text('Guardar'),
+                ),
+              ],
+            );
+          },
         );
       },
     );

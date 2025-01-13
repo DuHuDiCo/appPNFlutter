@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pn_movil/widgets/Components-cards/resumen_compra.dart';
+import 'package:pn_movil/widgets/Components-generales/estado_compra.dart';
+import 'package:pn_movil/widgets/Components-generales/estado_flete.dart';
 import 'package:pn_movil/widgets/Components-navbar/drawer.dart';
 import 'package:pn_movil/widgets/Components-navbar/navbar.dart';
 
@@ -29,13 +31,13 @@ class ComprasSolicitarDetalle extends StatelessWidget {
           SingleChildScrollView(
             child: Column(
               children: [
-                const SizedBox(height: 50),
+                const SizedBox(height: 40),
                 _buildTitle('Detalle de la Compra'),
-                const SizedBox(height: 30),
+                const SizedBox(height: 20),
                 _buildDetailsCard(compra),
-                const SizedBox(height: 40),
+                const SizedBox(height: 20),
                 _buildAdicionesSection(compra),
-                const SizedBox(height: 40),
+                const SizedBox(height: 20),
                 _buildFooter(context),
               ],
             ),
@@ -106,6 +108,15 @@ class ComprasSolicitarDetalle extends StatelessWidget {
                 value: formatCurrencyToCOP(compra['totalPagar'] ?? 0),
                 iconColor: Colors.orange.shade700,
               ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  estadoPagoWidget(compra['pago']),
+                  SizedBox(width: 15),
+                  estadoFleteWidget(compra['productoCompras'][0]['flete']),
+                ],
+              )
             ],
           ),
         ),
@@ -138,7 +149,7 @@ class ComprasSolicitarDetalle extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 40),
+          const SizedBox(height: 30),
           SizedBox(
             height: 220,
             child: ListView.builder(

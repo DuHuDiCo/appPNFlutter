@@ -52,28 +52,37 @@ class PagoClienteProvider extends ChangeNotifier {
   //Metodo para obtener un pago cliente por ID
   Future<void> obtenerPagoPorId(BuildContext context, int idCliente) async {
     try {
+      print(
+          'Iniciando solicitud para obtener pago de cliente con ID: $idCliente');
       _isLoading = true;
       notifyListeners();
 
       final response = await _apiClient.get('/pagosClientes/$idCliente');
+      print('Status Code: ${response.statusCode}');
+      print('Response Body: ${response.body}');
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         final pagos =
             List<Map<String, dynamic>>.from(json.decode(response.body));
         if (pagos.isNotEmpty) {
           _filteredPagosClientes = pagos;
+          print('Pagos cliente recibidos $_filteredPagosClientes');
         } else {
           _filteredPagosClientes = [];
+          print('No hay pagos para este cliente');
           throw Exception('No hay pagos para este cliente');
         }
       } else if (response.statusCode == 404) {
+        print('Pago cliente no encontrado');
         throw Exception('Pago cliente no encontrado');
       }
     } catch (e) {
+      print('Error en obtenerPagoPorId: $e');
       _filteredPagosClientes = [];
     } finally {
       _isLoading = false;
       notifyListeners();
+      print('Finalizando solicitud para obtener pago cliente.');
     }
   }
 
@@ -165,6 +174,7 @@ class PagoClienteProvider extends ChangeNotifier {
     }
   }
 
+  //Metodo para aplicar el pago automático
   Future<void> aplicarPagoAutomatico(BuildContext context, int idPagoCliente,
       {List<Map<String, dynamic>>? aplicarPagoDTO}) async {
     final dio = Dio();
@@ -193,6 +203,7 @@ class PagoClienteProvider extends ChangeNotifier {
         _pagosClientes.add(pagoClienteCreado);
 
         print('Pago cliente creado exitosamente');
+        await obtenerPagosSinAplicar(context);
       } else {
         print('Error en la respuesta: ${response.data}');
       }

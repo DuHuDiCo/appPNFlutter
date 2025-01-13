@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:pn_movil/providers/compra_provider.dart';
 import 'package:pn_movil/widgets/Components-cards/cards_listar_products.dart';
 import 'package:pn_movil/widgets/Components-generales/estado_compra.dart';
+import 'package:pn_movil/widgets/Components-generales/estado_flete.dart';
 import 'package:pn_movil/widgets/Components-navbar/drawer.dart';
 import 'package:pn_movil/widgets/Components-navbar/navbar.dart';
 import 'package:provider/provider.dart';
@@ -153,7 +154,16 @@ class _ComprasState extends State<Compras> {
                                         fontSize: 14, color: Colors.grey[700]),
                                   ),
                                   const SizedBox(height: 4),
-                                  estadoPagoWidget(compra['pago']),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      estadoPagoWidget(compra['pago']),
+                                      SizedBox(width: 15),
+                                      estadoFleteWidget(
+                                          compra['productoCompras'][0]
+                                              ['flete']),
+                                    ],
+                                  )
                                 ],
                               ),
                             ),

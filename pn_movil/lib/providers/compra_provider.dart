@@ -145,7 +145,7 @@ class CompraProvider extends ChangeNotifier {
       notifyListeners();
 
       final response = await _apiClient.put(
-        '/api/v1/compra/flete/?idCompra=$idCompra',
+        '/api/v1/compra/flete/$idCompra',
         flete,
       );
 

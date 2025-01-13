@@ -53,9 +53,9 @@ class _DetalleInventarioState extends State<DetalleInventario> {
           children: [
             _buildTitle(),
             _buildDetailsCard(inventario, context.read<InventarioProvider>()),
-            const SizedBox(height: 40),
+            const SizedBox(height: 30),
             _buildAdicionesSection(inventario),
-            const SizedBox(height: 40),
+            const SizedBox(height: 30),
             _buildFooter(context),
           ],
         ),

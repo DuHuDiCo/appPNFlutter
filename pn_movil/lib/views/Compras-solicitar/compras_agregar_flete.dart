@@ -32,8 +32,7 @@ class _ComprasAgregarFleteState extends State<ComprasAgregarFlete> {
 
   void _removeProductoFleteSeleccionada(int productoId) {
     setState(() {
-      comprasService
-          .removeProductoFlete(productoId); // Pasamos el ID directamente
+      comprasService.removeProductoFlete(productoId);
     });
   }
 
@@ -122,7 +121,7 @@ class _ComprasAgregarFleteState extends State<ComprasAgregarFlete> {
                     ),
                   ),
                   onChanged: (value) {
-                    // Lógica para manejar el cambio en el valor
+                    setState(() {});
                   },
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -170,7 +169,7 @@ class _ComprasAgregarFleteState extends State<ComprasAgregarFlete> {
               itemBuilder: (context, index) {
                 final productoCompra = productoCompras[index];
                 final producto = productoCompra['producto'];
-                final idProducto = producto['idProducto'];
+                final idProductoCompra = productoCompra['idProductoCompra'];
                 final imagen = producto['imagenes'].isNotEmpty
                     ? producto['imagenes'][0]
                     : 'assets/algo.jpg';
@@ -186,9 +185,9 @@ class _ComprasAgregarFleteState extends State<ComprasAgregarFlete> {
                     setState(() {
                       seleccionados[index] = !seleccionados[index];
                       if (seleccionados[index]) {
-                        _addProductoFleteSeleccionada(idProducto);
+                        _addProductoFleteSeleccionada(idProductoCompra);
                       } else {
-                        _removeProductoFleteSeleccionada(idProducto);
+                        _removeProductoFleteSeleccionada(idProductoCompra);
                       }
                     });
                   },
@@ -254,9 +253,10 @@ class _ComprasAgregarFleteState extends State<ComprasAgregarFlete> {
                             seleccionados[index] = value ?? false;
 
                             if (value == true) {
-                              _addProductoFleteSeleccionada(idProducto);
+                              _addProductoFleteSeleccionada(idProductoCompra);
                             } else {
-                              _removeProductoFleteSeleccionada(idProducto);
+                              _removeProductoFleteSeleccionada(
+                                  idProductoCompra);
                             }
                           });
                         },
@@ -314,11 +314,16 @@ class _ComprasAgregarFleteState extends State<ComprasAgregarFlete> {
               SizedBox(
                 width: 150,
                 child: ElevatedButton(
-                  onPressed: () {
-                    final flete = double.tryParse(_fleteController.text) ?? 0;
-
-                    comprasService.guardarFlete(context, idCompra!, flete);
-                  },
+                  onPressed: (double.tryParse(_fleteController.text) != null &&
+                          double.tryParse(_fleteController.text)! > 0 &&
+                          seleccionados.contains(true))
+                      ? () {
+                          final flete =
+                              double.tryParse(_fleteController.text) ?? 0;
+                          comprasService.guardarFlete(
+                              context, idCompra!, flete);
+                        }
+                      : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
                   ),
