@@ -163,7 +163,7 @@ class _ComprasState extends State<Compras> {
                                           compra['productoCompras'][0]
                                               ['flete']),
                                     ],
-                                  )
+                                  ),
                                 ],
                               ),
                             ),

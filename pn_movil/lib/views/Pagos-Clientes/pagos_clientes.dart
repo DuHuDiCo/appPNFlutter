@@ -249,6 +249,7 @@ class _PagosClientesState extends State<PagosClientes> {
             itemCount: pagoClienteProvider.pagosClientes.length,
             itemBuilder: (context, index) {
               final pagoCliente = pagoClienteProvider.pagosClientes[index];
+              final tipoPago = pagoCliente['tipoPago'];
 
               return ListItem(
                 imageUrl: null,
@@ -260,7 +261,7 @@ class _PagosClientesState extends State<PagosClientes> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Pago #${pagoCliente['idPagoCliente']}',
+                            'Recibo #${pagoCliente['numeroRecibo']}',
                             style: const TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold),
                           ),
@@ -273,6 +274,12 @@ class _PagosClientesState extends State<PagosClientes> {
                           const SizedBox(height: 4),
                           Text(
                             'Total pago: ${pagoClienteService.formatCurrencyToCOP(pagoCliente["valor"])}',
+                            style: TextStyle(
+                                fontSize: 14, color: Colors.grey[700]),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${tipoPago['nombreTipoPago']}',
                             style: TextStyle(
                                 fontSize: 14, color: Colors.grey[700]),
                           ),
