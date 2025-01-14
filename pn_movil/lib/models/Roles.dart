@@ -1,33 +1,45 @@
-enum Role { admin, vendedor, cliente, guest }
+enum Role { admin, vendedor, guest }
 
 class Permisos {
-  static const Map<Role, List<String>> modulosAcceso = {
-    Role.admin: [
-      'home',
-      'compras-solicitar',
-      'realizar-pago',
-      'listar',
-      'clasificacion-productos',
-      'productos',
-      'crearProduct'
-    ],
-    Role.vendedor: [
-      'home',
-      'compras-solicitar',
-      'clasificacion-productos',
-      'productos',
-    ],
-    Role.cliente: [
-      'home',
-      'compras-solicitar',
-    ],
-    Role.guest: [],
+  // Este mapa ahora asigna módulos y sus permisos específicos.
+  static const Map<Role, Map<String, List<String>>> modulosAcceso = {
+    Role.admin: {
+      'home': ['visualizar'],
+      'compras-solicitar': ['visualizar', 'crear', 'editar', 'eliminar'],
+      'compras-solicitar-crear': ['crear'],
+      'compras-solicitar-editar': ['editar'],
+      'compras-solicitar-detalle': ['visualizar'],
+      'compras-solicitar-agregar-flete': ['editar'],
+      'realizar-pago': ['crear'],
+      'crear-pago': ['crear'],
+      'pagos-clientes': ['visualizar', 'crear'],
+      'crear-pagos-clientes': ['crear'],
+      'facturacion': ['visualizar', 'crear'],
+      'productos-sin-facturacion': ['visualizar'],
+      'productos-facturacion-detalle': ['visualizar'],
+      'inventario': ['visualizar', 'editar'],
+      'detalle-inventario': ['visualizar'],
+      'crear-plan-pago': ['crear'],
+      'plan-pago': ['visualizar', 'editar'],
+      'tipo-venta': ['crear', 'visualizar'],
+      'abono-normal': ['crear'],
+      'resumen-cuenta': ['visualizar'],
+      'clasificacion-productos': ['editar'],
+      'productos': ['visualizar', 'editar'],
+      'crearProduct': ['crear'],
+    },
+    Role.vendedor: {
+      'home': ['visualizar'],
+      'compras-solicitar': ['visualizar', 'crear'],
+      'clasificacion-productos': ['editar'],
+      'productos': ['visualizar'],
+    },
+    Role.guest: {
+      'home': ['visualizar'],
+    },
   };
 
-  static const Map<Role, List<String>> AccionesPermisos = {
-    Role.admin: ['crear', 'editar', 'eliminar', 'visualizar'],
-    Role.vendedor: ['crear', 'editar', 'visualizar'],
-    Role.cliente: ['visualizar'],
-    Role.guest: [],
-  };
+  static bool tienePermiso(Role role, String modulo, String accion) {
+    return modulosAcceso[role]?[modulo]?.contains(accion) ?? false;
+  }
 }
